@@ -14,7 +14,7 @@ public class DocumentDtoRequest {
     @NotEmpty
     private String title;
     @NotEmpty
-    private String description;
+    private String designation;
     @NotEmpty
     private String codeOKS;
     @NotEmpty
@@ -61,12 +61,12 @@ public class DocumentDtoRequest {
         return this;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDesignation() {
+        return designation;
     }
 
-    public DocumentDtoRequest setDescription(String description) {
-        this.description = description;
+    public DocumentDtoRequest setDesignation(String designation) {
+        this.designation = designation;
         return this;
     }
 
