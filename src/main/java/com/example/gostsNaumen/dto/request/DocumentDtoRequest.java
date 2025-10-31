@@ -9,6 +9,8 @@ import java.util.Set;
  * Дто для приема госта извне
  */
 public class DocumentDtoRequest {
+    // TODO: Для всего класса, добавить валидацию на min max длину строки
+
     @NotEmpty
     private String fullName;
     @NotEmpty
