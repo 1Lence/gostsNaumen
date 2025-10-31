@@ -43,6 +43,11 @@ public class DocumentController {
         return documentService.getDocumentById(docId);
     }
 
+    /**
+     * Удаление ГОСТа по ID
+     *
+     * @param docId id Документа
+     */
     @DeleteMapping("/delete/{docId}")
     public void deleteDocument(@PathVariable Long docId) {
         documentService.deleteDocumentById(docId);
