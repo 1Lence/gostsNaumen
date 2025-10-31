@@ -3,6 +3,7 @@ package com.example.gostsNaumen.service.document;
 import com.example.gostsNaumen.dto.DocumentMapper;
 import com.example.gostsNaumen.dto.request.DocumentDtoRequest;
 import com.example.gostsNaumen.dto.response.DocumentDtoResponse;
+import com.example.gostsNaumen.dto.response.GostIdDtoResponse;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import jakarta.persistence.EntityExistsException;
@@ -30,7 +31,7 @@ public class DocumentService {
      * @return сохраненная сущность в бд
      */
     @Transactional
-    public DocumentDtoResponse saveDocument(DocumentDtoRequest documentDtoRequest) {
+    public GostIdDtoResponse saveDocument(DocumentDtoRequest documentDtoRequest) {
 
         if (documentRepository.findByFullName(documentDtoRequest.getFullName()).isPresent()) {
             throw new EntityExistsException("Такой гост уже существует.");
@@ -38,7 +39,7 @@ public class DocumentService {
 
         Document document = documentMapper.mapToEntity(documentDtoRequest);
 
-        return documentMapper.mapToDto(documentRepository.save(document));
+        return new GostIdDtoResponse(document.getId());
     }
 
     /**

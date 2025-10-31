@@ -2,6 +2,7 @@ package com.example.gostsNaumen.controller.document;
 
 import com.example.gostsNaumen.dto.request.DocumentDtoRequest;
 import com.example.gostsNaumen.dto.response.DocumentDtoResponse;
+import com.example.gostsNaumen.dto.response.GostIdDtoResponse;
 import com.example.gostsNaumen.service.document.DocumentService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class DocumentController {
     }
 
     @PostMapping("/add")
-    public DocumentDtoResponse addDocument(
+    public GostIdDtoResponse addDocument(
             @RequestBody @Valid DocumentDtoRequest documentDtoRequest
     ) {
         return documentService.saveDocument(documentDtoRequest);
