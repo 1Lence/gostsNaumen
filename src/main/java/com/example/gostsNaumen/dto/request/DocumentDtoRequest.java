@@ -14,8 +14,6 @@ public class DocumentDtoRequest {
     @NotEmpty
     private String fullName;
     @NotEmpty
-    private String title;
-    @NotEmpty
     private String designation;
     @NotEmpty
     private String codeOKS;
@@ -51,15 +49,6 @@ public class DocumentDtoRequest {
 
     public DocumentDtoRequest setFullName(String fullName) {
         this.fullName = fullName;
-        return this;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public DocumentDtoRequest setTitle(String title) {
-        this.title = title;
         return this;
     }
 
