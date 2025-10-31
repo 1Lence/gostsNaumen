@@ -1,6 +1,9 @@
 package com.example.gostsNaumen.entity;
 
+import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Степень стандартизации ГОСТа, отражает масштаб применения и уровень обязательности<br><br>
@@ -15,29 +18,32 @@ import jakarta.persistence.*;
  * private AdoptionLevel adoptionLevel;
  *     }
  * </pre>
- *
  */
 @Entity
 public class AdoptionLevel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    private String adoptionLevel;
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
+    private AdoptionLevelEnum adoptionLevel;
 
-    public String getAdoptionLevel() {
+    public AdoptionLevelEnum getAdoptionLevel() {
         return adoptionLevel;
     }
 
-    public void setAdoptionLevel(String adoptionLevel) {
+    public AdoptionLevel setAdoptionLevel(AdoptionLevelEnum adoptionLevel) {
         this.adoptionLevel = adoptionLevel;
+        return this;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public AdoptionLevel setId(Long id) {
         this.id = id;
+        return this;
     }
 }

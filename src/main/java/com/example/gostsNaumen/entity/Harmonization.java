@@ -1,6 +1,9 @@
 package com.example.gostsNaumen.entity;
 
+import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Степень гармонизации ГОСТа<br><br>
@@ -14,36 +17,39 @@ import jakarta.persistence.*;
  *     private Harmonization harmonization;
  *     }
  * </pre>
- *
  */
 @Entity
 public class Harmonization {
     /**
      * Уникальный идентификатор
-     * */
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     /**
      * Тип гармонизации, примеры:<br>
      * Негармонизированный, Модифицированный, Гармонизированный
-     * */
+     */
     @Column(name = "harmonization")
-    private String harmonizationType;
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
+    private HarmonizationEnum harmonizationType;
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public Harmonization setId(Integer id) {
         this.id = id;
+        return this;
     }
 
-    public String getHarmonizationType() {
+    public HarmonizationEnum getHarmonizationType() {
         return harmonizationType;
     }
 
-    public void setHarmonizationType(String harmonizationType) {
+    public Harmonization setHarmonizationType(HarmonizationEnum harmonizationType) {
         this.harmonizationType = harmonizationType;
+        return this;
     }
 }
