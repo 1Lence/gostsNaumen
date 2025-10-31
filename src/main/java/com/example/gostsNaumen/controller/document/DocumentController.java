@@ -19,16 +19,28 @@ public class DocumentController {
         this.documentService = documentService;
     }
 
-    @GetMapping("/{docId}")
-    public DocumentDtoResponse getDocument(@PathVariable Long docId) {
-        return documentService.getDocumentById(docId);
-    }
-
+    /**
+     * Добавление нового ГОСТа
+     *
+     * @param documentDtoRequest ДТО ГОСТа
+     * @return id успешно добавленного ГОСТа
+     */
     @PostMapping("/add")
     public GostIdDtoResponse addDocument(
             @RequestBody @Valid DocumentDtoRequest documentDtoRequest
     ) {
         return documentService.saveDocument(documentDtoRequest);
+    }
+
+    /**
+     * Получение ГОСТа по ID
+     *
+     * @param docId ID приходящий в запросе
+     * @return ДТО ГОСТа
+     */
+    @GetMapping("/{docId}")
+    public DocumentDtoResponse getDocument(@PathVariable Long docId) {
+        return documentService.getDocumentById(docId);
     }
 
     @DeleteMapping("/delete/docId")
