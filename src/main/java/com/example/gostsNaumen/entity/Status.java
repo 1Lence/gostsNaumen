@@ -1,9 +1,10 @@
 package com.example.gostsNaumen.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.gostsNaumen.entity.model.StatusEnum;
+import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 /**
  * Статус ГОСТа<br>
@@ -30,21 +31,25 @@ public class Status {
      * Статус ГОСТа, примеры: <br>
      * Актуальный, Отменённый, Заменённый
      */
-    private String status;
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
+    private StatusEnum status = StatusEnum.Current;
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public Status setId(Integer id) {
         this.id = id;
+        return this;
     }
 
-    public String getStatus() {
+    public StatusEnum getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public Status setStatus(StatusEnum status) {
         this.status = status;
+        return this;
     }
 }

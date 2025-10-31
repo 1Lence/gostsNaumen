@@ -2,12 +2,12 @@ package com.example.gostsNaumen.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
  * Сущность документа (ГОСТа) представляет собой ГОСТ со всеми необходимыми полями.<br>
  * Некоторые поля представлены связями с другими cущностями через внешние ключи.
- *
  */
 @Entity
 public class Document {
@@ -16,7 +16,7 @@ public class Document {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     /**
      * Полное название ГОСТа.<br>
      * Пример: "БРОНЕОДЕЖДА Классификация и общие технические требования"
@@ -31,21 +31,18 @@ public class Document {
     /**
      * Код ОКС (Общероссийский классификатор стандартов) ГОСТа.<br>
      * Пример: "13.340.10"
-     *
      */
     @Column(name = "code_oks")
     private String codeOKS;
     /**
      * Область применения ГОСТа.<br>
      * Пример: "Защитная одежда"
-     *
      */
     @Column(name = "activity_field")
     private String activityField;
     /**
      * Автор ГОСТа.<br>
      * Пример: "МТК 391 «Средства физической защиты и материалы для их изготовления"
-     *
      */
     private String author;
     /**
@@ -55,7 +52,6 @@ public class Document {
      * стрелкового оружия, а также поражения осколками. Стандарт устанавливает классификацию бронеодежды и
      * общие технические требования к ней, необходимые для разработки, изготовления
      * и испытаний соответствующей продукции."
-     *
      */
     @Column(name = "application_area")
     private String applicationArea;
@@ -75,7 +71,6 @@ public class Document {
     /**
      * Год введения ГОСТа в действие.<br>
      * Пример: 2019
-     *
      */
     @Column(name = "commission_year")
     private int commissionYear;
@@ -85,7 +80,6 @@ public class Document {
      * стрелковое оружие, защитная структура, класс защитной
      * структуры, заброневое воздействие поражающего элемента при непробитии защитной структуры,
      * показатель противоосколочной стойкости защитной структуры"
-     *
      */
     @Column(name = "key_words")
     private String keyWords;
@@ -95,7 +89,6 @@ public class Document {
      * Национальный, Межгосударственный, Отраслевой, Региональный, Стандарт Организаций.<br>
      * Значение вынесено в отдельную таблицу
      * {@link AdoptionLevel}
-     *
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "adoption_level")
@@ -106,7 +99,6 @@ public class Document {
      * Актуальный, Отменённый, Заменённый<br>
      * Значение вынесено в отдельную таблицу
      * {@link Status}
-     *
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status")
@@ -125,14 +117,14 @@ public class Document {
     /**
      * Нормативные ссылки на другие ГОСТы
      * Пример: "ГОСТ 3722—2014", "ГОСТ 28653—90"
-     * */
+     */
     private Set<String> references;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -140,111 +132,137 @@ public class Document {
         return fullName;
     }
 
-    public void setFullName(String fullName) {
+    public Document setFullName(String fullName) {
         this.fullName = fullName;
+        return this;
     }
 
     public String getDesignation() {
         return designation;
     }
 
-    public void setDesignation(String designation) {
+    public Document setDesignation(String designation) {
         this.designation = designation;
+        return this;
     }
 
     public String getCodeOKS() {
         return codeOKS;
     }
 
-    public void setCodeOKS(String codeOKS) {
+    public Document setCodeOKS(String codeOKS) {
         this.codeOKS = codeOKS;
+        return this;
     }
 
     public String getActivityField() {
         return activityField;
     }
 
-    public void setActivityField(String activityField) {
+    public Document setActivityField(String activityField) {
         this.activityField = activityField;
+        return this;
     }
 
     public String getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public Document setAuthor(String author) {
         this.author = author;
+        return this;
     }
 
     public String getApplicationArea() {
         return applicationArea;
     }
 
-    public void setApplicationArea(String applicationArea) {
+    public Document setApplicationArea(String applicationArea) {
         this.applicationArea = applicationArea;
+        return this;
     }
 
     public String getContentLink() {
         return contentLink;
     }
 
-    public void setContentLink(String contentLink) {
+    public Document setContentLink(String contentLink) {
         this.contentLink = contentLink;
+        return this;
     }
 
     public int getAcceptanceYear() {
         return acceptanceYear;
     }
 
-    public void setAcceptanceYear(int acceptanceYear) {
+    public Document setAcceptanceYear(int acceptanceYear) {
         this.acceptanceYear = acceptanceYear;
+        return this;
     }
 
     public int getCommissionYear() {
         return commissionYear;
     }
 
-    public void setCommissionYear(int commissionYear) {
+    public Document setCommissionYear(int commissionYear) {
         this.commissionYear = commissionYear;
+        return this;
     }
 
     public String getKeyWords() {
         return keyWords;
     }
 
-    public void setKeyWords(String keyWords) {
+    public Document setKeyWords(String keyWords) {
         this.keyWords = keyWords;
+        return this;
     }
 
     public AdoptionLevel getAdoptionLevel() {
         return adoptionLevel;
     }
 
-    public void setAdoptionLevel(AdoptionLevel adoptionLevel) {
+    public Document setAdoptionLevel(AdoptionLevel adoptionLevel) {
         this.adoptionLevel = adoptionLevel;
+        return this;
     }
 
     public Status getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public Document setStatus(Status status) {
         this.status = status;
+        return this;
     }
 
     public Harmonization getHarmonization() {
         return harmonization;
     }
 
-    public void setHarmonization(Harmonization harmonization) {
+    public Document setHarmonization(Harmonization harmonization) {
         this.harmonization = harmonization;
+        return this;
     }
 
     public Set<String> getReferences() {
         return references;
     }
 
-    public void setReferences(Set<String> references) {
+    public Document setReferences(Set<String> references) {
         this.references = references;
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Document document = (Document) o;
+        return Objects.equals(id, document.id) && Objects.equals(fullName, document.fullName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, fullName);
     }
 }
