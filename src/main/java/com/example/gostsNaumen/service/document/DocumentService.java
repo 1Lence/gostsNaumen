@@ -5,6 +5,7 @@ import com.example.gostsNaumen.dto.request.DocumentDtoRequest;
 import com.example.gostsNaumen.dto.response.DocumentDtoResponse;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.repository.DocumentRepository;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,11 @@ public class DocumentService {
      */
     @Transactional
     public DocumentDtoResponse saveDocument(DocumentDtoRequest documentDtoRequest) {
+
+        if (documentRepository.findByFullName(documentDtoRequest.getFullName()).isPresent()) {
+            throw new EntityExistsException("Такой гост уже существует.");
+        }
+
         Document document = documentMapper.mapToEntity(documentDtoRequest);
 
         return documentMapper.mapToDto(documentRepository.save(document));
