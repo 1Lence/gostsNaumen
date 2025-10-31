@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = CustomPasswordValidator.class)
 public @interface CustomPasswordValid {
-    String message() default "Invalid password";
+    String message() default "Невалидная почта";
 
     Class<?>[] groups() default {};
 

@@ -7,11 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * Jpa репозиторий для работы с пользовательскими данными.
+ * Репозиторий для работы с пользовательскими данными.
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
     Optional<User> findUserByEmail(String email);
     Optional<User> findUserByUsername(String username);
 }

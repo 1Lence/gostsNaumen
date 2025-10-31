@@ -19,16 +19,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    /**
-     * Загружает данные пользователя по его email.
-     *
-     * <p>Если пользователь с указанной почтой не найден, выбрасывает исключение
-     * {@link EntityNotFoundException}.</p>
-     *
-     * @param email почта пользователя для загрузки.
-     * @return Объект {@link CustomUserDetails}, представляющий загруженного пользователя.
-     * @throws EntityNotFoundException если пользователь с указанной почтой не найден.
-     */
     @Override
     public CustomUserDetails loadUserByUsername(String email) throws EntityNotFoundException {
         User user = userRepository.findUserByEmail(email)
