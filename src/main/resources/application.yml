@@ -13,3 +13,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+app:
+  jws:
+    secret: ${JWS_SECRET}
+  jwe:
+    secret: ${JWE_SECRET}
