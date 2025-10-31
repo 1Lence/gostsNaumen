@@ -14,7 +14,7 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**
- * Централизованный обработчик ошибок.
+ * Централизованный обработчик ошибок контроллера.
  * Здесь необходимо отлавливать ошибки связанные с валидацией/внешней работой приложения.
  */
 @ControllerAdvice
