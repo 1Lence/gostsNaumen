@@ -4,6 +4,7 @@ import com.example.gostsNaumen.entity.model.StatusEnum;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 /**
  * Статус ГОСТа<br>
@@ -32,7 +33,7 @@ public class Status {
      */
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Enumerated(EnumType.STRING)
-    private StatusEnum status;
+    private StatusEnum status = StatusEnum.Current;
 
     public Integer getId() {
         return id;
