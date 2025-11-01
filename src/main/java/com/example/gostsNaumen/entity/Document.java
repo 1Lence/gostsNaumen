@@ -1,6 +1,11 @@
 package com.example.gostsNaumen.entity;
 
+import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
+import com.example.gostsNaumen.entity.model.HarmonizationEnum;
+import com.example.gostsNaumen.entity.model.StatusEnum;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -68,13 +73,13 @@ public class Document {
      * Пример: 2017
      */
     @Column(name = "acceptance_year")
-    private int acceptanceYear;
+    private Integer acceptanceYear;
     /**
      * Год введения ГОСТа в действие.<br>
      * Пример: 2019
      */
     @Column(name = "commission_year")
-    private int commissionYear;
+    private Integer commissionYear;
     /**
      * Ключевые слова ГОСТа.<br>
      * Пример: "Ключевые слова: бронеодежда, холодное оружие,
@@ -88,32 +93,26 @@ public class Document {
      * Уровень стандартизации ГОСТа.<br>
      * Всего бывает 5 уровней:<br>
      * Национальный, Межгосударственный, Отраслевой, Региональный, Стандарт Организаций.<br>
-     * Значение вынесено в отдельную таблицу
-     * {@link AdoptionLevel}
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "adoption_level")
-    private AdoptionLevel adoptionLevel;
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
+    private AdoptionLevelEnum adoptionLevel;
     /**
      * Статус ГОСТа.<br>
      * Всего бывает 3 статуса:<br>
      * Актуальный, Отменённый, Заменённый<br>
-     * Значение вынесено в отдельную таблицу
-     * {@link Status}
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status")
-    private Status status;
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
+    private StatusEnum status;
     /**
      * Уровень гармонизации ГОСТа<br>
      * Всего бывает 3 варианта:<br>
      * Негармонизированный, Модифицированный, Гармонизированный<br>
-     * Значение вынесено в отдельную таблицу
-     * {@link Harmonization}
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "harmonization")
-    private Harmonization harmonization;
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
+    private HarmonizationEnum harmonization;
 
     /**
      * Нормативные ссылки на другие ГОСТы
@@ -220,29 +219,29 @@ public class Document {
         return this;
     }
 
-    public AdoptionLevel getAdoptionLevel() {
+    public AdoptionLevelEnum getAdoptionLevel() {
         return adoptionLevel;
     }
 
-    public Document setAdoptionLevel(AdoptionLevel adoptionLevel) {
+    public Document setAdoptionLevel(AdoptionLevelEnum adoptionLevel) {
         this.adoptionLevel = adoptionLevel;
         return this;
     }
 
-    public Status getStatus() {
+    public StatusEnum getStatus() {
         return status;
     }
 
-    public Document setStatus(Status status) {
+    public Document setStatus(StatusEnum status) {
         this.status = status;
         return this;
     }
 
-    public Harmonization getHarmonization() {
+    public HarmonizationEnum getHarmonization() {
         return harmonization;
     }
 
-    public Document setHarmonization(Harmonization harmonization) {
+    public Document setHarmonization(HarmonizationEnum harmonization) {
         this.harmonization = harmonization;
         return this;
     }

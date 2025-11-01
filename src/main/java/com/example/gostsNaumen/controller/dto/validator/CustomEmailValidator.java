@@ -1,4 +1,4 @@
-package com.example.gostsNaumen.dto.validator;
+package com.example.gostsNaumen.controller.dto.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

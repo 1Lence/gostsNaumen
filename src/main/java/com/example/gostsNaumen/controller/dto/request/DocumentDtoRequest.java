@@ -1,4 +1,4 @@
-package com.example.gostsNaumen.dto.request;
+package com.example.gostsNaumen.controller.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

@@ -1,4 +1,4 @@
-package com.example.gostsNaumen.dto.response;
+package com.example.gostsNaumen.controller.dto.response;
 
 /**
  * Дто для передачи

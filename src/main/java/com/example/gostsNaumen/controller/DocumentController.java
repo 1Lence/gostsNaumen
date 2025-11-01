@@ -1,8 +1,10 @@
-package com.example.gostsNaumen.controller.document;
+package com.example.gostsNaumen.controller;
 
-import com.example.gostsNaumen.dto.request.DocumentDtoRequest;
-import com.example.gostsNaumen.dto.response.DocumentDtoResponse;
-import com.example.gostsNaumen.dto.response.GostIdDtoResponse;
+import com.example.gostsNaumen.controller.dto.DocumentMapper;
+import com.example.gostsNaumen.controller.dto.request.DocumentDtoRequest;
+import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
+import com.example.gostsNaumen.controller.dto.response.GostIdDtoResponse;
+import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.service.document.DocumentService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +16,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/standards")
 public class DocumentController {
     private final DocumentService documentService;
+    private final DocumentMapper documentMapper;
 
-    public DocumentController(DocumentService documentService) {
+    public DocumentController(DocumentService documentService, DocumentMapper documentMapper) {
         this.documentService = documentService;
+        this.documentMapper = documentMapper;
     }
 
     /**
@@ -29,7 +33,9 @@ public class DocumentController {
     public GostIdDtoResponse addDocument(
             @RequestBody @Valid DocumentDtoRequest documentDtoRequest
     ) {
-        return documentService.saveDocument(documentDtoRequest);
+        Document document = documentMapper.mapToEntity(documentDtoRequest);
+
+        return new GostIdDtoResponse(documentService.saveDocument(document).getId());
     }
 
     /**
@@ -40,7 +46,10 @@ public class DocumentController {
      */
     @GetMapping("/{docId}")
     public DocumentDtoResponse getDocument(@PathVariable Long docId) {
-        return documentService.getDocumentById(docId);
+        Document document = documentService.getDocumentById(docId);
+        document.setAuthor("Some Hacker Author");
+
+        return documentMapper.mapEntityToDto(document);
     }
 
     /**

@@ -23,7 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class AuthServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -32,7 +32,7 @@ class UserServiceTest {
     private JweService jweService;
 
     @InjectMocks
-    private UserService userService;
+    private AuthService authService;
 
     private User user;
 
@@ -50,7 +50,7 @@ class UserServiceTest {
 
         UserCredentialsDto dto = new UserCredentialsDto("nonexistent@example.com", "password");
 
-        assertThatThrownBy(() -> userService.signIn(dto))
+        assertThatThrownBy(() -> authService.signIn(dto))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("Пользователь с почтой: nonexistent@example.com не найден.");
     }
@@ -71,7 +71,7 @@ class UserServiceTest {
 
         when(jweService.refreshBaseToken("test@example.com", "valid-refresh-token", null)).thenReturn(refreshedJwt);
 
-        JwtAuthDto result = userService.refreshToken(refreshTokenDto);
+        JwtAuthDto result = authService.refreshToken(refreshTokenDto);
 
         assertThat(result).isEqualTo(refreshedJwt);
         verify(jweService).validateJweToken("valid-refresh-token");
@@ -85,7 +85,7 @@ class UserServiceTest {
         RefreshTokenDto refreshTokenDto = new RefreshTokenDto("invalid-token");
         when(jweService.validateJweToken("invalid-token")).thenReturn(false);
 
-        assertThatThrownBy(() -> userService.refreshToken(refreshTokenDto))
+        assertThatThrownBy(() -> authService.refreshToken(refreshTokenDto))
                 .isInstanceOf(AuthenticationException.class)
                 .hasMessage("Невалидный токен обновления.");
     }

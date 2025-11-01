@@ -1,4 +1,4 @@
-package com.example.gostsNaumen.dto.response;
+package com.example.gostsNaumen.controller.dto.response;
 
 import java.util.Set;
 
@@ -8,7 +8,6 @@ import java.util.Set;
 public class DocumentDtoResponse {
     private Long id;
     private String fullName;
-    private String title;
     private String description;
     private String codeOKS;
     private String activityField;
@@ -41,15 +40,6 @@ public class DocumentDtoResponse {
 
     public DocumentDtoResponse setFullName(String fullName) {
         this.fullName = fullName;
-        return this;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public DocumentDtoResponse setTitle(String title) {
-        this.title = title;
         return this;
     }
 

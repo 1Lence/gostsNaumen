@@ -1,7 +1,7 @@
-package com.example.gostsNaumen.dto.request;
+package com.example.gostsNaumen.controller.dto.request;
 
-import com.example.gostsNaumen.dto.validator.CustomEmailValid;
-import com.example.gostsNaumen.dto.validator.CustomPasswordValid;
+import com.example.gostsNaumen.controller.dto.validator.CustomEmailValid;
+import com.example.gostsNaumen.controller.dto.validator.CustomPasswordValid;
 import jakarta.validation.constraints.NotBlank;
 
 /**
