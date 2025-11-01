@@ -47,7 +47,6 @@ public class DocumentController {
     @GetMapping("/{docId}")
     public DocumentDtoResponse getDocument(@PathVariable Long docId) {
         Document document = documentService.getDocumentById(docId);
-        document.setAuthor("Some Hacker Author");
 
         return documentMapper.mapEntityToDto(document);
     }
