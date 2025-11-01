@@ -2,6 +2,7 @@ package com.example.gostsNaumen.entity;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -118,7 +119,8 @@ public class Document {
      * Нормативные ссылки на другие ГОСТы
      * Пример: "ГОСТ 3722—2014", "ГОСТ 28653—90"
      */
-    private Set<String> references;
+    @Column(name = "references_list")
+    private Set<String> references = new HashSet<>();
 
     public Long getId() {
         return id;
