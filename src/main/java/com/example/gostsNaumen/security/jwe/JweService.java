@@ -1,9 +1,15 @@
 package com.example.gostsNaumen.security.jwe;
 
+import com.example.gostsNaumen.exception.BusinessException;
+import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.security.dto.JwtAuthDto;
 import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.*;
-import com.nimbusds.jwt.*;
+import com.nimbusds.jose.crypto.DirectDecrypter;
+import com.nimbusds.jose.crypto.DirectEncrypter;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
@@ -63,7 +69,7 @@ public class JweService {
      * <p>Время жизни токена необходимо изменить.</p>
      *
      * @param email почта пользователя.
-     * @param id айди пользователя.
+     * @param id    айди пользователя.
      * @return Объект {@link JwtAuthDto}, содержащий сгенерированные токены и ID пользователя.
      * @throws JOSEException в случае ошибки при создании токена.
      */
@@ -80,17 +86,25 @@ public class JweService {
      * @param token JWE токен.
      * @return почта пользователя, извлечённая из токена, или {@code null}, если токен недействителен
      * или произошла ошибка при извлечении.
+     * <p>
+     * Пользователю ничего не говорится, т.к. ошибки связанные с токеном могут говорить о попытке взлома.
      */
     public String getEmailFromToken(String token) {
         try {
             SignedJWT signedJWT = parseJweToSignedJWT(token);
-            if (signedJWT != null) {
-                return signedJWT.getJWTClaimsSet().getSubject();
+
+            String subject = signedJWT.getJWTClaimsSet().getSubject();
+
+            if (subject == null) {
+                throw new BusinessException(ErrorCode.INVALID_TOKEN);
             }
-        } catch (Exception e) {
+
+            return signedJWT.getJWTClaimsSet().getSubject();
+
+        } catch (ParseException | JOSEException e) {
             log.error("Не удалось получить почту из JWE токена", e);
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
-        return null;
     }
 
     /**
@@ -109,23 +123,19 @@ public class JweService {
     public boolean validateJweToken(String token) {
         try {
             SignedJWT signedJWT = parseJweToSignedJWT(token);
-            if (signedJWT != null) {
-                if (signedJWT.verify(new MACVerifier(getSigningKey()))) {
 
-                    JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
-                    Date expirationTime = claimsSet.getExpirationTime();
+            if (signedJWT.verify(new MACVerifier(getSigningKey()))) {
 
-                    if (expirationTime != null && new Date().after(expirationTime)) {
-                        log.error("JWE токен истёк.");
-                        return false;
-                    }
+                JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
+                Date expirationTime = claimsSet.getExpirationTime();
 
-                    return true;
-                } else {
-                    log.error("Верификация JWS сигнатуры не пройдена.");
+                if (expirationTime != null && new Date().after(expirationTime)) {
+                    log.error("JWE токен истёк.");
+                    return false;
                 }
+                return true;
             } else {
-                log.error("Не удалось проанализировать JWE или внутренний JWS.");
+                log.error("Верификация JWS сигнатуры не пройдена.");
             }
         } catch (Exception e) {
             log.error("Ошибка валидации JWE токена.", e);
@@ -138,9 +148,9 @@ public class JweService {
      *
      * <p>Генерирует новый основной токен для указанного пользователя, сохраняя переданный токен обновления.</p>
      *
-     * @param email почта пользователя.
+     * @param email        почта пользователя.
      * @param refreshToken Существующий токен обновления.
-     * @param id айди пользователя.
+     * @param id           айди пользователя.
      * @return Объект {@link JwtAuthDto}, содержащий новый основной токен, старый токен обновления и айди пользователя.
      * @throws JOSEException в случае ошибки при создании токена.
      */
@@ -158,10 +168,10 @@ public class JweService {
      * затем шифруется с использованием {@link #getEncryptionKey()} JWE.
      * Алгоритмы: HS256 для подписи, DIR и A256GCM для шифрования.</p>
      *
-     * @param email почта пользователя, который будет установлен в поле subject токена.
+     * @param email         почта пользователя, который будет установлен в поле subject токена.
      * @param expireMinutes Время жизни токена в минутах.
      * @return JWE токен в формате String.
-     * @throws JOSEException в случае ошибки при создании токена.
+     * @throws JOSEException         в случае ошибки при создании токена.
      * @throws IllegalStateException если длина ключа шифрования некорректна для A256GCM.
      */
     private String generateJweToken(String email, int expireMinutes) throws JOSEException {
@@ -198,9 +208,9 @@ public class JweService {
      *
      * @param jweString JWE токен в формате String.
      * @return {@link SignedJWT}, содержащийся внутри JWE, или {@code null},
-     *         если токен не удалось расшифровать, или его заголовок не указан как JWT.
-     * @throws ParseException в случае ошибки парсинга JWE.
-     * @throws JOSEException в случае ошибки при расшифровке JWE.
+     * если токен не удалось расшифровать, или его заголовок не указан как JWT.
+     * @throws ParseException        в случае ошибки парсинга JWE.
+     * @throws JOSEException         в случае ошибки при расшифровке JWE.
      * @throws IllegalStateException если длина ключа дешифрования некорректна для A256GCM.
      */
     private SignedJWT parseJweToSignedJWT(String jweString) throws ParseException, JOSEException {
@@ -215,25 +225,9 @@ public class JweService {
 
         if (!"JWT".equals(jweObject.getHeader().getContentType())) {
             log.error("Ожидается, что Header JWE будет представлять собой JWT");
-            return null;
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
 
         return SignedJWT.parse(jweObject.getPayload().toString());
-    }
-
-    /**
-     * Используется ТОЛЬКО для тестирования.
-     * @param jwsSecret
-     */
-    public void setJwsSecret(String jwsSecret) {
-        this.jwsSecret = jwsSecret;
-    }
-
-    /**
-     * Используется ТОЛЬКО для тестирования.
-     * @param jweSecret
-     */
-    public void setJweSecret(String jweSecret) {
-        this.jweSecret = jweSecret;
     }
 }

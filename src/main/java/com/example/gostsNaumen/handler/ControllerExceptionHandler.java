@@ -1,5 +1,6 @@
 package com.example.gostsNaumen.handler;
 
+import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.handler.dto.ValidationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -52,6 +54,28 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
                         .setUrl(url)
                         .setValidationErrors(validationErrors),
                 BAD_REQUEST
+        );
+    }
+
+    /**
+     * Обработка ошибок бизнес-логики приложения
+     *
+     * @param exception возникает при ошибках в бизнес-логике
+     * @param request   данные HTTP запроса
+     * @return удобочитаемый JSON с описанием ошибки
+     */
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(final BusinessException exception, WebRequest request) {
+        log.info("BusinessException: {}", exception.getMessage());
+        log.debug(exception.getMessage(), exception);
+
+        return new ResponseEntity<>(
+                new ErrorResponse()
+                        .setTimestamp(LocalDateTime.now())
+                        .setMessage(exception.getMessage())
+                        .setStatus(exception.getErrorCode().getStatus())
+                        .setUrl(getUrl(request)),
+                exception.getErrorCode().getStatus()
         );
     }
 }

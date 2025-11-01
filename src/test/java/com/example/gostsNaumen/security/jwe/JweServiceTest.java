@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
+import java.lang.reflect.Field;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class JweServiceTest {
@@ -16,12 +18,20 @@ class JweServiceTest {
 
     private final String EMAIL = "example@example.com";
     private final Long ID = 1L;
+    private final String SECRET = "tPpMbX+5QkX1qKp3iPh4mfrc5D0F3eG9HvA2BcD4Efg";
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
-        jweService.setJweSecret("tPpMbX+5QkX1qKp3iPh4mfrc5D0F3eG9HvA2BcD4Efg");
-        jweService.setJwsSecret("tPpMbX+5QkX1qKp3iPh4mfrc5D0F3eG9HvA2BcD4Efg");
+
+        setField("jwsSecret", SECRET);
+        setField("jweSecret", SECRET);
+    }
+
+    private void setField(String fieldName, String value) throws Exception {
+        Field field = JweService.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(jweService, value);
     }
 
     @Test

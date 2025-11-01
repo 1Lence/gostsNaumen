@@ -1,9 +1,5 @@
 package com.example.gostsNaumen.service.document;
 
-import com.example.gostsNaumen.dto.DocumentMapper;
-import com.example.gostsNaumen.dto.request.DocumentDtoRequest;
-import com.example.gostsNaumen.dto.response.DocumentDtoResponse;
-import com.example.gostsNaumen.dto.response.GostIdDtoResponse;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import jakarta.persistence.EntityExistsException;
@@ -16,30 +12,26 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class DocumentService {
-    private final DocumentMapper documentMapper;
     private final DocumentRepository documentRepository;
 
-    public DocumentService(DocumentMapper documentMapper, DocumentRepository documentRepository) {
-        this.documentMapper = documentMapper;
+    public DocumentService(DocumentRepository documentRepository) {
         this.documentRepository = documentRepository;
     }
 
     /**
      * Сохранение сущности ГОСТа в БД
      *
-     * @param documentDtoRequest Дто с данными о документе
+     * @param documentForSave Сущность из БД
      * @return сохраненная сущность в бд
      */
     @Transactional
-    public GostIdDtoResponse saveDocument(DocumentDtoRequest documentDtoRequest) {
+    public Document saveDocument(Document documentForSave) {
 
-        if (documentRepository.findByFullName(documentDtoRequest.getFullName()).isPresent()) {
+        if (documentRepository.findByFullName(documentForSave.getFullName()).isPresent()) {
             throw new EntityExistsException("Такой гост уже существует.");
         }
 
-        Document document = documentMapper.mapToEntity(documentDtoRequest);
-
-        return new GostIdDtoResponse(document.getId());
+        return documentRepository.save(documentForSave);
     }
 
     /**
@@ -48,16 +40,14 @@ public class DocumentService {
      * @param id id ГОСТа
      * @return найденный по ID ГОСТ
      */
-    @Transactional(readOnly = true)
-    public DocumentDtoResponse getDocumentById(Long id) {
+    @Transactional
+    public Document getDocumentById(Long id) {
         if (id == null) {
             throw new EntityNotFoundException("Поиск по пустому ID");
         }
 
-        Document document = documentRepository
+        return documentRepository
                 .findById(id).orElseThrow(() -> new EntityNotFoundException("Документ по ID: " + id + " не найден."));
-
-        return documentMapper.mapToDto(document);
     }
 
     /**

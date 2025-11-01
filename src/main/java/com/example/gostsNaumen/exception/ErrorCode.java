@@ -7,7 +7,9 @@ import org.springframework.http.HttpStatus;
  */
 public enum ErrorCode {
 
-    NO_SUCH_CODE_OKS("NO_SUCH_CODE_OKS", "Несуществующий код ОКС", HttpStatus.BAD_REQUEST),;
+    NO_SUCH_CODE_OKS("NO_SUCH_CODE_OKS", "Несуществующий код ОКС", HttpStatus.BAD_REQUEST),
+    INVALID_TOKEN("INVALID_TOKEN", "Невалидный токен", HttpStatus.UNAUTHORIZED),
+    ;
 
     private final String code;
     private final String defaultMessage;

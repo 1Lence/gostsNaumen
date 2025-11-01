@@ -1,10 +1,13 @@
-package com.example.gostsNaumen.controller.security;
+package com.example.gostsNaumen.controller;
 
-import com.example.gostsNaumen.dto.request.UserDtoRequest;
-import com.example.gostsNaumen.dto.response.UserDtoResponse;
+import com.example.gostsNaumen.controller.dto.UserMapper;
+import com.example.gostsNaumen.controller.dto.request.UserDtoRequest;
+import com.example.gostsNaumen.controller.dto.response.UserDtoResponse;
+import com.example.gostsNaumen.entity.User;
 import com.example.gostsNaumen.security.dto.JwtAuthDto;
 import com.example.gostsNaumen.security.dto.RefreshTokenDto;
 import com.example.gostsNaumen.security.dto.UserCredentialsDto;
+import com.example.gostsNaumen.service.user.AuthService;
 import com.example.gostsNaumen.service.user.UserService;
 import com.nimbusds.jose.JOSEException;
 import jakarta.validation.Valid;
@@ -21,10 +24,14 @@ import javax.naming.AuthenticationException;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+    private final AuthService authService;
     private final UserService userService;
+    private final UserMapper userMapper;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, UserMapper userMapper, AuthService authService) {
+        this.userMapper = userMapper;
         this.userService = userService;
+        this.authService = authService;
     }
 
     /**
@@ -35,7 +42,7 @@ public class AuthController {
     @PostMapping("/sign-in")
     public JwtAuthDto signIn(@RequestBody @Valid UserCredentialsDto userCredentialsDto) {
         try {
-            return userService.signIn(userCredentialsDto);
+            return authService.signIn(userCredentialsDto);
         }catch (AuthenticationException | JOSEException e) {
             throw new RuntimeException("Auth failed: " + e.getMessage());
         }
@@ -50,7 +57,7 @@ public class AuthController {
      */
     @PostMapping("/refresh")
     public JwtAuthDto refresh(@RequestBody RefreshTokenDto refreshTokenDto) throws AuthenticationException, JOSEException {
-        return userService.refreshToken(refreshTokenDto);
+        return authService.refreshToken(refreshTokenDto);
     }
 
     /**
@@ -60,6 +67,7 @@ public class AuthController {
      */
     @PostMapping("/registration")
     public UserDtoResponse register(@RequestBody @Valid UserDtoRequest userDtoRequest) {
-        return userService.saveUser(userDtoRequest);
+        User user = userMapper.mapToEntity(userDtoRequest);
+        return userMapper.mapEntityToDto(userService.saveUser(user));
     }
 }

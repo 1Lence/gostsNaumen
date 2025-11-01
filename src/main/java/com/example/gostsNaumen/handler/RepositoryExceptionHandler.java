@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import java.time.LocalDateTime;
+
 import static org.springframework.http.HttpStatus.CONFLICT;
 
 /**
@@ -33,6 +35,8 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
 
         return new ResponseEntity<>(
                 new ErrorResponse()
+                        .setTimestamp(LocalDateTime.now())
+                        .setMessage(exception.getMessage())
                         .setStatus(CONFLICT)
                         .setUrl(getUrl(request)),
                 CONFLICT
@@ -54,6 +58,8 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
 
         return new ResponseEntity<>(
                 new ErrorResponse()
+                        .setTimestamp(LocalDateTime.now())
+                        .setMessage(exception.getMessage())
                         .setStatus(CONFLICT)
                         .setUrl(getUrl(request)),
                 CONFLICT

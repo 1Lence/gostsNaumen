@@ -1,5 +1,7 @@
 package com.example.gostsNaumen.security.jwe;
 
+import com.example.gostsNaumen.exception.BusinessException;
+import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.security.dto.CustomUserDetails;
 import com.example.gostsNaumen.security.service.UserDetailServiceImpl;
 import jakarta.servlet.FilterChain;
@@ -8,10 +10,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.lang.NonNull;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -45,11 +47,11 @@ public class JweFilter extends OncePerRequestFilter {
      * проверяет его, и если он действителен, устанавливает аутентификацию
      * для текущего потока.
      *
-     * @param request HTTP-запрос.
-     * @param response HTTP-ответ.
+     * @param request     HTTP-запрос.
+     * @param response    HTTP-ответ.
      * @param filterChain Цепочка фильтров.
      * @throws ServletException в случае ошибки сервлета.
-     * @throws IOException в случае ошибки ввода-вывода.
+     * @throws IOException      в случае ошибки ввода-вывода.
      */
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -61,7 +63,7 @@ public class JweFilter extends OncePerRequestFilter {
             if (jweService.validateJweToken(token)) {
                 setCustomUserDetailsToSecurityContextHolder(token);
             } else {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Невалидный или истёкший токен.");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Невалидный токен.");
                 return;
             }
         }
@@ -81,18 +83,17 @@ public class JweFilter extends OncePerRequestFilter {
     private void setCustomUserDetailsToSecurityContextHolder(String token) {
         try {
             String email = jweService.getEmailFromToken(token);
-            if (email != null) {
-                CustomUserDetails customUserDetails = userDetailServiceIml.loadUserByUsername(email);
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        customUserDetails, null, customUserDetails.getAuthorities());
+            CustomUserDetails customUserDetails = userDetailServiceIml.loadUserByUsername(email);
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } else {
-                logger.warn("Не получилось достать почту из токен.");
-            }
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    customUserDetails, null, customUserDetails.getAuthorities());
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
         } catch (Exception e) {
             logger.error("Ошибка в деталях пользователя.", e);
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
     }
 
