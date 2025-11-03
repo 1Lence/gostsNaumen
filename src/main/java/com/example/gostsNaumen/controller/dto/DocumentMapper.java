@@ -4,9 +4,10 @@ import com.example.gostsNaumen.controller.TwoWaysMapper;
 import com.example.gostsNaumen.controller.dto.request.DocumentDtoRequest;
 import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
 import com.example.gostsNaumen.entity.Document;
-import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
-import com.example.gostsNaumen.entity.model.HarmonizationEnum;
-import com.example.gostsNaumen.entity.model.StatusEnum;
+import com.example.gostsNaumen.entity.model.converter.AdoptionLevelConverter;
+import com.example.gostsNaumen.entity.model.converter.HarmonizationLevelConverter;
+import com.example.gostsNaumen.entity.model.converter.StatusConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,6 +15,22 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DocumentMapper implements TwoWaysMapper<Document, DocumentDtoRequest, DocumentDtoResponse> {
+
+    private final StatusConverter statusConverter;
+    private final HarmonizationLevelConverter harmonizationLevelConverter;
+    private final AdoptionLevelConverter adoptionLevelConverter;
+
+
+    @Autowired
+    public DocumentMapper(
+            StatusConverter statusConverter,
+            HarmonizationLevelConverter harmonizationLevelConverter,
+            AdoptionLevelConverter adoptionConverter
+    ) {
+        this.statusConverter = statusConverter;
+        this.harmonizationLevelConverter = harmonizationLevelConverter;
+        this.adoptionLevelConverter = adoptionConverter;
+    }
 
     @Override
     public Document mapToEntity(DocumentDtoRequest dto) {
@@ -27,9 +44,12 @@ public class DocumentMapper implements TwoWaysMapper<Document, DocumentDtoReques
                 .setAcceptanceYear(dto.getAcceptanceYear())
                 .setCommissionYear(dto.getCommissionYear())
                 .setKeyWords(dto.getKeyWords())
-                .setAdoptionLevel(AdoptionLevelEnum.valueOf(dto.getAdoptionLevel()))
-                .setStatus(StatusEnum.valueOf(dto.getStatus()))
-                .setHarmonization(HarmonizationEnum.valueOf(dto.getHarmonization()))
+                //Контр интуитивно, но интерфейс предлагает именно такие названия, хотя по-хорошему тут нужно название
+                //наоборот: convertToDatabaseColumn, потому что из русского атрибута мы получаем значение enum-а,
+                //которое хранится в базе данных
+                .setAdoptionLevel(adoptionLevelConverter.convertToEntityAttribute(dto.getAdoptionLevel()))
+                .setStatus(statusConverter.convertToEntityAttribute(dto.getStatus()))
+                .setHarmonization(harmonizationLevelConverter.convertToEntityAttribute(dto.getHarmonization()))
                 .setReferences(dto.getReferences());
     }
 
@@ -47,10 +67,10 @@ public class DocumentMapper implements TwoWaysMapper<Document, DocumentDtoReques
                 .setAcceptanceYear(fromWhat.getAcceptanceYear())
                 .setCommissionYear(fromWhat.getCommissionYear())
                 .setKeyWords(fromWhat.getKeyWords())
-                .setAdoptionLevel(fromWhat.getAdoptionLevel().toString())
-                .setStatus(fromWhat.getStatus().toString())
-                .setHarmonization(fromWhat.getHarmonization().toString())
+                //Аналогично верхнему случаю
+                .setAdoptionLevel(adoptionLevelConverter.convertToDatabaseColumn(fromWhat.getAdoptionLevel()))
+                .setStatus(statusConverter.convertToDatabaseColumn(fromWhat.getStatus()))
+                .setHarmonization(harmonizationLevelConverter.convertToDatabaseColumn(fromWhat.getHarmonization()))
                 .setReferences(fromWhat.getReferences());
     }
-
 }

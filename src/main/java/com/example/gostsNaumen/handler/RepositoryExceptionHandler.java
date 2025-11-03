@@ -12,6 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 import java.time.LocalDateTime;
 
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 /**
  * Централизованный обработчик ошибок взаимодействия с репозиторием.
@@ -37,9 +38,9 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
                 new ErrorResponse()
                         .setTimestamp(LocalDateTime.now())
                         .setMessage(exception.getMessage())
-                        .setStatus(CONFLICT)
+                        .setStatus(NOT_FOUND)
                         .setUrl(getUrl(request)),
-                CONFLICT
+                NOT_FOUND
         );
     }
 
