@@ -3,7 +3,7 @@ package com.example.gostsNaumen.entity.model;
 /**
  * Перечисление, содержащее все возможные варианты статуса документа
  */
-public enum StatusEnum {
+public enum StatusEnum implements HasValue {
     CURRENT("Актуальный"),
     CANCELED("Отменённый"),
     REPLACED("Заменённый");

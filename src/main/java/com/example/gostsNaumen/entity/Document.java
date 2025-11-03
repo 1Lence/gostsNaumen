@@ -3,7 +3,6 @@ package com.example.gostsNaumen.entity;
 import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
-import com.example.gostsNaumen.entity.model.converter.AdoptionLevelConverter;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -97,7 +96,6 @@ public class Document {
      */
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Enumerated(EnumType.STRING)
-    @Convert(converter = AdoptionLevelConverter.class)
     private AdoptionLevelEnum adoptionLevel;
     /**
      * Статус ГОСТа.<br>

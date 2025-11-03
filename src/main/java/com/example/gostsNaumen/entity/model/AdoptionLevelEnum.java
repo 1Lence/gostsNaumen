@@ -3,7 +3,7 @@ package com.example.gostsNaumen.entity.model;
 /**
  * Перечисление, содержащее все возможные варианты уровня принятия
  */
-public enum AdoptionLevelEnum {
+public enum AdoptionLevelEnum implements HasValue {
     NATIONAL("Национальный"),
     INTERSTATE("Межгосударственный"),
     SECTORAL("Отраслевой"),
