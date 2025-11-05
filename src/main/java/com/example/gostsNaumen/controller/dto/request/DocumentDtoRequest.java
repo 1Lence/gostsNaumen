@@ -47,6 +47,9 @@ public class DocumentDtoRequest {
     @NotEmpty
     @Length(min = 1, max = 32)
     private String harmonization;
+    @NotEmpty
+    @Length(min = 1, max = 32)
+    private String acceptedFirstTimeOrReplaced;;
     @NotNull
     @Length(min = 1, max = 255)
     private Set<@Length(min = 1, max = 128) String> references;
@@ -56,6 +59,15 @@ public class DocumentDtoRequest {
 
     public String getFullName() {
         return fullName;
+    }
+
+    public String getAcceptedFirstTimeOrReplaced() {
+        return acceptedFirstTimeOrReplaced;
+    }
+
+    public DocumentDtoRequest setAcceptedFirstTimeOrReplaced(String acceptedFirstTimeOrReplaced) {
+        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
+        return this;
     }
 
     public DocumentDtoRequest setFullName(String fullName) {
