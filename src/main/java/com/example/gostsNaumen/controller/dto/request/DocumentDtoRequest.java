@@ -2,6 +2,7 @@ package com.example.gostsNaumen.controller.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.Set;
 
@@ -9,49 +10,48 @@ import java.util.Set;
  * Дто для приема госта извне
  */
 public class DocumentDtoRequest {
-    // TODO: Для всего класса, добавить валидацию на min max длину строки
-
     @NotEmpty
+    @Length(min = 1, max = 512)
     private String fullName;
     @NotEmpty
+    @Length(min = 1, max = 128)
     private String designation;
     @NotEmpty
+    @Length(min = 1, max = 64)
     private String codeOKS;
     @NotEmpty
+    @Length(min = 1, max = 128)
     private String activityField;
     @NotEmpty
+    @Length(min = 1, max = 256)
     private String author;
     @NotEmpty
+    @Length(min = 1, max = 1024)
     private String applicationArea;
     @NotEmpty
+    @Length(min = 1, max = 256)
     private String contentLink;
     @NotNull
     private Integer acceptanceYear;
     @NotNull
     private Integer commissionYear;
     @NotEmpty
+    @Length(min = 1, max = 512)
     private String keyWords;
     @NotEmpty
+    @Length(min = 1, max = 32)
     private String adoptionLevel;
     @NotEmpty
+    @Length(min = 1, max = 32)
     private String status;
     @NotEmpty
+    @Length(min = 1, max = 32)
     private String harmonization;
-    @NotEmpty
-    private String acceptedFirstTimeOrReplaced;
     @NotNull
-    private Set<String> references;
+    @Length(min = 1, max = 255)
+    private Set<@Length(min = 1, max = 128) String> references;
 
     public DocumentDtoRequest() {
-    }
-
-    public String getAcceptedFirstTimeOrReplaced() {
-        return acceptedFirstTimeOrReplaced;
-    }
-
-    public DocumentDtoRequest setAcceptedFirstTimeOrReplaced(String acceptedFirstTimeOrReplaced) {
-        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
-        return this;
     }
 
     public String getFullName() {
