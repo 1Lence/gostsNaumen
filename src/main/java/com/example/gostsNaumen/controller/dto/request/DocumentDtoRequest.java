@@ -1,5 +1,10 @@
 package com.example.gostsNaumen.controller.dto.request;
 
+import com.example.gostsNaumen.controller.dto.validator.CustomEnumValid;
+import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
+import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
+import com.example.gostsNaumen.entity.model.HarmonizationEnum;
+import com.example.gostsNaumen.entity.model.StatusEnum;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
@@ -40,18 +45,21 @@ public class DocumentDtoRequest {
     private String keyWords;
     @NotEmpty
     @Length(min = 1, max = 32)
+    @CustomEnumValid(enumClass = AdoptionLevelEnum.class, message = "Должно содержать: Национальный, Межгосударственный, Отраслевой, Региональный, Стандарт Организаций")
     private String adoptionLevel;
     @NotEmpty
     @Length(min = 1, max = 32)
+    @CustomEnumValid(enumClass = StatusEnum.class, message = "Должно содержать: Актуальный, Отменённый или Заменённый")
     private String status;
     @NotEmpty
     @Length(min = 1, max = 32)
+    @CustomEnumValid(enumClass = HarmonizationEnum.class, message = "Должно содержать: Не гармонизированный, Модифицированный или Гармонизированный")
     private String harmonization;
     @NotEmpty
     @Length(min = 1, max = 32)
-    private String acceptedFirstTimeOrReplaced;;
+    @CustomEnumValid(enumClass = AcceptedFirstTimeOrReplacedEnum.class, message = "Должно содержать: ВВЕДЁН ВПЕРВЫЕ, ИЗМЕНЁН")
+    private String acceptedFirstTimeOrReplaced;
     @NotNull
-    @Length(min = 1, max = 255)
     private Set<@Length(min = 1, max = 128) String> references;
 
     public DocumentDtoRequest() {
