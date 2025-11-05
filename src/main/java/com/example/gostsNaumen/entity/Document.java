@@ -1,5 +1,6 @@
 package com.example.gostsNaumen.entity;
 
+import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
 import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
@@ -115,6 +116,15 @@ public class Document {
     private HarmonizationEnum harmonization;
 
     /**
+     * Информация о том, был ли стандарт введён впервые, или был обновлён<br>
+     * Бывает 2 состояния:<br>
+     * Введён впервые, изменён
+     */
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
+    private AcceptedFirstTimeOrReplacedEnum acceptedFirstTimeOrReplaced;
+
+    /**
      * Нормативные ссылки на другие ГОСТы
      * Пример: "ГОСТ 3722—2014", "ГОСТ 28653—90"
      */
@@ -131,6 +141,15 @@ public class Document {
 
     public String getFullName() {
         return fullName;
+    }
+
+    public AcceptedFirstTimeOrReplacedEnum getAcceptedFirstTimeOrReplaced() {
+        return acceptedFirstTimeOrReplaced;
+    }
+
+    public Document setAcceptedFirstTimeOrReplaced(AcceptedFirstTimeOrReplacedEnum acceptedFirstTimeOrReplaced) {
+        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
+        return this;
     }
 
     public Document setFullName(String fullName) {

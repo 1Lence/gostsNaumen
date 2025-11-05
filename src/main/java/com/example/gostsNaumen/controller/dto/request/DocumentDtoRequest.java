@@ -37,10 +37,21 @@ public class DocumentDtoRequest {
     private String status;
     @NotEmpty
     private String harmonization;
+    @NotEmpty
+    private String acceptedFirstTimeOrReplaced;
     @NotNull
     private Set<String> references;
 
     public DocumentDtoRequest() {
+    }
+
+    public String getAcceptedFirstTimeOrReplaced() {
+        return acceptedFirstTimeOrReplaced;
+    }
+
+    public DocumentDtoRequest setAcceptedFirstTimeOrReplaced(String acceptedFirstTimeOrReplaced) {
+        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
+        return this;
     }
 
     public String getFullName() {

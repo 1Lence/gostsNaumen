@@ -20,6 +20,7 @@ public class DocumentDtoResponse {
     private String adoptionLevel;
     private String status;
     private String harmonization;
+    private String acceptedFirstTimeOrReplaced;
     private Set<String> references;
 
     public DocumentDtoResponse() {
@@ -27,6 +28,15 @@ public class DocumentDtoResponse {
 
     public Long getId() {
         return id;
+    }
+
+    public String getAcceptedFirstTimeOrReplaced() {
+        return acceptedFirstTimeOrReplaced;
+    }
+
+    public DocumentDtoResponse setAcceptedFirstTimeOrReplaced(String acceptedFirstTimeOrReplaced) {
+        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
+        return this;
     }
 
     public DocumentDtoResponse setId(Long id) {
