@@ -2,12 +2,18 @@ package com.example.gostsNaumen.controller;
 
 import com.example.gostsNaumen.controller.dto.DocumentMapper;
 import com.example.gostsNaumen.controller.dto.request.DocumentDtoRequest;
+import com.example.gostsNaumen.controller.dto.request.FilterDtoRequest;
 import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
 import com.example.gostsNaumen.controller.dto.response.GostIdDtoResponse;
 import com.example.gostsNaumen.entity.Document;
+import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
 import com.example.gostsNaumen.service.document.DocumentService;
 import jakarta.validation.Valid;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Контроллер по работе с гостами
@@ -17,10 +23,16 @@ import org.springframework.web.bind.annotation.*;
 public class DocumentController {
     private final DocumentService documentService;
     private final DocumentMapper documentMapper;
+    private final DocumentSpecificationMapper documentSpecificationMapper;
 
-    public DocumentController(DocumentService documentService, DocumentMapper documentMapper) {
+    public DocumentController(
+            DocumentService documentService,
+            DocumentMapper documentMapper,
+            DocumentSpecificationMapper documentSpecificationMapper
+    ) {
         this.documentService = documentService;
         this.documentMapper = documentMapper;
+        this.documentSpecificationMapper = documentSpecificationMapper;
     }
 
     /**
@@ -39,12 +51,27 @@ public class DocumentController {
     }
 
     /**
+     * Поиск ГОСТ-ов по необходимым фильтрам.
+     *
+     * @param filterDtoRequest JSON с фильтрами
+     * @return список DTO найденных по фильтрам
+     */
+    @GetMapping(path = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<DocumentDtoResponse> getAllDocumentsByFilters(FilterDtoRequest filterDtoRequest) {
+        Specification<Document> specification = documentSpecificationMapper.mapFullSpecification(filterDtoRequest);
+
+        List<Document> documentList = documentService.getAllDocumentsByFilters(specification);
+
+        return documentList.stream().map(documentMapper::mapEntityToDto).toList();
+    }
+
+    /**
      * Получение ГОСТа по ID
      *
      * @param docId ID приходящий в запросе
      * @return ДТО ГОСТа
      */
-    @GetMapping("/{docId}")
+    @GetMapping(value = "/{docId}")
     public DocumentDtoResponse getDocument(@PathVariable Long docId) {
         Document document = documentService.getDocumentById(docId);
 
