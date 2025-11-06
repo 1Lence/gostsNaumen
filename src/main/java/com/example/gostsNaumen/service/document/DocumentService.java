@@ -5,6 +5,9 @@ import com.example.gostsNaumen.exception.CustomEntityExistsException;
 import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import org.springframework.data.jpa.domain.Specification;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,7 +31,6 @@ public class DocumentService {
      * @return сохраненная сущность в бд
      */
     public Document saveDocument(Document documentForSave) {
-
 
         Optional<Document> interferingDocument = documentRepository
                 .findByFullNameAndStatus(documentForSave.getFullName(), StatusEnum.CURRENT);
