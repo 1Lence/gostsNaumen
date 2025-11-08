@@ -1,6 +1,5 @@
 package com.example.gostsNaumen.service.document;
 
-import com.example.gostsNaumen.controller.dto.ActualizeDocumentMapper;
 import com.example.gostsNaumen.controller.dto.request.ActualizeDtoRequest;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
@@ -109,12 +108,24 @@ class DocumentServiceTest {
      * Также проверяет текст ошибки, он должен соответствовать {@code Удаление по пустому ID}
      */
     @Test
+    void deleteDocumentShouldThrowIllegalArgumentExceptionWhenDocumentDoesNotExist() {
+        IllegalArgumentException testException = assertThrows(IllegalArgumentException.class,
+                () -> documentService.deleteDocumentById(null));
+        assertEquals("Получен null id", testException.getMessage());
+    }
+
+    /**
+     * Проверка на выброс {@link EntityNotFoundException} при попытке вызвать метод с id, запись с которым в
+     * базе отсутствует.
+     * Также проверяет текст ошибки, он должен соответствовать {@code Удаление по пустому ID}
+     */
+    @Test
     void deleteDocumentShouldThrowEntityNotFoundExceptionWhenDocumentDoesNotExist() {
-        when(documentRepository.findById(document.getId())).thenReturn(Optional.empty());
+        when(documentRepository.existsById(document.getId())).thenReturn(false);
 
         EntityNotFoundException testException = assertThrows(EntityNotFoundException.class,
                 () -> documentService.deleteDocumentById(document.getId()));
-        assertEquals("Удаление по пустому ID", testException.getMessage());
+        assertEquals("Документа с таким " + document.getId() + " не существует", testException.getMessage());
     }
 
     /**

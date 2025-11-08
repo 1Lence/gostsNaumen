@@ -67,7 +67,10 @@ public class DocumentService {
     @Transactional
     public void deleteDocumentById(Long id) {
         if (id == null) {
-            throw new EntityNotFoundException("Удаление по пустому ID");
+            throw new IllegalArgumentException("Получен null id");
+        }
+        if (!documentRepository.existsById(id)) {
+            throw new EntityNotFoundException("Документа с таким " + id + " не существует");
         }
         documentRepository.deleteById(id);
     }
