@@ -1,6 +1,11 @@
 package com.example.gostsNaumen.service.document;
 
+import com.example.gostsNaumen.controller.dto.ActualizeDocumentMapper;
+import com.example.gostsNaumen.controller.dto.request.ActualizeDtoRequest;
 import com.example.gostsNaumen.entity.Document;
+import com.example.gostsNaumen.entity.model.StatusEnum;
+import com.example.gostsNaumen.exception.BusinessException;
+import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,9 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DocumentService {
     private final DocumentRepository documentRepository;
+    private final LifeCycleService lifeCycleService;
+    private final ActualizeDocumentMapper actualizeDocumentMapper;
 
-    public DocumentService(DocumentRepository documentRepository) {
+    public DocumentService(DocumentRepository documentRepository, LifeCycleService lifeCycleService, ActualizeDocumentMapper actualizeDocumentMapper) {
         this.documentRepository = documentRepository;
+        this.lifeCycleService = lifeCycleService;
+        this.actualizeDocumentMapper = actualizeDocumentMapper;
     }
 
     /**
@@ -51,7 +60,7 @@ public class DocumentService {
     }
 
     /**
-     * Удаление госта по Id
+     * Удаление ГОСТа по Id
      *
      * @param id id ГОСТа
      */
@@ -61,5 +70,39 @@ public class DocumentService {
             throw new EntityNotFoundException("Удаление по пустому ID");
         }
         documentRepository.deleteById(id);
+    }
+
+    /**
+     * Метод для обновления статуса ГОСТа
+     *
+     * @param documentForUpdate документ, у которого будет изменён статус
+     * @param status            новый статус документа {@link StatusEnum}
+     */
+    @Transactional
+    public Document updateDocumentStatus(Document documentForUpdate, StatusEnum status) {
+        if (documentForUpdate.getStatus().equals(status)) {
+            throw new BusinessException(ErrorCode.STATUS_ALREADY_SET);
+        }
+        if (!lifeCycleService.canUpdateStatus(documentForUpdate.getStatus(), status)) {
+            throw new BusinessException(ErrorCode.INVALID_LIFECYCLE_TRANSITION);
+        }
+        documentForUpdate.setStatus(status);
+        return documentForUpdate;
+    }
+
+    /**
+     * Метод для актуализации полей ГОСТа
+     *
+     * @param id                 идентификатор госта
+     * @param documentDtoRequest дто с обновлёнными значениями полей
+     * @return энтити с обновлёнными значениями полей
+     */
+    public Document actualizeDocument(Long id, ActualizeDtoRequest documentDtoRequest) {
+        Document document = documentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Документ по ID: " + id + " не найден."));
+
+        document = actualizeDocumentMapper.actualizeDocument(document, documentDtoRequest);
+
+        return document;
     }
 }

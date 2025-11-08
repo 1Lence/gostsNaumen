@@ -13,13 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Преобразует сущность госта из БД в сущность
+ * Преобразует сущность госта из БД в dto и наоборот
  */
 @Component
 public class DocumentMapper implements TwoWaysMapper<Document, DocumentDtoRequest, DocumentDtoResponse> {
 
     private final TwoWaysConverter twoWaysConverter;
-
 
     @Autowired
 
@@ -41,10 +40,10 @@ public class DocumentMapper implements TwoWaysMapper<Document, DocumentDtoReques
                 .setAcceptanceYear(dto.getAcceptanceYear())
                 .setCommissionYear(dto.getCommissionYear())
                 .setKeyWords(dto.getKeyWords())
-                .setAdoptionLevel(twoWaysConverter.convertToDatabaseColumn(dto.getAdoptionLevel(),AdoptionLevelEnum.class))
+                .setAdoptionLevel(twoWaysConverter.convertToDatabaseColumn(dto.getAdoptionLevel(), AdoptionLevelEnum.class))
                 .setStatus(twoWaysConverter.convertToDatabaseColumn(dto.getStatus(), StatusEnum.class))
-                .setHarmonization(twoWaysConverter.convertToDatabaseColumn(dto.getHarmonization(),HarmonizationEnum.class))
-                .setAcceptedFirstTimeOrReplaced(twoWaysConverter.convertToDatabaseColumn(dto.getAcceptedFirstTimeOrReplaced(),AcceptedFirstTimeOrReplacedEnum.class))
+                .setHarmonization(twoWaysConverter.convertToDatabaseColumn(dto.getHarmonization(), HarmonizationEnum.class))
+                .setAcceptedFirstTimeOrReplaced(twoWaysConverter.convertToDatabaseColumn(dto.getAcceptedFirstTimeOrReplaced(), AcceptedFirstTimeOrReplacedEnum.class))
                 .setReferences(dto.getReferences());
     }
 

@@ -9,11 +9,12 @@ public enum ErrorCode {
 
     NO_SUCH_CODE_OKS("NO_SUCH_CODE_OKS", "Несуществующий код ОКС", HttpStatus.BAD_REQUEST),
     INVALID_TOKEN("INVALID_TOKEN", "Невалидный токен", HttpStatus.UNAUTHORIZED),
-    ;
+    STATUS_ALREADY_SET("STATUS_ALREADY_SET", "Текущий статус уже установлен", HttpStatus.I_AM_A_TEAPOT),
+    INVALID_LIFECYCLE_TRANSITION("CANT_CHANGE_STATUS", "Невозможно совершить текущий переход по жизненному циклу", HttpStatus.I_AM_A_TEAPOT);
 
     private final String code;
     private final String defaultMessage;
-    private  final HttpStatus status;
+    private final HttpStatus status;
 
     ErrorCode(final String code,
               final String defaultMessage,

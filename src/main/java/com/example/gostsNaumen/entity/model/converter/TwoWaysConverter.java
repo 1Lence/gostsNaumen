@@ -7,15 +7,15 @@ import org.springframework.stereotype.Component;
 public class TwoWaysConverter {
 
     public <E extends Enum<E> & HasValue> E convertToDatabaseColumn(String s, Class<E> enumClass) {
-        if (s == null) {
-            return null;
+        if (s == null && enumClass == null) {
+            throw new IllegalArgumentException("Один из полученных аргументов null");
         }
         for (E enumConstant : enumClass.getEnumConstants()) {
             if (enumConstant.getValue().equals(s)) {
                 return enumConstant;
             }
         }
-        throw new IllegalArgumentException("No enum constant " + s + " for " + enumClass);
+        throw new IllegalArgumentException("Нет атрибута: " + s + " для энама " + enumClass);
     }
 
     public <E extends Enum<E> & HasValue> String convertToEntityAttribute(E englishValue) {
