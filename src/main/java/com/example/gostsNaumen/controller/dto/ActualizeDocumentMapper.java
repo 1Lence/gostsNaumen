@@ -9,6 +9,9 @@ import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.function.Consumer;
+
 /**
  * Класс, служащий для актуализации документа (по-сути метод Update)
  */
@@ -28,50 +31,51 @@ public class ActualizeDocumentMapper {
         if (dto.getFullName() != null && !dto.getFullName().isEmpty()) {
             document.setFullName(dto.getFullName());
         }
-        if (dto.getDesignation() != null && !dto.getDesignation().isEmpty()) {
-            document.setDesignation(dto.getDesignation());
-        }
-        if (dto.getCodeOKS() != null && !dto.getCodeOKS().isEmpty()) {
-            document.setCodeOKS(dto.getCodeOKS());
-        }
-        if (dto.getActivityField() != null && !dto.getActivityField().isEmpty()) {
-            document.setActivityField(dto.getActivityField());
-        }
-        if (dto.getAuthor() != null && !dto.getAuthor().isEmpty()) {
-            document.setAuthor(dto.getAuthor());
-        }
-        if (dto.getApplicationArea() != null && !dto.getApplicationArea().isEmpty()) {
-            document.setApplicationArea(dto.getApplicationArea());
-        }
-        if (dto.getContentLink() != null && !dto.getContentLink().isEmpty()) {
-            document.setContentLink(dto.getContentLink());
-        }
-        if (dto.getAcceptanceYear() != null) {
-            document.setAcceptanceYear(dto.getAcceptanceYear());
-        }
-        if (dto.getCommissionYear() != null) {
-            document.setCommissionYear(dto.getCommissionYear());
-        }
-        if (dto.getKeyWords() != null && !dto.getKeyWords().isEmpty()) {
-            document.setKeyWords(dto.getKeyWords());
-        }
-        if (dto.getAdoptionLevel() != null) {
-            document.setAdoptionLevel(rusEngEnumConverter.convertToEnglishValue(dto.getAdoptionLevel(), AdoptionLevelEnum.class));
-        }
-        if (dto.getStatus() != null) {
-            document.setStatus(rusEngEnumConverter.convertToEnglishValue(dto.getStatus(), StatusEnum.class));
-        }
-        if (dto.getHarmonization() != null) {
-            document.setHarmonization(rusEngEnumConverter.convertToEnglishValue(dto.getHarmonization(), HarmonizationEnum.class));
-        }
+        setIfNotEmpty(dto.getFullName(), document::setFullName);
+        setIfNotEmpty(dto.getDesignation(), document::setDesignation);
+        setIfNotEmpty(dto.getCodeOKS(), document::setCodeOKS);
+        setIfNotEmpty(dto.getActivityField(), document::setActivityField);
+        setIfNotEmpty(dto.getAuthor(), document::setAuthor);
+        setIfNotEmpty(dto.getApplicationArea(), document::setApplicationArea);
+        setIfNotEmpty(dto.getContentLink(), document::setContentLink);
+        setIfNotEmpty(dto.getAcceptanceYear(), document::setAcceptanceYear);
+        setIfNotEmpty(dto.getCommissionYear(), document::setCommissionYear);
+        setIfNotEmpty(dto.getKeyWords(), document::setKeyWords);
+        setIfNotEmpty(dto.getAdoptionLevel(), val -> rusEngEnumConverter.convertToEnglishValue(
+                dto.getAdoptionLevel(), AdoptionLevelEnum.class));
+        setIfNotEmpty(dto.getHarmonization(), val -> rusEngEnumConverter.convertToEnglishValue(
+                dto.getHarmonization(), HarmonizationEnum.class));
+        setIfNotEmpty(dto.getStatus(), val -> rusEngEnumConverter.convertToEnglishValue(
+                dto.getStatus(), StatusEnum.class));
 
         document.setAcceptedFirstTimeOrReplaced(AcceptedFirstTimeOrReplacedEnum.REPLACED);
-
-        if (dto.getReferences() != null && !dto.getReferences().isEmpty()) {
-            document.setReferences(dto.getReferences());
-        }
+        setIfNotEmpty(dto.getReferences(), document::setReferences);
 
         return document;
     }
 
+    /**
+     * Вспомогательный метод, служащий для возможного обновления параметров,
+     * если в дто присутствует новое значение поля
+     *
+     * @param value  новое значение
+     * @param setter метод для установки нового значения
+     */
+    private <T> void setIfNotEmpty(T value, Consumer<T> setter) {
+        switch (value) {
+            case null -> {
+                return;
+            }
+            case String s when s.isEmpty() -> {
+                return;
+            }
+            case Collection<?> c when c.isEmpty() -> {
+                return;
+            }
+            default -> {
+            }
+        }
+
+        setter.accept(value);
+    }
 }
