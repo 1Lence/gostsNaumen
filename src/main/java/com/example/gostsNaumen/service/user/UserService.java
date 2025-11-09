@@ -4,6 +4,7 @@ import com.example.gostsNaumen.controller.dto.request.PasswordDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.UpdateUserDtoRequest;
 import com.example.gostsNaumen.entity.User;
 import com.example.gostsNaumen.repository.UserRepository;
+import com.example.gostsNaumen.security.service.SecurityContextService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,12 +20,17 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SecurityContextService securityContextService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            SecurityContextService securityContextService
+    ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.securityContextService = securityContextService;
     }
-    //TODO: Добавить все операции с пользователем,
 
     /**
      * Сохранить сущность пользователя в БД.
@@ -98,12 +104,13 @@ public class UserService {
      * Обновление пароля пользователя.
      * Пользователь не должен иметь возможности обновить пароль другого пользователя
      *
-     * @param id          айди залогиненного пользователя
      * @param newPassword ДТО с новым паролем пользователя
      */
     @Transactional
-    public Long updatePassword(Long id, PasswordDtoRequest newPassword) {
-        User user = findEntityById(id);
+    public Long updatePassword(PasswordDtoRequest newPassword) {
+        Long userId = securityContextService.getLoggedInUserId();
+
+        User user = findEntityById(userId);
 
         user.setPasswordHash(passwordEncoder.encode(newPassword.newPassword()));
 

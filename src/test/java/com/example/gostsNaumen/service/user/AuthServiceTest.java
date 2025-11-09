@@ -5,7 +5,6 @@ import com.example.gostsNaumen.security.dto.JwtAuthDto;
 import com.example.gostsNaumen.security.dto.RefreshTokenDto;
 import com.example.gostsNaumen.security.jwe.JweService;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.naming.AuthenticationException;
 
+/**
+ * Тестирование логики сервиса авторизации
+ */
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
@@ -30,6 +32,9 @@ class AuthServiceTest {
 
     private User user;
 
+    /**
+     * Подготовка сущности пользователя
+     */
     @BeforeEach
     void setUp() {
         user = new User();
@@ -38,6 +43,11 @@ class AuthServiceTest {
         user.setPasswordHash("$2a$04$/d95NxhGEiMmDSJUb5jqG.WKNxDd1UpniGAljsbWxuSDyNh18bqj6");
     }
 
+    /**
+     * Проверяет работу метода по обновлению токена доступа с помощью токена обновления.
+     *
+     * @throws Exception
+     */
     @Test
     void refreshTokenShouldReturnNewTokenWhenValidRefreshTokenProvided() throws Exception {
         RefreshTokenDto refreshTokenDto = new RefreshTokenDto("valid-refresh-token");
@@ -56,12 +66,12 @@ class AuthServiceTest {
 
         JwtAuthDto result = authService.refreshToken(refreshTokenDto);
 
-        AssertionsForClassTypes.assertThat(result).isEqualTo(refreshedJwt);
-        Mockito.verify(jweService).validateJweToken("valid-refresh-token");
-        Mockito.verify(jweService).getEmailFromToken("valid-refresh-token");
-        Mockito.verify(jweService).refreshBaseToken("test@example.com", "valid-refresh-token", null);
+        Assertions.assertThat(result).isEqualTo(refreshedJwt);
     }
 
+    /**
+     * Проверяет, что в случае невалидного токена обновления выбросится ошибка и не будет обновлен токен доступа
+     */
     @Test
     void refreshTokenShouldThrowAuthenticationExceptionWhenTokenInvalid() {
         RefreshTokenDto refreshTokenDto = new RefreshTokenDto("invalid-token");

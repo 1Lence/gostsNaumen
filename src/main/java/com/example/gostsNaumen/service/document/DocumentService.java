@@ -17,7 +17,6 @@ public class DocumentService {
     public DocumentService(DocumentRepository documentRepository) {
         this.documentRepository = documentRepository;
     }
-    //TODO: Нужен полный CRUD
     /**
      * Сохранение сущности ГОСТа в БД
      *

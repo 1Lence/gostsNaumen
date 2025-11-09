@@ -10,6 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+/**
+ * Тестирование валидации почты
+ */
 @ExtendWith(MockitoExtension.class)
 class CustomEmailValidatorTest {
 
@@ -19,6 +22,9 @@ class CustomEmailValidatorTest {
     @Mock
     private ConstraintValidatorContext context;
 
+    /**
+     * Подготовка валидатора
+     */
     @BeforeEach
     void setUp() {
         validator = new CustomEmailValidator();

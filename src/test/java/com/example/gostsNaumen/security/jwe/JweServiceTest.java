@@ -10,30 +10,64 @@ import org.mockito.MockitoAnnotations;
 
 import java.lang.reflect.Field;
 
+/**
+ * Тестирование логики JWE сервиса
+ */
 class JweServiceTest {
 
     @InjectMocks
     private JweService jweService;
 
-    //FIXME Убрать константы и статический импорт
     private final String EMAIL = "example@example.com";
     private final Long ID = 1L;
     private final String SECRET = "tPpMbX+5QkX1qKp3iPh4mfrc5D0F3eG9HvA2BcD4Efg";
 
+    /**
+     * Подготовка к проведению тестов
+     *
+     * @throws Exception
+     */
     @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
 
-        setField("jwsSecret", SECRET);
-        setField("jweSecret", SECRET);
+        setSecret("jwsSecret", SECRET);
+        setSecret("jweSecret", SECRET);
+        setExpire("expireMinutes",1000);
     }
 
-    private void setField(String fieldName, String value) throws Exception {
+    //FIXME: Убрать рефлексию и добавить профили для приложения
+
+    /**
+     * Устанавливает секрет
+     *
+     * @param fieldName имя переменной
+     * @param value     значение переменной
+     * @throws Exception
+     */
+    private void setSecret(String fieldName, String value) throws Exception {
         Field field = JweService.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(jweService, value);
     }
 
+    /**
+     * Устанавливает время истечения токена
+     *
+     * @param fieldName имя переменной
+     * @param value     значение переменной
+     * @throws Exception
+     */
+    private void setExpire(String fieldName, Integer value) throws Exception {
+        Field field = JweService.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(jweService, value);
+    }
+
+    /**
+     * Проверка работы генерации токена, его валидности и наличия в нем почты
+     * @throws JOSEException выбрасывается при неверных обработках токена
+     */
     @Test
     void generateAuthTokenTest() throws JOSEException {
         JwtAuthDto jwtAuthenticationDto = jweService.generateAuthToken(EMAIL, ID);
@@ -41,18 +75,31 @@ class JweServiceTest {
         Assertions.assertTrue(jweService.validateJweToken(jwtAuthenticationDto.token()));
     }
 
+    /**
+     * Проверяется что почта достанется без ошибок
+     * @throws JOSEException выбрасывается при неверных обработках токена
+     */
     @Test
     void getEmailFromToken() throws JOSEException {
         JwtAuthDto jwtAuthenticationDto = jweService.generateAuthToken(EMAIL, ID);
         Assertions.assertEquals(EMAIL, jweService.getEmailFromToken(jwtAuthenticationDto.token()));
     }
 
+    /**
+     * Проверяется корректность работы валидации токена
+     * @throws JOSEException выбрасывается при неверных обработках токена
+     */
     @Test
     void validateJweToken() throws JOSEException {
         JwtAuthDto jwtAuthenticationDto = jweService.generateAuthToken(EMAIL, ID);
         Assertions.assertTrue(jweService.validateJweToken(jwtAuthenticationDto.token()));
     }
 
+    /**
+     * Проверяется обновление токена
+     * @throws JOSEException выбрасывается при неверных обработках токена
+     * @throws InterruptedException
+     */
     @Test
     void refreshBaseToken() throws JOSEException, InterruptedException {
         JwtAuthDto jwtAuthenticationDto = jweService.generateAuthToken(EMAIL, ID);
@@ -67,6 +114,9 @@ class JweServiceTest {
         Assertions.assertNotEquals(jwtAuthenticationDtoNew.token(), jwtAuthenticationDto.token());
     }
 
+    /**
+     * Проверяется, что неверный токен не пройдет проверку
+     */
     @Test
     void validateJwtTokenNegativeTest() {
         Assertions.assertFalse(jweService.validateJweToken("eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiZGlyIn0..Pyk2mfnP8" +

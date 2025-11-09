@@ -58,16 +58,14 @@ public class UserController {
      * Обновление пароля пользователя.
      * Необходимо помнить, что никто кроме админа не должен иметь возможности изменить пароль другого пользователя.
      *
-     * @param id                 айди залогиненного пользователя, который выполняет операцию смены пароля
      * @param passwordDtoRequest дто с новым паролем
      * @return айди пользователя у которого обновился пароль
      */
-    @PatchMapping("/user/update/password/{id}")
+    @PatchMapping("/user/update/password")
     public UserIdDtoResponse updatePassword(
-            @PathVariable Long id,
             @RequestBody @Valid PasswordDtoRequest passwordDtoRequest
     ) {
-        Long userId = userService.updatePassword(id, passwordDtoRequest);
+        Long userId = userService.updatePassword(passwordDtoRequest);
 
         return new UserIdDtoResponse(userId);
     }

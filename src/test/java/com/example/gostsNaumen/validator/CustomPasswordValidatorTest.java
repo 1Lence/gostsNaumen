@@ -22,6 +22,9 @@ class CustomPasswordValidatorTest {
     @Mock
     private ConstraintValidatorContext context;
 
+    /**
+     * Подготовка валидатора
+     */
     @BeforeEach
     void setUp() {
         validator = new CustomPasswordValidator();
