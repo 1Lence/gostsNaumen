@@ -6,7 +6,7 @@ import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
 import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
-import com.example.gostsNaumen.entity.model.converter.TwoWaysConverter;
+import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ActualizeDocumentMapper {
 
-    private final TwoWaysConverter twoWaysConverter = new TwoWaysConverter();
+    private final RusEngEnumConverter rusEngEnumConverter = new RusEngEnumConverter();
 
     /**
      * Актуализирует поля стандарта
@@ -24,7 +24,7 @@ public class ActualizeDocumentMapper {
      * @param dto      правки в документе
      * @return document обновлённая сущность документа
      */
-    public Document actualizeDocument(Document document, ActualizeDtoRequest dto) {
+    public Document setNewValues(Document document, ActualizeDtoRequest dto) {
         if (dto.getFullName() != null && !dto.getFullName().isEmpty()) {
             document.setFullName(dto.getFullName());
         }
@@ -56,13 +56,13 @@ public class ActualizeDocumentMapper {
             document.setKeyWords(dto.getKeyWords());
         }
         if (dto.getAdoptionLevel() != null) {
-            document.setAdoptionLevel(twoWaysConverter.convertToDatabaseColumn(dto.getAdoptionLevel(), AdoptionLevelEnum.class));
+            document.setAdoptionLevel(rusEngEnumConverter.convertToEnglishValue(dto.getAdoptionLevel(), AdoptionLevelEnum.class));
         }
         if (dto.getStatus() != null) {
-            document.setStatus(twoWaysConverter.convertToDatabaseColumn(dto.getStatus(), StatusEnum.class));
+            document.setStatus(rusEngEnumConverter.convertToEnglishValue(dto.getStatus(), StatusEnum.class));
         }
         if (dto.getHarmonization() != null) {
-            document.setHarmonization(twoWaysConverter.convertToDatabaseColumn(dto.getHarmonization(), HarmonizationEnum.class));
+            document.setHarmonization(rusEngEnumConverter.convertToEnglishValue(dto.getHarmonization(), HarmonizationEnum.class));
         }
 
         document.setAcceptedFirstTimeOrReplaced(AcceptedFirstTimeOrReplacedEnum.REPLACED);

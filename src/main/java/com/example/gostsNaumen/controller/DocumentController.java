@@ -1,5 +1,6 @@
 package com.example.gostsNaumen.controller;
 
+import com.example.gostsNaumen.controller.dto.ActualizeDocumentMapper;
 import com.example.gostsNaumen.controller.dto.DocumentMapper;
 import com.example.gostsNaumen.controller.dto.request.ActualizeDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.DocumentDtoRequest;
@@ -8,7 +9,7 @@ import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
 import com.example.gostsNaumen.controller.dto.response.GostIdDtoResponse;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.entity.model.StatusEnum;
-import com.example.gostsNaumen.entity.model.converter.TwoWaysConverter;
+import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import com.example.gostsNaumen.service.document.DocumentService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +22,18 @@ import org.springframework.web.bind.annotation.*;
 public class DocumentController {
     private final DocumentService documentService;
     private final DocumentMapper documentMapper;
-    private final TwoWaysConverter twoWaysConverter;
+    private final RusEngEnumConverter rusEngEnumConverter;
+    private final ActualizeDocumentMapper actualizeDocumentMapper;
 
-    public DocumentController(DocumentService documentService, DocumentMapper documentMapper, TwoWaysConverter twoWaysConverter) {
+    public DocumentController(
+            DocumentService documentService,
+            DocumentMapper documentMapper,
+            RusEngEnumConverter rusEngEnumConverter,
+            ActualizeDocumentMapper actualizeDocumentMapper) {
         this.documentService = documentService;
         this.documentMapper = documentMapper;
-        this.twoWaysConverter = twoWaysConverter;
+        this.rusEngEnumConverter = rusEngEnumConverter;
+        this.actualizeDocumentMapper = actualizeDocumentMapper;
     }
 
     /**
@@ -78,7 +85,7 @@ public class DocumentController {
             @RequestBody @Valid DocumentIdStatusDtoRequest documentIdStatusDtoRequest
     ) {
         Document document = documentService.getDocumentById(documentIdStatusDtoRequest.getId());
-        StatusEnum status = twoWaysConverter.convertToDatabaseColumn(
+        StatusEnum status = rusEngEnumConverter.convertToEnglishValue(
                 documentIdStatusDtoRequest.getStatus(), StatusEnum.class);
 
         Document updatedDocument = documentService.updateDocumentStatus(document, status);
@@ -86,18 +93,20 @@ public class DocumentController {
     }
 
     /**
-     * Обновление полей госта
+     * Метод для обновления полей документа
      *
-     * @param docId              идентификатор госта
-     * @param documentDtoRequest дто, содержащее новые значения полей
+     * @param docId            идентификатор госта
+     * @param dtoWithNewValues дто, содержащее новые значения полей
      * @return обновлённое дто госта
      */
     @PatchMapping("/actualize/{docId}")
-    public DocumentDtoResponse actualizeDocument(
+    public DocumentDtoResponse updateDocument(
             @PathVariable Long docId,
-            @RequestBody @Valid ActualizeDtoRequest documentDtoRequest
+            @RequestBody @Valid ActualizeDtoRequest dtoWithNewValues
     ) {
-        Document actualizedDocument = documentService.actualizeDocument(docId, documentDtoRequest);
-        return documentMapper.mapEntityToDto(actualizedDocument);
+        Document oldDocument = documentService.getDocumentById(docId);
+        Document documentWithNewFieldsValues = actualizeDocumentMapper.setNewValues(oldDocument, dtoWithNewValues);
+
+        return documentMapper.mapEntityToDto(documentService.updateDocument(documentWithNewFieldsValues));
     }
 }

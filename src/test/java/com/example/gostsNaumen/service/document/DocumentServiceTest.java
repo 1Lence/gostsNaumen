@@ -1,6 +1,5 @@
 package com.example.gostsNaumen.service.document;
 
-import com.example.gostsNaumen.controller.dto.request.ActualizeDtoRequest;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
 import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
@@ -23,6 +22,17 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+/**
+ * Класс для тестов сервиса по работе с документами {@link DocumentService}.<br>
+ * Тестирует следующие методы:
+ * <ul>
+ *     <li>{@code saveDocument}</li>
+ *     <li>{@code getDocumentById}</li>
+ *     <li>{@code deleteDocumentById}</li>
+ *     <li>{@code updateDocumentStatus}</li>
+ *     <li>{@code updateDocument}</li>
+ * </ul>
+ */
 @ExtendWith(MockitoExtension.class)
 class DocumentServiceTest {
 
@@ -37,6 +47,9 @@ class DocumentServiceTest {
 
     private Document document;
 
+    /**
+     * Перед тестами создаём пример экземпляра госта
+     */
     @BeforeEach
     void setUp() {
         document = new Document();
@@ -156,12 +169,14 @@ class DocumentServiceTest {
      * Также проверяет текст ошибки, он должен соответствовать {@code Документ по ID: {id документа} не найден.}
      */
     @Test
-    void actualizeDocumentShouldThrowEntityNotFoundExceptionWhenDocumentDoesNotExist() {
-        Long id = 2L;
-        when(documentRepository.findById(id)).thenReturn(Optional.empty());
+    void updateDocumentShouldThrowEntityNotFoundExceptionWhenDocumentDoesNotExist() {
+        Document testDocument = new Document();
+        testDocument.setId(2L);
+
+        when(documentRepository.existsById(testDocument.getId())).thenReturn(false);
 
         EntityNotFoundException testException = assertThrows(EntityNotFoundException.class,
-                () -> documentService.actualizeDocument(id, new ActualizeDtoRequest()));
-        assertEquals("Документ по ID: " + id + " не найден.", testException.getMessage());
+                () -> documentService.updateDocument(testDocument));
+        assertEquals("Документа с таким id: " + testDocument.getId() + ", не существует", testException.getMessage());
     }
 }

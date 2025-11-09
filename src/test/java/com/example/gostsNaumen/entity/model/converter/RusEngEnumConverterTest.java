@@ -7,9 +7,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TwoWaysConverterTest {
+/**
+ * Класс для тестирования конвертера Enum-ов, тестирует как успешные случаи, так и ошибочные
+ */
+class RusEngEnumConverterTest {
 
-    TwoWaysConverter twoWaysConverter = new TwoWaysConverter();
+    RusEngEnumConverter rusEngEnumConverter = new RusEngEnumConverter();
 
     /**
      * Проверяет корректность работы на стандартных данных
@@ -18,14 +21,14 @@ class TwoWaysConverterTest {
     void convertToDatabaseColumShouldReturnCorrectValues() {
         assertEquals(
                 AdoptionLevelEnum.NATIONAL,
-                twoWaysConverter.convertToDatabaseColumn("Национальный", AdoptionLevelEnum.class));
+                rusEngEnumConverter.convertToEnglishValue("Национальный", AdoptionLevelEnum.class));
         assertEquals(
                 StatusEnum.CURRENT,
-                twoWaysConverter.convertToDatabaseColumn("Актуальный", StatusEnum.class)
+                rusEngEnumConverter.convertToEnglishValue("Актуальный", StatusEnum.class)
         );
         assertEquals(
                 HarmonizationEnum.HARMONIZED,
-                twoWaysConverter.convertToDatabaseColumn("Гармонизированный", HarmonizationEnum.class)
+                rusEngEnumConverter.convertToEnglishValue("Гармонизированный", HarmonizationEnum.class)
         );
     }
 
@@ -33,11 +36,11 @@ class TwoWaysConverterTest {
      * Проверка случая, когда метод получает несуществующее в enum-е значение
      */
     @Test
-    void convertToDatabaseColumnShouldThrowIllegalArgumentExceptionWhenStringIsIncorrect() {
+    void convertToEnglishValueShouldThrowIllegalArgumentExceptionWhenStringIsIncorrect() {
         String wrongTestValue = "неправильноеЗначение";
         Throwable exception = assertThrows(IllegalArgumentException.class,
                 () -> {
-                    twoWaysConverter.convertToDatabaseColumn(wrongTestValue, AdoptionLevelEnum.class);
+                    rusEngEnumConverter.convertToEnglishValue(wrongTestValue, AdoptionLevelEnum.class);
                 });
         assertEquals(
                 "Нет атрибута: " + wrongTestValue + " для энама " + AdoptionLevelEnum.class,
@@ -48,18 +51,18 @@ class TwoWaysConverterTest {
      * Проверка случая, когда один из аргументов функций {@code null}
      */
     @Test
-    void convertToDatabaseColumnShouldThrowIllegalArgumentExceptionWhenOneOfArgsIsNull() {
+    void convertToEnglishValueShouldThrowIllegalArgumentExceptionWhenOneOfArgsIsNull() {
         String correctValue = "Региональный";
 
         Throwable exception = assertThrows(IllegalArgumentException.class,
                 () -> {
-                    twoWaysConverter.convertToDatabaseColumn(correctValue, null);
+                    rusEngEnumConverter.convertToEnglishValue(correctValue, null);
                 });
         assertEquals("Один из полученных аргументов null", exception.getMessage());
 
         Throwable secondException = assertThrows(IllegalArgumentException.class,
                 () -> {
-                    twoWaysConverter.convertToDatabaseColumn(null, AdoptionLevelEnum.class);
+                    rusEngEnumConverter.convertToEnglishValue(null, AdoptionLevelEnum.class);
                 });
         assertEquals("Один из полученных аргументов null", secondException.getMessage());
     }
@@ -68,17 +71,17 @@ class TwoWaysConverterTest {
      * Проверка корректности работы, при нормальных данных
      */
     @Test
-    void convertToEntityAttributeShouldReturnCorrectValues() {
-        assertEquals("Национальный", twoWaysConverter.convertToEntityAttribute(AdoptionLevelEnum.NATIONAL));
-        assertEquals("Актуальный", twoWaysConverter.convertToEntityAttribute(StatusEnum.CURRENT));
-        assertEquals("Гармонизированный", twoWaysConverter.convertToEntityAttribute(HarmonizationEnum.HARMONIZED));
+    void convertToRussianValueShouldReturnCorrectValues() {
+        assertEquals("Национальный", rusEngEnumConverter.convertToRussianValue(AdoptionLevelEnum.NATIONAL));
+        assertEquals("Актуальный", rusEngEnumConverter.convertToRussianValue(StatusEnum.CURRENT));
+        assertEquals("Гармонизированный", rusEngEnumConverter.convertToRussianValue(HarmonizationEnum.HARMONIZED));
     }
 
     /**
      * Проверка на выброс null при получении null
      */
     @Test
-    void convertToEntityAttributeShouldReturnNull() {
-        assertNull(twoWaysConverter.convertToEntityAttribute(null));
+    void convertToRussianValueShouldReturnNull() {
+        assertNull(rusEngEnumConverter.convertToRussianValue(null));
     }
 }

@@ -1,7 +1,5 @@
 package com.example.gostsNaumen.service.document;
 
-import com.example.gostsNaumen.controller.dto.ActualizeDocumentMapper;
-import com.example.gostsNaumen.controller.dto.request.ActualizeDtoRequest;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.exception.BusinessException;
@@ -19,12 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class DocumentService {
     private final DocumentRepository documentRepository;
     private final LifeCycleService lifeCycleService;
-    private final ActualizeDocumentMapper actualizeDocumentMapper;
 
-    public DocumentService(DocumentRepository documentRepository, LifeCycleService lifeCycleService, ActualizeDocumentMapper actualizeDocumentMapper) {
+    public DocumentService(DocumentRepository documentRepository, LifeCycleService lifeCycleService) {
         this.documentRepository = documentRepository;
         this.lifeCycleService = lifeCycleService;
-        this.actualizeDocumentMapper = actualizeDocumentMapper;
     }
 
     /**
@@ -94,18 +90,20 @@ public class DocumentService {
     }
 
     /**
-     * Метод для актуализации полей ГОСТа
+     * Метод для обновления полей ГОСТа
      *
-     * @param id                 идентификатор госта
-     * @param documentDtoRequest дто с обновлёнными значениями полей
-     * @return энтити с обновлёнными значениями полей
+     * @param document документ с уже обновлёнными полями, которые нужно сохранить
+     * @return {@code document} – обновлённый документ
      */
-    public Document actualizeDocument(Long id, ActualizeDtoRequest documentDtoRequest) {
-        Document document = documentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Документ по ID: " + id + " не найден."));
+    @Transactional
+    public Document updateDocument(Document document) {
 
-        document = actualizeDocumentMapper.actualizeDocument(document, documentDtoRequest);
+        Long id = document.getId();
 
-        return document;
+        if (!documentRepository.existsById(id)) {
+            throw new EntityNotFoundException("Документа с таким id: " + id + ", не существует");
+        }
+
+        return documentRepository.save(document);
     }
 }
