@@ -76,7 +76,7 @@ public class JweService {
     public JwtAuthDto generateAuthToken(String email, Long id) throws JOSEException {
         return new JwtAuthDto(
                 generateJweToken(email, 1440), //TODO: Обговорить время жизни токена
-                generateJweToken(email, 1440),
+                generateJweToken(email, 1440), //TODO: Вынести в value env
                 id);
     }
 

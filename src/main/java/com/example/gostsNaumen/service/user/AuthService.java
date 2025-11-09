@@ -73,4 +73,8 @@ public class AuthService {
             throw new AuthenticationException("Почта или пароль неверные.");
         }
     }
+
+    public void logOut() {
+
+    }
 }
