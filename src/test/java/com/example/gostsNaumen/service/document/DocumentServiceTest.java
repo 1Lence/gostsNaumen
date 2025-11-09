@@ -9,18 +9,17 @@ import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashSet;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 /**
  * Класс для тестов сервиса по работе с документами {@link DocumentService}.<br>
@@ -85,11 +84,11 @@ class DocumentServiceTest {
      */
     @Test
     void saveDocumentShouldThrowExceptionWhenDocumentAlreadyExists() {
-        when(documentRepository.findByFullName(document.getFullName())).thenReturn(Optional.of(document));
+        Mockito.when(documentRepository.findByFullName(document.getFullName())).thenReturn(Optional.of(document));
 
-        EntityExistsException testException = assertThrows(EntityExistsException.class,
+        EntityExistsException testException = Assertions.assertThrows(EntityExistsException.class,
                 () -> documentService.saveDocument(document));
-        assertEquals("Такой гост уже существует.", testException.getMessage());
+        Assertions.assertEquals("Такой гост уже существует.", testException.getMessage());
     }
 
     /**
@@ -98,11 +97,11 @@ class DocumentServiceTest {
      */
     @Test
     void getDocumentShouldThrowEntityNotFoundExceptionWhenDocumentDoesNotExist() {
-        when(documentRepository.findById(document.getId())).thenReturn(Optional.empty());
+        Mockito.when(documentRepository.findById(document.getId())).thenReturn(Optional.empty());
 
-        EntityNotFoundException testException = assertThrows(EntityNotFoundException.class,
+        EntityNotFoundException testException = Assertions.assertThrows(EntityNotFoundException.class,
                 () -> documentService.getDocumentById(document.getId()));
-        assertEquals("Документ по ID: " + document.getId() + " не найден.", testException.getMessage());
+        Assertions.assertEquals("Документ по ID: " + document.getId() + " не найден.", testException.getMessage());
     }
 
     /**
@@ -111,9 +110,9 @@ class DocumentServiceTest {
      */
     @Test
     void getDocumentShouldThrowEntityNotFoundExceptionWhenProvidedIdIsNull() {
-        EntityNotFoundException testException = assertThrows(EntityNotFoundException.class,
+        EntityNotFoundException testException = Assertions.assertThrows(EntityNotFoundException.class,
                 () -> documentService.getDocumentById(null));
-        assertEquals("Поиск по пустому ID", testException.getMessage());
+        Assertions.assertEquals("Поиск по пустому ID", testException.getMessage());
     }
 
     /**
@@ -122,9 +121,9 @@ class DocumentServiceTest {
      */
     @Test
     void deleteDocumentShouldThrowIllegalArgumentExceptionWhenDocumentDoesNotExist() {
-        IllegalArgumentException testException = assertThrows(IllegalArgumentException.class,
+        IllegalArgumentException testException = Assertions.assertThrows(IllegalArgumentException.class,
                 () -> documentService.deleteDocumentById(null));
-        assertEquals("Получен null id", testException.getMessage());
+        Assertions.assertEquals("Получен null id", testException.getMessage());
     }
 
     /**
@@ -134,11 +133,11 @@ class DocumentServiceTest {
      */
     @Test
     void deleteDocumentShouldThrowEntityNotFoundExceptionWhenDocumentDoesNotExist() {
-        when(documentRepository.existsById(document.getId())).thenReturn(false);
+        Mockito.when(documentRepository.existsById(document.getId())).thenReturn(false);
 
-        EntityNotFoundException testException = assertThrows(EntityNotFoundException.class,
+        EntityNotFoundException testException = Assertions.assertThrows(EntityNotFoundException.class,
                 () -> documentService.deleteDocumentById(document.getId()));
-        assertEquals("Документа с таким " + document.getId() + " не существует", testException.getMessage());
+        Assertions.assertEquals("Документа с таким " + document.getId() + " не существует", testException.getMessage());
     }
 
     /**
@@ -147,9 +146,9 @@ class DocumentServiceTest {
      */
     @Test
     void updateDocumentStatusShouldThrowStatusAlreadySetExceptionWhenDocumentStatusMatchesTransmittedStatus() {
-        BusinessException testException = assertThrows(BusinessException.class,
+        BusinessException testException = Assertions.assertThrows(BusinessException.class,
                 () -> documentService.updateDocumentStatus(document, document.getStatus()));
-        assertEquals(ErrorCode.STATUS_ALREADY_SET, testException.getErrorCode());
+        Assertions.assertEquals(ErrorCode.STATUS_ALREADY_SET, testException.getErrorCode());
     }
 
     /**
@@ -158,10 +157,10 @@ class DocumentServiceTest {
      */
     @Test
     void updateDocumentStatusShouldThrowInvalidLifeCycleTransactionWhenStatusTransitionIsNotPossible() {
-        when(lifeCycleService.canUpdateStatus(document.getStatus(), StatusEnum.CURRENT)).thenReturn(false);
-        BusinessException testException = assertThrows(BusinessException.class,
+        Mockito.when(lifeCycleService.canUpdateStatus(document.getStatus(), StatusEnum.CURRENT)).thenReturn(false);
+        BusinessException testException = Assertions.assertThrows(BusinessException.class,
                 () -> documentService.updateDocumentStatus(document, StatusEnum.CURRENT));
-        assertEquals(ErrorCode.INVALID_LIFECYCLE_TRANSITION, testException.getErrorCode());
+        Assertions.assertEquals(ErrorCode.INVALID_LIFECYCLE_TRANSITION, testException.getErrorCode());
     }
 
     /**
@@ -173,10 +172,10 @@ class DocumentServiceTest {
         Document testDocument = new Document();
         testDocument.setId(2L);
 
-        when(documentRepository.existsById(testDocument.getId())).thenReturn(false);
+        Mockito.when(documentRepository.existsById(testDocument.getId())).thenReturn(false);
 
-        EntityNotFoundException testException = assertThrows(EntityNotFoundException.class,
+        EntityNotFoundException testException = Assertions.assertThrows(EntityNotFoundException.class,
                 () -> documentService.updateDocument(testDocument));
-        assertEquals("Документа с таким id: " + testDocument.getId() + ", не существует", testException.getMessage());
+        Assertions.assertEquals("Документа с таким id: " + testDocument.getId() + ", не существует", testException.getMessage());
     }
 }

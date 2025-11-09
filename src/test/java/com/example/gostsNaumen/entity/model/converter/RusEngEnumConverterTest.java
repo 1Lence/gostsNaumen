@@ -3,6 +3,7 @@ package com.example.gostsNaumen.entity.model.converter;
 import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,11 +39,11 @@ class RusEngEnumConverterTest {
     @Test
     void convertToEnglishValueShouldThrowIllegalArgumentExceptionWhenStringIsIncorrect() {
         String wrongTestValue = "неправильноеЗначение";
-        Throwable exception = assertThrows(IllegalArgumentException.class,
+        Throwable exception = Assertions.assertThrows(IllegalArgumentException.class,
                 () -> {
                     rusEngEnumConverter.convertToEnglishValue(wrongTestValue, AdoptionLevelEnum.class);
                 });
-        assertEquals(
+        Assertions.assertEquals(
                 "Нет атрибута: " + wrongTestValue + " для энама " + AdoptionLevelEnum.class,
                 exception.getMessage());
     }
@@ -54,17 +55,17 @@ class RusEngEnumConverterTest {
     void convertToEnglishValueShouldThrowIllegalArgumentExceptionWhenOneOfArgsIsNull() {
         String correctValue = "Региональный";
 
-        Throwable exception = assertThrows(IllegalArgumentException.class,
+        Throwable exception = Assertions.assertThrows(IllegalArgumentException.class,
                 () -> {
                     rusEngEnumConverter.convertToEnglishValue(correctValue, null);
                 });
-        assertEquals("Один из полученных аргументов null", exception.getMessage());
+        Assertions.assertEquals("Один из полученных аргументов null", exception.getMessage());
 
-        Throwable secondException = assertThrows(IllegalArgumentException.class,
+        Throwable secondException = Assertions.assertThrows(IllegalArgumentException.class,
                 () -> {
                     rusEngEnumConverter.convertToEnglishValue(null, AdoptionLevelEnum.class);
                 });
-        assertEquals("Один из полученных аргументов null", secondException.getMessage());
+        Assertions.assertEquals("Один из полученных аргументов null", secondException.getMessage());
     }
 
     /**
@@ -72,9 +73,9 @@ class RusEngEnumConverterTest {
      */
     @Test
     void convertToRussianValueShouldReturnCorrectValues() {
-        assertEquals("Национальный", rusEngEnumConverter.convertToRussianValue(AdoptionLevelEnum.NATIONAL));
-        assertEquals("Актуальный", rusEngEnumConverter.convertToRussianValue(StatusEnum.CURRENT));
-        assertEquals("Гармонизированный", rusEngEnumConverter.convertToRussianValue(HarmonizationEnum.HARMONIZED));
+        Assertions.assertEquals("Национальный", rusEngEnumConverter.convertToRussianValue(AdoptionLevelEnum.NATIONAL));
+        Assertions.assertEquals("Актуальный", rusEngEnumConverter.convertToRussianValue(StatusEnum.CURRENT));
+        Assertions.assertEquals("Гармонизированный", rusEngEnumConverter.convertToRussianValue(HarmonizationEnum.HARMONIZED));
     }
 
     /**
@@ -82,6 +83,6 @@ class RusEngEnumConverterTest {
      */
     @Test
     void convertToRussianValueShouldReturnNull() {
-        assertNull(rusEngEnumConverter.convertToRussianValue(null));
+        Assertions.assertNull(rusEngEnumConverter.convertToRussianValue(null));
     }
 }
