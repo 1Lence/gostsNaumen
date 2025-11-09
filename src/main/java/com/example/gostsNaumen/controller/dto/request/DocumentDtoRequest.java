@@ -23,7 +23,7 @@ public class DocumentDtoRequest {
     private String designation;
     @NotEmpty
     @Length(min = 1, max = 64)
-    private String codeOKS;
+    private String codeOKS; //TODO: Добавить валидацию формата записи (возможна запись только цифр и точек)
     @NotEmpty
     @Length(min = 1, max = 128)
     private String activityField;
@@ -45,19 +45,31 @@ public class DocumentDtoRequest {
     private String keyWords;
     @NotEmpty
     @Length(min = 1, max = 32)
-    @CustomEnumValid(enumClass = AdoptionLevelEnum.class, message = "Должно содержать: Национальный, Межгосударственный, Отраслевой, Региональный, Стандарт Организаций")
+    @CustomEnumValid(
+            enumClass = AdoptionLevelEnum.class,
+            message = "Должно содержать: Национальный, Межгосударственный, Отраслевой, Региональный, Стандарт Организаций"
+    )
     private String adoptionLevel;
     @NotEmpty
     @Length(min = 1, max = 32)
-    @CustomEnumValid(enumClass = StatusEnum.class, message = "Должно содержать: Актуальный, Отменённый или Заменённый")
+    @CustomEnumValid(
+            enumClass = StatusEnum.class,
+            message = "Должно содержать: Актуальный, Отменённый или Заменённый"
+    )
     private String status;
     @NotEmpty
     @Length(min = 1, max = 32)
-    @CustomEnumValid(enumClass = HarmonizationEnum.class, message = "Должно содержать: Не гармонизированный, Модифицированный или Гармонизированный")
+    @CustomEnumValid(
+            enumClass = HarmonizationEnum.class,
+            message = "Должно содержать: Не гармонизированный, Модифицированный или Гармонизированный"
+    )
     private String harmonization;
     @NotEmpty
     @Length(min = 1, max = 32)
-    @CustomEnumValid(enumClass = AcceptedFirstTimeOrReplacedEnum.class, message = "Должно содержать: ВВЕДЁН ВПЕРВЫЕ, ИЗМЕНЁН")
+    @CustomEnumValid(
+            enumClass = AcceptedFirstTimeOrReplacedEnum.class,
+            message = "Должно содержать: ВВЕДЁН ВПЕРВЫЕ, ИЗМЕНЁН"
+    )
     private String acceptedFirstTimeOrReplaced;
     @NotNull
     private Set<@Length(min = 1, max = 128) String> references;

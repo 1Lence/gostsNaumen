@@ -9,7 +9,6 @@ import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.TwoWaysConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,12 +19,7 @@ public class DocumentMapper implements TwoWaysMapper<Document, DocumentDtoReques
 
     private final TwoWaysConverter twoWaysConverter;
 
-
-    @Autowired
-
-    public DocumentMapper(
-            TwoWaysConverter twoWaysConverter
-    ) {
+    public DocumentMapper(TwoWaysConverter twoWaysConverter) {
         this.twoWaysConverter = twoWaysConverter;
     }
 
@@ -41,10 +35,10 @@ public class DocumentMapper implements TwoWaysMapper<Document, DocumentDtoReques
                 .setAcceptanceYear(dto.getAcceptanceYear())
                 .setCommissionYear(dto.getCommissionYear())
                 .setKeyWords(dto.getKeyWords())
-                .setAdoptionLevel(twoWaysConverter.convertToDatabaseColumn(dto.getAdoptionLevel(),AdoptionLevelEnum.class))
+                .setAdoptionLevel(twoWaysConverter.convertToDatabaseColumn(dto.getAdoptionLevel(), AdoptionLevelEnum.class))
                 .setStatus(twoWaysConverter.convertToDatabaseColumn(dto.getStatus(), StatusEnum.class))
-                .setHarmonization(twoWaysConverter.convertToDatabaseColumn(dto.getHarmonization(),HarmonizationEnum.class))
-                .setAcceptedFirstTimeOrReplaced(twoWaysConverter.convertToDatabaseColumn(dto.getAcceptedFirstTimeOrReplaced(),AcceptedFirstTimeOrReplacedEnum.class))
+                .setHarmonization(twoWaysConverter.convertToDatabaseColumn(dto.getHarmonization(), HarmonizationEnum.class))
+                .setAcceptedFirstTimeOrReplaced(twoWaysConverter.convertToDatabaseColumn(dto.getAcceptedFirstTimeOrReplaced(), AcceptedFirstTimeOrReplacedEnum.class))
                 .setReferences(dto.getReferences());
     }
 
