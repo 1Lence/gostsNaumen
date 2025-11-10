@@ -8,25 +8,21 @@ import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
 import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
-import com.example.gostsNaumen.entity.model.converter.TwoWaysConverter;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import org.springframework.stereotype.Component;
 
 /**
- * Преобразует сущность госта из БД в сущность
+ * Преобразует сущность госта из БД в dto и наоборот
  */
 @Component
 public class DocumentMapper implements TwoWaysMapper<Document, DocumentDtoRequest, DocumentDtoResponse> {
 
-    private final TwoWaysConverter twoWaysConverter;
-
-
-    @Autowired
+    private final RusEngEnumConverter rusEngEnumConverter;
 
     public DocumentMapper(
-            TwoWaysConverter twoWaysConverter
+            RusEngEnumConverter rusEngEnumConverter
     ) {
-        this.twoWaysConverter = twoWaysConverter;
+        this.rusEngEnumConverter = rusEngEnumConverter;
     }
 
     @Override
@@ -41,10 +37,10 @@ public class DocumentMapper implements TwoWaysMapper<Document, DocumentDtoReques
                 .setAcceptanceYear(dto.getAcceptanceYear())
                 .setCommissionYear(dto.getCommissionYear())
                 .setKeyWords(dto.getKeyWords())
-                .setAdoptionLevel(twoWaysConverter.convertToDatabaseColumn(dto.getAdoptionLevel(),AdoptionLevelEnum.class))
-                .setStatus(twoWaysConverter.convertToDatabaseColumn(dto.getStatus(), StatusEnum.class))
-                .setHarmonization(twoWaysConverter.convertToDatabaseColumn(dto.getHarmonization(),HarmonizationEnum.class))
-                .setAcceptedFirstTimeOrReplaced(twoWaysConverter.convertToDatabaseColumn(dto.getAcceptedFirstTimeOrReplaced(),AcceptedFirstTimeOrReplacedEnum.class))
+                .setAdoptionLevel(rusEngEnumConverter.convertToEnglishValue(dto.getAdoptionLevel(), AdoptionLevelEnum.class))
+                .setStatus(rusEngEnumConverter.convertToEnglishValue(dto.getStatus(), StatusEnum.class))
+                .setHarmonization(rusEngEnumConverter.convertToEnglishValue(dto.getHarmonization(), HarmonizationEnum.class))
+                .setAcceptedFirstTimeOrReplaced(rusEngEnumConverter.convertToEnglishValue(dto.getAcceptedFirstTimeOrReplaced(), AcceptedFirstTimeOrReplacedEnum.class))
                 .setReferences(dto.getReferences());
     }
 
@@ -62,10 +58,10 @@ public class DocumentMapper implements TwoWaysMapper<Document, DocumentDtoReques
                 .setAcceptanceYear(fromWhat.getAcceptanceYear())
                 .setCommissionYear(fromWhat.getCommissionYear())
                 .setKeyWords(fromWhat.getKeyWords())
-                .setAdoptionLevel(twoWaysConverter.convertToEntityAttribute(fromWhat.getAdoptionLevel()))
-                .setStatus(twoWaysConverter.convertToEntityAttribute(fromWhat.getStatus()))
-                .setHarmonization(twoWaysConverter.convertToEntityAttribute(fromWhat.getHarmonization()))
-                .setAcceptedFirstTimeOrReplaced(twoWaysConverter.convertToEntityAttribute(fromWhat.getAcceptedFirstTimeOrReplaced()))
+                .setAdoptionLevel(rusEngEnumConverter.convertToRussianValue(fromWhat.getAdoptionLevel()))
+                .setStatus(rusEngEnumConverter.convertToRussianValue(fromWhat.getStatus()))
+                .setHarmonization(rusEngEnumConverter.convertToRussianValue(fromWhat.getHarmonization()))
+                .setAcceptedFirstTimeOrReplaced(rusEngEnumConverter.convertToRussianValue(fromWhat.getAcceptedFirstTimeOrReplaced()))
                 .setReferences(fromWhat.getReferences());
     }
 }

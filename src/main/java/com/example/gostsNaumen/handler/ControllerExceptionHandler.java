@@ -26,8 +26,9 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
     /**
      * Основной обработчик валидации.
      * Отлавливает и обрабатывает все ошибки связанные с входящей валидацией данных.
+     *
      * @param exception ошибка валидации
-     * @param request данные HTTP запроса
+     * @param request   данные HTTP запроса
      * @return удобочитаемый JSON с описанием ошибки
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -52,6 +53,7 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
                 new ErrorResponse()
                         .setStatus(BAD_REQUEST)
                         .setUrl(url)
+                        .setTimestamp(LocalDateTime.now())
                         .setValidationErrors(validationErrors),
                 BAD_REQUEST
         );
