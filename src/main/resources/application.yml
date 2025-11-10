@@ -18,3 +18,4 @@ app:
     secret: ${JWS_SECRET}
   jwe:
     secret: ${JWE_SECRET}
+  expireMinutes: ${EXPIRE_MINUTES}

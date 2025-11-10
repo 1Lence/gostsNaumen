@@ -2,6 +2,7 @@ package com.example.gostsNaumen.validator;
 
 import com.example.gostsNaumen.controller.dto.validator.CustomEmailValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,9 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+/**
+ * Тестирование валидации почты
+ */
 @ExtendWith(MockitoExtension.class)
 class CustomEmailValidatorTest {
 
@@ -21,6 +22,9 @@ class CustomEmailValidatorTest {
     @Mock
     private ConstraintValidatorContext context;
 
+    /**
+     * Подготовка валидатора
+     */
     @BeforeEach
     void setUp() {
         validator = new CustomEmailValidator();
@@ -41,7 +45,7 @@ class CustomEmailValidatorTest {
         };
 
         for (String email : validEmails) {
-            assertTrue(validator.isValid(email, context));
+            Assertions.assertTrue(validator.isValid(email, context));
         }
     }
 
@@ -71,7 +75,7 @@ class CustomEmailValidatorTest {
         };
 
         for (String email : invalidEmails) {
-            assertFalse(validator.isValid(email, context));
+            Assertions.assertFalse(validator.isValid(email, context));
         }
     }
 
@@ -89,7 +93,7 @@ class CustomEmailValidatorTest {
         };
 
         for (String email : specialCharEmails) {
-            assertTrue(validator.isValid(email, context));
+            Assertions.assertTrue(validator.isValid(email, context));
         }
     }
 
@@ -101,8 +105,8 @@ class CustomEmailValidatorTest {
         String email = "test@example.com";
         String invalidEmail = "invalid-email";
 
-        assertTrue(validator.isValid(email, context));
-        assertFalse(validator.isValid(invalidEmail, context));
+        Assertions.assertTrue(validator.isValid(email, context));
+        Assertions.assertFalse(validator.isValid(invalidEmail, context));
     }
 
     /**
@@ -114,8 +118,8 @@ class CustomEmailValidatorTest {
         String blankString = "   ";
         String nullString = null;
 
-        assertFalse(validator.isValid(emptyString, context));
-        assertFalse(validator.isValid(blankString, context));
-        assertFalse(validator.isValid(nullString, context));
+        Assertions.assertFalse(validator.isValid(emptyString, context));
+        Assertions.assertFalse(validator.isValid(blankString, context));
+        Assertions.assertFalse(validator.isValid(nullString, context));
     }
 }

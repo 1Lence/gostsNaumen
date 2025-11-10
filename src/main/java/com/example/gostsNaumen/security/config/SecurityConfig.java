@@ -37,8 +37,10 @@ public class SecurityConfig {
         http.httpBasic(AbstractHttpConfigurer::disable).
                 csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/standards/**").hasAuthority(Permission.USER_READ.getPermission())
                         .requestMatchers("/api/standards/delete/**").hasAuthority(Permission.USER_WRITE.getPermission())
+                        .requestMatchers("/api/standards/**").hasAuthority(Permission.USER_READ.getPermission())
+                        .requestMatchers("/api/user/delete/**").hasAuthority(Permission.USER_WRITE.getPermission())
+                        .requestMatchers("/api/user/**").hasAuthority(Permission.USER_READ.getPermission())
                         .anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jweFilter, UsernamePasswordAuthenticationFilter.class);

@@ -17,7 +17,6 @@ public class DocumentService {
     public DocumentService(DocumentRepository documentRepository) {
         this.documentRepository = documentRepository;
     }
-
     /**
      * Сохранение сущности ГОСТа в БД
      *
@@ -60,6 +59,7 @@ public class DocumentService {
         if (id == null) {
             throw new EntityNotFoundException("Удаление по пустому ID");
         }
+        getDocumentById(id);
         documentRepository.deleteById(id);
     }
 }

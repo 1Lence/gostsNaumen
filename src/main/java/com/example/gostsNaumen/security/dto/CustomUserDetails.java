@@ -27,4 +27,8 @@ public record CustomUserDetails(User user, Collection<? extends GrantedAuthority
     public String getUsername() {
         return user.getEmail();
     }
+
+    public Long getId() {
+        return user.getId();
+    }
 }
