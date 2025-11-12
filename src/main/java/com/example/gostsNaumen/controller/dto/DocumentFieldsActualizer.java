@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * Класс, служащий для актуализации документа (по-сути метод Update)
  */
 @Component
-public class ActualizeDocumentMapper {
+public class DocumentFieldsActualizer {
 
     private final RusEngEnumConverter rusEngEnumConverter = new RusEngEnumConverter();
 

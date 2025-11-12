@@ -4,7 +4,7 @@ import com.example.gostsNaumen.entity.model.HasValue;
 import org.springframework.stereotype.Component;
 
 /**
- * Конвертер, необходимый для преобразования enum-ов между русским и английским значениями.
+ * Конвертер. Необходим для преобразования enum-ов между русским и английским значениями.
  */
 @Component
 public class RusEngEnumConverter {

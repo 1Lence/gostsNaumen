@@ -131,6 +131,31 @@ public class Document {
     @Column(name = "references_list")
     private Set<String> references = new HashSet<>();
 
+    public Document() {
+    }
+
+    public Document(Set<String> references, AcceptedFirstTimeOrReplacedEnum acceptedFirstTimeOrReplaced,
+                    HarmonizationEnum harmonization, StatusEnum status, AdoptionLevelEnum adoptionLevel,
+                    String keyWords, Integer commissionYear, Integer acceptanceYear, String contentLink,
+                    String applicationArea, String author, String activityField, String codeOKS,
+                    String designation, String fullName) {
+        this.references = references;
+        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
+        this.harmonization = harmonization;
+        this.status = status;
+        this.adoptionLevel = adoptionLevel;
+        this.keyWords = keyWords;
+        this.commissionYear = commissionYear;
+        this.acceptanceYear = acceptanceYear;
+        this.contentLink = contentLink;
+        this.applicationArea = applicationArea;
+        this.author = author;
+        this.activityField = activityField;
+        this.codeOKS = codeOKS;
+        this.designation = designation;
+        this.fullName = fullName;
+    }
+
     public Long getId() {
         return id;
     }

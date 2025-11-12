@@ -1,12 +1,12 @@
 package com.example.gostsNaumen.controller;
 
-import com.example.gostsNaumen.controller.dto.ActualizeDocumentMapper;
+import com.example.gostsNaumen.controller.dto.DocumentFieldsActualizer;
 import com.example.gostsNaumen.controller.dto.DocumentMapper;
 import com.example.gostsNaumen.controller.dto.request.ActualizeDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.DocumentDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.DocumentStatusDto;
 import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
-import com.example.gostsNaumen.controller.dto.response.GostIdDtoResponse;
+import com.example.gostsNaumen.controller.dto.response.StandardIdDtoResponse;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
@@ -23,17 +23,17 @@ public class DocumentController {
     private final DocumentService documentService;
     private final DocumentMapper documentMapper;
     private final RusEngEnumConverter rusEngEnumConverter;
-    private final ActualizeDocumentMapper actualizeDocumentMapper;
+    private final DocumentFieldsActualizer documentFieldsActualizer;
 
     public DocumentController(
             DocumentService documentService,
             DocumentMapper documentMapper,
             RusEngEnumConverter rusEngEnumConverter,
-            ActualizeDocumentMapper actualizeDocumentMapper) {
+            DocumentFieldsActualizer documentFieldsActualizer) {
         this.documentService = documentService;
         this.documentMapper = documentMapper;
         this.rusEngEnumConverter = rusEngEnumConverter;
-        this.actualizeDocumentMapper = actualizeDocumentMapper;
+        this.documentFieldsActualizer = documentFieldsActualizer;
     }
 
     /**
@@ -43,12 +43,12 @@ public class DocumentController {
      * @return id успешно добавленного ГОСТа
      */
     @PostMapping()
-    public GostIdDtoResponse addDocument(
+    public StandardIdDtoResponse addDocument(
             @RequestBody @Valid DocumentDtoRequest documentDtoRequest
     ) {
         Document document = documentMapper.mapToEntity(documentDtoRequest);
 
-        return new GostIdDtoResponse(documentService.saveDocument(document).getId());
+        return new StandardIdDtoResponse(documentService.saveDocument(document).getId());
     }
 
     /**
@@ -106,7 +106,7 @@ public class DocumentController {
             @RequestBody @Valid ActualizeDtoRequest dtoWithNewValues
     ) {
         Document oldDocument = documentService.getDocumentById(docId);
-        Document documentWithNewFieldsValues = actualizeDocumentMapper.setNewValues(oldDocument, dtoWithNewValues);
+        Document documentWithNewFieldsValues = documentFieldsActualizer.setNewValues(oldDocument, dtoWithNewValues);
 
         return documentMapper.mapEntityToDto(documentService.updateDocument(documentWithNewFieldsValues));
     }

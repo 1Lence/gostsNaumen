@@ -47,7 +47,7 @@ public class DocumentService {
     @Transactional
     public Document getDocumentById(Long id) {
         if (id == null) {
-            throw new EntityNotFoundException("Поиск по пустому ID");
+            throw new NullPointerException("Поиск по пустому ID");
         }
 
         return documentRepository

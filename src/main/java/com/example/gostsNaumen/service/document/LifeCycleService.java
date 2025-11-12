@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class LifeCycleService {
-    //TODO реализовать полноценный переход по жизненному циклу
-
     /**
      * Метод для проверки возможности обновления статуса госта
      *

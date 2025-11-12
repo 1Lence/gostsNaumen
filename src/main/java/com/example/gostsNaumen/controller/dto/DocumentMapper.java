@@ -49,7 +49,7 @@ public class DocumentMapper implements TwoWaysMapper<Document, DocumentDtoReques
         return new DocumentDtoResponse()
                 .setId(fromWhat.getId())
                 .setFullName(fromWhat.getFullName())
-                .setDescription(fromWhat.getDesignation())
+                .setDesignation(fromWhat.getDesignation())
                 .setCodeOKS(fromWhat.getCodeOKS())
                 .setActivityField(fromWhat.getActivityField())
                 .setAuthor(fromWhat.getAuthor())

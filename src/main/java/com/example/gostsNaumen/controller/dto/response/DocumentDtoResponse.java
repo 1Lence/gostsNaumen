@@ -8,7 +8,7 @@ import java.util.Set;
 public class DocumentDtoResponse {
     private Long id;
     private String fullName;
-    private String description;
+    private String designation;
     private String codeOKS;
     private String activityField;
     private String author;
@@ -26,17 +26,32 @@ public class DocumentDtoResponse {
     public DocumentDtoResponse() {
     }
 
+    public DocumentDtoResponse(Long id, String fullName, String designation,
+                               String codeOKS, String activityField, String author,
+                               String applicationArea, String contentLink, Integer acceptanceYear,
+                               Integer commissionYear, String keyWords, String adoptionLevel,
+                               String status, String harmonization, String acceptedFirstTimeOrReplaced,
+                               Set<String> references) {
+        this.id = id;
+        this.fullName = fullName;
+        this.designation = designation;
+        this.codeOKS = codeOKS;
+        this.activityField = activityField;
+        this.author = author;
+        this.applicationArea = applicationArea;
+        this.contentLink = contentLink;
+        this.acceptanceYear = acceptanceYear;
+        this.commissionYear = commissionYear;
+        this.keyWords = keyWords;
+        this.adoptionLevel = adoptionLevel;
+        this.status = status;
+        this.harmonization = harmonization;
+        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
+        this.references = references;
+    }
+
     public Long getId() {
         return id;
-    }
-
-    public String getAcceptedFirstTimeOrReplaced() {
-        return acceptedFirstTimeOrReplaced;
-    }
-
-    public DocumentDtoResponse setAcceptedFirstTimeOrReplaced(String acceptedFirstTimeOrReplaced) {
-        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
-        return this;
     }
 
     public DocumentDtoResponse setId(Long id) {
@@ -53,12 +68,12 @@ public class DocumentDtoResponse {
         return this;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDesignation() {
+        return designation;
     }
 
-    public DocumentDtoResponse setDescription(String description) {
-        this.description = description;
+    public DocumentDtoResponse setDesignation(String designation) {
+        this.designation = designation;
         return this;
     }
 
@@ -107,20 +122,20 @@ public class DocumentDtoResponse {
         return this;
     }
 
-    public int getAcceptanceYear() {
+    public Integer getAcceptanceYear() {
         return acceptanceYear;
     }
 
-    public DocumentDtoResponse setAcceptanceYear(int acceptanceYear) {
+    public DocumentDtoResponse setAcceptanceYear(Integer acceptanceYear) {
         this.acceptanceYear = acceptanceYear;
         return this;
     }
 
-    public int getCommissionYear() {
+    public Integer getCommissionYear() {
         return commissionYear;
     }
 
-    public DocumentDtoResponse setCommissionYear(int commissionYear) {
+    public DocumentDtoResponse setCommissionYear(Integer commissionYear) {
         this.commissionYear = commissionYear;
         return this;
     }
@@ -158,6 +173,15 @@ public class DocumentDtoResponse {
 
     public DocumentDtoResponse setHarmonization(String harmonization) {
         this.harmonization = harmonization;
+        return this;
+    }
+
+    public String getAcceptedFirstTimeOrReplaced() {
+        return acceptedFirstTimeOrReplaced;
+    }
+
+    public DocumentDtoResponse setAcceptedFirstTimeOrReplaced(String acceptedFirstTimeOrReplaced) {
+        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
         return this;
     }
 
