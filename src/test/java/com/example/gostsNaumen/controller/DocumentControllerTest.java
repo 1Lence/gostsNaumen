@@ -11,6 +11,8 @@ import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
+import com.example.gostsNaumen.exception.BusinessException;
+import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.security.jwe.JweFilter;
 import com.example.gostsNaumen.service.document.DocumentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -270,16 +272,14 @@ class DocumentControllerTest {
     void getDocumentShouldReturnNotFoundException() throws Exception {
         Long id = 1L;
         Mockito.when(documentService.getDocumentById(
-                Mockito.anyLong())).thenThrow(new EntityNotFoundException("Документ по ID: " + id + " не найден."));
+                Mockito.anyLong())).thenThrow(new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/standards/{id}", id))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message")
-                        .value("Документ по ID: " + id + " не найден."));
+                        .value("По переданному id нет стандарта"));
     }
-
-    //TODO проверка на новую кастомной ошибке кирилла при передаче null параметра
 
     /**
      * Тест, проверяющий кейс, когда происходит успешная попытка удаления документа
@@ -299,13 +299,13 @@ class DocumentControllerTest {
     @Test
     void deleteDocumentShouldThrowEntityNotFoundException() throws Exception {
         Long docId = 1L;
-        Mockito.doThrow(new EntityNotFoundException("Документа с таким " + docId + " не существует"))
+        Mockito.doThrow(new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS))
                 .when(documentService).deleteDocumentById(docId);
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/standards/{id}", docId))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message")
-                        .value("Документа с таким " + docId + " не существует"));
+                        .value("По переданному id нет стандарта"));
     }
 
     /**
@@ -317,14 +317,14 @@ class DocumentControllerTest {
     void updateDocumentShouldThrowNotFoundException() throws Exception {
         Long docId = 1L;
         Mockito.when(documentService.getDocumentById(docId)).thenThrow(
-                new EntityNotFoundException("Документ по ID: " + docId + " не найден."));
+                new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS));
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/standards/{id}", docId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(documentRequest)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message")
-                        .value("Документ по ID: " + docId + " не найден."));
+                        .value("По переданному id нет стандарта"));
     }
 
     /**

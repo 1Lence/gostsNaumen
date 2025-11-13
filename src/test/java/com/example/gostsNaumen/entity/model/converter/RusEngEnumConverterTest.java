@@ -44,7 +44,7 @@ class RusEngEnumConverterTest {
                     rusEngEnumConverter.convertToEnglishValue(wrongTestValue, AdoptionLevelEnum.class);
                 });
         Assertions.assertEquals(
-                "Нет атрибута: " + wrongTestValue + " для энама " + AdoptionLevelEnum.class,
+                "Нет значения: " + wrongTestValue + " для энама " + AdoptionLevelEnum.class,
                 exception.getMessage());
     }
 

@@ -28,9 +28,6 @@ public class DocumentFieldsActualizer {
      * @return document обновлённая сущность документа
      */
     public Document setNewValues(Document document, ActualizeDtoRequest dto) {
-        if (dto.getFullName() != null && !dto.getFullName().isEmpty()) {
-            document.setFullName(dto.getFullName());
-        }
         setIfNotEmpty(dto.getFullName(), document::setFullName);
         setIfNotEmpty(dto.getDesignation(), document::setDesignation);
         setIfNotEmpty(dto.getCodeOKS(), document::setCodeOKS);

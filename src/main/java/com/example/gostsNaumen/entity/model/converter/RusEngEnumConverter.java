@@ -17,7 +17,7 @@ public class RusEngEnumConverter {
      * @return возвращает экземпляр enum-а
      */
     public <E extends Enum<E> & HasValue> E convertToEnglishValue(String s, Class<E> enumClass) {
-        if (s == null && enumClass == null) {
+        if (s == null || enumClass == null) {
             throw new IllegalArgumentException("Один из полученных аргументов null");
         }
         for (E enumConstant : enumClass.getEnumConstants()) {

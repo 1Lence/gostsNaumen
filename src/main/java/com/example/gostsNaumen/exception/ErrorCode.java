@@ -15,6 +15,10 @@ public enum ErrorCode {
      */
     INVALID_TOKEN("INVALID_TOKEN", "Невалидный токен", HttpStatus.UNAUTHORIZED),
     /**
+     * Код, отвечающий за ситуацию, когда при поиске сущности документа в бд, не находятся совпадения
+     */
+    STANDARD_BY_ID_NOT_EXISTS("CANT_FIND_STANDARD_BY_ID", "По переданному id нет стандарта", HttpStatus.NOT_FOUND),
+    /**
      * Код, отвечающий за ситуацию, когда статус документа уже установлен
      */
     STATUS_ALREADY_SET("STATUS_ALREADY_SET", "Текущий статус уже установлен", HttpStatus.I_AM_A_TEAPOT),
