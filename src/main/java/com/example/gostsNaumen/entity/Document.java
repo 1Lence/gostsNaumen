@@ -134,26 +134,28 @@ public class Document {
     public Document() {
     }
 
-    public Document(Set<String> references, AcceptedFirstTimeOrReplacedEnum acceptedFirstTimeOrReplaced,
-                    HarmonizationEnum harmonization, StatusEnum status, AdoptionLevelEnum adoptionLevel,
-                    String keyWords, Integer commissionYear, Integer acceptanceYear, String contentLink,
-                    String applicationArea, String author, String activityField, String codeOKS,
-                    String designation, String fullName) {
-        this.references = references;
-        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
-        this.harmonization = harmonization;
-        this.status = status;
-        this.adoptionLevel = adoptionLevel;
-        this.keyWords = keyWords;
-        this.commissionYear = commissionYear;
-        this.acceptanceYear = acceptanceYear;
-        this.contentLink = contentLink;
-        this.applicationArea = applicationArea;
-        this.author = author;
-        this.activityField = activityField;
-        this.codeOKS = codeOKS;
-        this.designation = designation;
+    public Document(Long id, String fullName, String designation,
+                    String codeOKS, String activityField, String author,
+                    String applicationArea, String contentLink, Integer acceptanceYear,
+                    Integer commissionYear, String keyWords, AdoptionLevelEnum adoptionLevel,
+                    StatusEnum status, HarmonizationEnum harmonization,
+                    AcceptedFirstTimeOrReplacedEnum acceptedFirstTimeOrReplaced, Set<String> references) {
+        this.id = id;
         this.fullName = fullName;
+        this.designation = designation;
+        this.codeOKS = codeOKS;
+        this.activityField = activityField;
+        this.author = author;
+        this.applicationArea = applicationArea;
+        this.contentLink = contentLink;
+        this.acceptanceYear = acceptanceYear;
+        this.commissionYear = commissionYear;
+        this.keyWords = keyWords;
+        this.adoptionLevel = adoptionLevel;
+        this.status = status;
+        this.harmonization = harmonization;
+        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
+        this.references = references;
     }
 
     public Long getId() {

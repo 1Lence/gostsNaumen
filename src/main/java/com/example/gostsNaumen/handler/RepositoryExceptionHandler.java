@@ -29,7 +29,7 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
      * @return HTTP Status код и JSON с ответом
      */
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(EntityNotFoundException exception, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFoundException exception, WebRequest request) {
         log.info("EntityNotFoundException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
