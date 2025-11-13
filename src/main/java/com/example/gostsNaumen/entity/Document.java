@@ -134,12 +134,23 @@ public class Document {
     public Document() {
     }
 
-    public Document(String fullName, String designation,
-                    String codeOKS, String activityField, String author,
-                    String applicationArea, String contentLink, Integer acceptanceYear,
-                    Integer commissionYear, String keyWords, AdoptionLevelEnum adoptionLevel,
-                    StatusEnum status, HarmonizationEnum harmonization,
-                    AcceptedFirstTimeOrReplacedEnum acceptedFirstTimeOrReplaced, Set<String> references) {
+    public Document(
+            String fullName,
+            String designation,
+            String codeOKS,
+            String activityField,
+            String author,
+            String applicationArea,
+            String contentLink,
+            Integer acceptanceYear,
+            Integer commissionYear,
+            String keyWords,
+            AdoptionLevelEnum adoptionLevel,
+            StatusEnum status,
+            HarmonizationEnum harmonization,
+            AcceptedFirstTimeOrReplacedEnum acceptedFirstTimeOrReplaced,
+            Set<String> references
+    ) {
         this.fullName = fullName;
         this.designation = designation;
         this.codeOKS = codeOKS;
@@ -156,6 +167,7 @@ public class Document {
         this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
         this.references = references;
     }
+
 
     public Long getId() {
         return id;

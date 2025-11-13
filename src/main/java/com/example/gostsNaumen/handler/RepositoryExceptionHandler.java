@@ -29,7 +29,7 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
      * @return HTTP Status код и JSON с ответом
      */
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFoundException exception, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException exception, WebRequest request) {
         log.info("EntityNotFoundException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
@@ -44,9 +44,9 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
     }
 
     /**
-     * Отлавливает ошибки связанные с отсутствием сущностей в БД
+     * Отлавливает ошибки связанные с неверно переданными аргументами в метод
      *
-     * @param exception возникает при отсутствии сущности при поиске по какому-либо параметру
+     * @param exception возникает при передачи неверных параметров в метод
      * @param request   http запрос
      * @return HTTP Status код и JSON с ответом
      */
