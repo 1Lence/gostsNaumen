@@ -4,7 +4,6 @@ import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.repository.DocumentRepository;
-import jakarta.persistence.EntityExistsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +28,8 @@ public class DocumentService {
     public Document saveDocument(Document documentForSave) {
 
         if (documentRepository.findByFullName(documentForSave.getFullName()).isPresent()) {
-            throw new EntityExistsException("Такой гост уже существует.");
+            throw new BusinessException(ErrorCode.STANDARD_BY_FULL_NAME_EXISTS,
+                    "Гост с таким fullName: %s уже существует".formatted(documentForSave.getFullName()));
         }
 
         return documentRepository.save(documentForSave);
