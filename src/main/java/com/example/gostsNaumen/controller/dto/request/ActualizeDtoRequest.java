@@ -6,7 +6,7 @@ import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
 
-import org.hibernate.validator.constraints.Length;
+import jakarta.validation.constraints.Size;
 
 import java.util.Set;
 
@@ -15,37 +15,109 @@ import java.util.Set;
  * {@link  DocumentDtoRequest} не имеет аннотаций @NotNull и @NotEmpty
  */
 public class ActualizeDtoRequest {
-    @Length(min = 1, max = 512)
+    /**
+     * Полное название ГОСТа.<br>
+     * Пример: "БРОНЕОДЕЖДА Классификация и общие технические требования"
+     */
+    @Size(min = 1, max = 512)
     private String fullName;
-    @Length(min = 1, max = 128)
+    /**
+     * Регистрационный номер ГОСТа.<br>
+     * Пример: "ГОСТ 34286-2017"
+     */
+    @Size(min = 1, max = 128)
     private String designation;
-    @Length(min = 1, max = 64)
+    /**
+     * Код ОКС (Общероссийский классификатор стандартов) ГОСТа.<br>
+     * Пример: "13.340.10"
+     */
+    @Size(min = 1, max = 64)
     private String codeOKS;
-    @Length(min = 1, max = 128)
+    /**
+     * Область применения ГОСТа.<br>
+     * Пример: "Защитная одежда"
+     */
+    @Size(min = 1, max = 128)
     private String activityField;
-    @Length(min = 1, max = 256)
+    /**
+     * Автор ГОСТа.<br>
+     * Пример: "МТК 391 «Средства физической защиты и материалы для их изготовления"
+     */
+    @Size(min = 1, max = 256)
     private String author;
-    @Length(min = 1, max = 1024)
+    /**
+     * Область применения ГОСТа.<br>
+     * Пример: "Настоящий стандарт распространяется на бронеодежду, предназначенную для защиты туловища и конечностей
+     * человека (за исключением стоп ног и кистей рук) (далее — человека) от воздействияхолодного и огнестрельного
+     * стрелкового оружия, а также поражения осколками. Стандарт устанавливает классификацию бронеодежды и
+     * общие технические требования к ней, необходимые для разработки, изготовления
+     * и испытаний соответствующей продукции."
+     */
+    @Size(min = 1, max = 1024)
     private String applicationArea;
-    @Length(min = 1, max = 256)
+    /**
+     * Ссылка на полный документ ГОСТа.<br>
+     * Пример: <a href="https://meganorm.ru/Data2/1/4293734/4293734461.pdf">
+     * https://meganorm.ru/Data2/1/4293734/4293734461.pdf</a>
+     */
+    @Size(min = 1, max = 256)
     private String contentLink;
+    /**
+     * Год принятия ГОСТа.<br>
+     * Пример: 2017
+     */
     private Integer acceptanceYear;
+    /**
+     * Год введения ГОСТа в действие.<br>
+     * Пример: 2019
+     */
     private Integer commissionYear;
-    @Length(min = 1, max = 512)
+    /**
+     * Ключевые слова ГОСТа.<br>
+     * Пример: "Ключевые слова: бронеодежда, холодное оружие,
+     * стрелковое оружие, защитная структура, класс защитной
+     * структуры, заброневое воздействие поражающего элемента при непробитии защитной структуры,
+     * показатель противоосколочной стойкости защитной структуры"
+     */
+    @Size(min = 1, max = 512)
     private String keyWords;
-    @Length(min = 1, max = 32)
+    /**
+     * Уровень стандартизации ГОСТа.<br>
+     * Всего бывает 5 уровней:<br>
+     * Национальный, Межгосударственный, Отраслевой, Региональный, Стандарт Организаций.<br>
+     */
+    @Size(min = 1, max = 32)
     @CustomEnumValid(enumClass = AdoptionLevelEnum.class, message = "Должно содержать: Национальный, Межгосударственный, Отраслевой, Региональный, Стандарт Организаций")
     private String adoptionLevel;
-    @Length(min = 1, max = 32)
+    /**
+     * Статус ГОСТа.<br>
+     * Всего бывает 3 статуса:<br>
+     * Актуальный, Отменённый, Заменённый<br>
+     */
+    @Size(min = 1, max = 32)
     @CustomEnumValid(enumClass = StatusEnum.class, message = "Должно содержать: Актуальный, Отменённый или Заменённый")
     private String status;
-    @Length(min = 1, max = 32)
-    @CustomEnumValid(enumClass = HarmonizationEnum.class, message = "Должно содержать: Не гармонизированный, Модифицированный или Гармонизированный")
-    private String harmonization;
-    @Length(min = 1, max = 32)
+    /**
+     * Информация о том, был ли стандарт введён впервые, или был обновлён<br>
+     * Бывает 2 состояния:<br>
+     * Введён впервые, изменён
+     */
+    @Size(min = 1, max = 32)
     @CustomEnumValid(enumClass = AcceptedFirstTimeOrReplacedEnum.class, message = "Должно содержать: ВВЕДЁН ВПЕРВЫЕ, ИЗМЕНЁН")
     private String acceptedFirstTimeOrReplaced;
-    private Set<@Length(min = 1, max = 128) String> references;
+    /**
+     * Уровень гармонизации ГОСТа<br>
+     * Всего бывает 3 варианта:<br>
+     * Негармонизированный, Модифицированный, Гармонизированный<br>
+     */
+    @Size(min = 1, max = 32)
+    @CustomEnumValid(enumClass = HarmonizationEnum.class, message = "Должно содержать: Не гармонизированный, Модифицированный или Гармонизированный")
+    private String harmonization;
+    /**
+     * Нормативные ссылки на другие ГОСТы
+     * Пример: "ГОСТ 3722—2014", "ГОСТ 28653—90"
+     */
+    private Set<@Size(min = 1, max = 128) String> references;
 
     public String getFullName() {
         return fullName;

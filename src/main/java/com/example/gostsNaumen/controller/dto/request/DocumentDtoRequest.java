@@ -7,7 +7,7 @@ import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.Length;
+import jakarta.validation.constraints.Size;
 
 import java.util.Set;
 
@@ -16,51 +16,51 @@ import java.util.Set;
  */
 public class DocumentDtoRequest {
     @NotEmpty
-    @Length(min = 1, max = 512)
+    @Size(min = 1, max = 512)
     private String fullName;
     @NotEmpty
-    @Length(min = 1, max = 128)
+    @Size(min = 1, max = 128)
     private String designation;
     @NotEmpty
-    @Length(min = 1, max = 64)
+    @Size(min = 1, max = 64)
     private String codeOKS;
     @NotEmpty
-    @Length(min = 1, max = 128)
+    @Size(min = 1, max = 128)
     private String activityField;
     @NotEmpty
-    @Length(min = 1, max = 256)
+    @Size(min = 1, max = 256)
     private String author;
     @NotEmpty
-    @Length(min = 1, max = 1024)
+    @Size(min = 1, max = 1024)
     private String applicationArea;
     @NotEmpty
-    @Length(min = 1, max = 256)
+    @Size(min = 1, max = 256)
     private String contentLink;
     @NotNull
     private Integer acceptanceYear;
     @NotNull
     private Integer commissionYear;
     @NotEmpty
-    @Length(min = 1, max = 512)
+    @Size(min = 1, max = 512)
     private String keyWords;
     @NotEmpty
-    @Length(min = 1, max = 32)
+    @Size(min = 1, max = 32)
     @CustomEnumValid(enumClass = AdoptionLevelEnum.class, message = "Должно содержать: Национальный, Межгосударственный, Отраслевой, Региональный, Стандарт Организаций")
     private String adoptionLevel;
     @NotEmpty
-    @Length(min = 1, max = 32)
+    @Size(min = 1, max = 32)
     @CustomEnumValid(enumClass = StatusEnum.class, message = "Должно содержать: Актуальный, Отменённый или Заменённый")
     private String status;
     @NotEmpty
-    @Length(min = 1, max = 32)
+    @Size(min = 1, max = 32)
     @CustomEnumValid(enumClass = HarmonizationEnum.class, message = "Должно содержать: Не гармонизированный, Модифицированный или Гармонизированный")
     private String harmonization;
     @NotEmpty
-    @Length(min = 1, max = 32)
+    @Size(min = 1, max = 32)
     @CustomEnumValid(enumClass = AcceptedFirstTimeOrReplacedEnum.class, message = "Должно содержать: ВВЕДЁН ВПЕРВЫЕ, ИЗМЕНЁН")
     private String acceptedFirstTimeOrReplaced;
     @NotNull
-    private Set<@Length(min = 1, max = 128) String> references;
+    private Set<@Size(min = 1, max = 128) String> references;
 
     public DocumentDtoRequest() {
     }

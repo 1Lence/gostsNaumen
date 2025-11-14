@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * Класс, служащий для актуализации документа (по-сути метод Update)
  */
 @Component
-public class ActualizeDocumentMapper {
+public class DocumentFieldsActualizer {
 
     private final RusEngEnumConverter rusEngEnumConverter = new RusEngEnumConverter();
 
@@ -28,9 +28,6 @@ public class ActualizeDocumentMapper {
      * @return document обновлённая сущность документа
      */
     public Document setNewValues(Document document, ActualizeDtoRequest dto) {
-        if (dto.getFullName() != null && !dto.getFullName().isEmpty()) {
-            document.setFullName(dto.getFullName());
-        }
         setIfNotEmpty(dto.getFullName(), document::setFullName);
         setIfNotEmpty(dto.getDesignation(), document::setDesignation);
         setIfNotEmpty(dto.getCodeOKS(), document::setCodeOKS);

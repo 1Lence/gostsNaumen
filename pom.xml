@@ -21,9 +21,8 @@
 		<slf4j-api.version>2.0.17</slf4j-api.version>
 
 		<nimbus-jose-jwt.version>10.5</nimbus-jose-jwt.version>
-		<jjwt-api.version>0.13.0</jjwt-api.version>
-		<jjwt-impl.version>0.13.0</jjwt-impl.version>
-		<jjwt-impl.scope>runtime</jjwt-impl.scope>
+		<jjwt.version>0.13.0</jjwt.version>
+		<jjwt.scope>runtime</jjwt.scope>
 		<mockito-core.version>5.20.0</mockito-core.version>
 		<springdoc-openapi-starter-webmvc-ui.version>2.7.0</springdoc-openapi-starter-webmvc-ui.version>
 	</properties>
@@ -116,7 +115,7 @@
 			<dependency>
 				<groupId>io.jsonwebtoken</groupId>
 				<artifactId>jjwt-api</artifactId>
-				<version>${jjwt-api.version}</version>
+				<version>${jjwt.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.nimbusds</groupId>
@@ -126,8 +125,8 @@
 			<dependency>
 				<groupId>io.jsonwebtoken</groupId>
 				<artifactId>jjwt-impl</artifactId>
-				<version>${jjwt-impl.version}</version>
-				<scope>${jjwt-impl.scope}</scope>
+				<version>${jjwt.version}</version>
+				<scope>${jjwt.scope}</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

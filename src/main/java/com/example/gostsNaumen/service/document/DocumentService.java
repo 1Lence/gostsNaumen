@@ -1,12 +1,10 @@
 package com.example.gostsNaumen.service.document;
 
 import com.example.gostsNaumen.entity.Document;
-import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,12 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DocumentService {
     private final DocumentRepository documentRepository;
-    private final LifeCycleService lifeCycleService;
 
-    public DocumentService(DocumentRepository documentRepository, LifeCycleService lifeCycleService) {
+    public DocumentService(DocumentRepository documentRepository) {
         this.documentRepository = documentRepository;
-        this.lifeCycleService = lifeCycleService;
     }
+
     /**
      * Сохранение сущности ГОСТа в БД
      *
@@ -47,11 +44,11 @@ public class DocumentService {
     @Transactional
     public Document getDocumentById(Long id) {
         if (id == null) {
-            throw new EntityNotFoundException("Поиск по пустому ID");
+            throw new IllegalArgumentException("Поиск по пустому ID");
         }
 
         return documentRepository
-                .findById(id).orElseThrow(() -> new EntityNotFoundException("Документ по ID: " + id + " не найден."));
+                .findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS));
     }
 
     /**
@@ -65,28 +62,9 @@ public class DocumentService {
             throw new IllegalArgumentException("Получен null id");
         }
         if (!documentRepository.existsById(id)) {
-            throw new EntityNotFoundException("Документа с таким " + id + " не существует");
+            throw new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS, id);
         }
-        getDocumentById(id);
         documentRepository.deleteById(id);
-    }
-
-    /**
-     * Метод для обновления статуса ГОСТа
-     *
-     * @param documentForUpdate документ, у которого будет изменён статус
-     * @param status            новый статус документа {@link StatusEnum}
-     */
-    @Transactional
-    public Document updateDocumentStatus(Document documentForUpdate, StatusEnum status) {
-        if (documentForUpdate.getStatus().equals(status)) {
-            throw new BusinessException(ErrorCode.STATUS_ALREADY_SET);
-        }
-        if (!lifeCycleService.canUpdateStatus(documentForUpdate.getStatus(), status)) {
-            throw new BusinessException(ErrorCode.INVALID_LIFECYCLE_TRANSITION);
-        }
-        documentForUpdate.setStatus(status);
-        return documentForUpdate;
     }
 
     /**
@@ -101,7 +79,7 @@ public class DocumentService {
         Long id = document.getId();
 
         if (!documentRepository.existsById(id)) {
-            throw new EntityNotFoundException("Документа с таким id: " + id + ", не существует");
+            throw new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS);
         }
 
         return documentRepository.save(document);
