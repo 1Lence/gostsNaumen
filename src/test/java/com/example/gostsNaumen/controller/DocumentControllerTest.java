@@ -16,8 +16,6 @@ import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.security.jwe.JweFilter;
 import com.example.gostsNaumen.service.document.DocumentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

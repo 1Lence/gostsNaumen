@@ -4,7 +4,6 @@ import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.repository.DocumentRepository;
-import jakarta.persistence.EntityExistsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
