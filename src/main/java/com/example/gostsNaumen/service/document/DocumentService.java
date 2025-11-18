@@ -32,13 +32,13 @@ public class DocumentService {
     @Transactional
     public Document saveDocument(Document documentForSave) {
 
+
         Optional<Document> interferingDocument = documentRepository
                 .findByFullNameAndStatus(documentForSave.getFullName(), StatusEnum.CURRENT);
 
         if (interferingDocument.isPresent() && documentForSave.getStatus() == StatusEnum.CURRENT) {
             Long interferingDocumentId = interferingDocument.get().getId();
-            throw new BusinessException(
-                    ErrorCode.STANDARD_BY_NAME_WITH_CURRENT_STATUS_ALREADY_EXIST,
+            throw new EntityExistsException(
                     "Документ с таким fullName: %s и статусом \"Актуален\" уже существует. Пожалуйста, измените его статус перед сохранением новой версии. ID документа: %d"
                             .formatted(documentForSave.getFullName(), interferingDocumentId)
 
