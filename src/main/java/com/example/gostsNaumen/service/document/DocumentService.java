@@ -84,8 +84,8 @@ public class DocumentService {
      */
     @Transactional
     public void deleteDocumentById(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Получен null id");
+        if (id == null || id < 0) {
+            throw new IllegalArgumentException("Некорректный аргумент: " + id);
         }
         if (!documentRepository.existsById(id)) {
             throw new BusinessException(
