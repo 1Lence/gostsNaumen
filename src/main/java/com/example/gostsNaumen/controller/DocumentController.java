@@ -67,7 +67,12 @@ public class DocumentController {
      * "Заменённый"
      *
      * @param documentDtoRequest {@link DocumentDtoRequest} ДТО ГОСТа
-     * @return id успешно добавленного ГОСТа
+     * @return <ul><li>В случае успешного добавления возвращается {"id":{@code id госта}}</li>
+     * <li>В случае попытки добавления существующего стандарта возвращается
+     * {@link com.example.gostsNaumen.handler.ErrorResponse} с кодом {@code 409 CONFLICT}</li>
+     * <li>В случае некорректных полей возвращается {@link com.example.gostsNaumen.handler.ErrorResponse}
+     * с перечислением ошибок валидации</li>
+     * </ul>
      */
     @PostMapping()
     @PreAuthorize("hasAuthority('user:read')")
@@ -83,7 +88,13 @@ public class DocumentController {
      * Получение ГОСТа по ID
      *
      * @param docId ID приходящий в запросе
-     * @return ДТО ГОСТа
+     * @return <ul>
+     * <li>В случае успешного поиска документа по id, возвращает {@link DocumentDtoResponse}</li>
+     * <li>В случае, если документ не был найден, возвращается {@link com.example.gostsNaumen.handler.ErrorResponse}
+     * с кодом {@code 404 NOT FOUND}</li>
+     * <li>В случае передачи некорректного {@code /{docId}} возвращается
+     * {@link com.example.gostsNaumen.handler.ErrorResponse} с кодом {@code 400 BAD REQUEST}</li>
+     * </ul>
      */
     @GetMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:read')")
