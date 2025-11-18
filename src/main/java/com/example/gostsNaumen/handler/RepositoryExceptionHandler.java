@@ -46,7 +46,7 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
     /**
      * Отлавливает ошибки связанные с неверно переданными аргументами в метод
      *
-     * @param exception возникает при передачи неверных параметров в метод
+     * @param exception возникает при передаче неверных параметров в метод
      * @param request   http запрос
      * @return HTTP Status код и JSON с ответом
      */
