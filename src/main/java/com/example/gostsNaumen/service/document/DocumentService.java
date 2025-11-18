@@ -29,7 +29,8 @@ public class DocumentService {
     public Document saveDocument(Document documentForSave) {
 
         if (documentRepository.findByFullName(documentForSave.getFullName()).isPresent()) {
-            throw new EntityExistsException("Такой гост уже существует.");
+            throw new BusinessException(ErrorCode.STANDARD_EXIST_BY_FULL_NAME,
+                    "Гост c таким full_name: " + documentForSave.getFullName() + " уже существует!");
         }
 
         return documentRepository.save(documentForSave);
@@ -43,12 +44,13 @@ public class DocumentService {
      */
     @Transactional
     public Document getDocumentById(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Поиск по пустому ID");
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("Некорректный аргумент: " + id);
         }
 
         return documentRepository
-                .findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS));
+                .findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+                        "По переданному id: %s нет стандарта".formatted(id)));
     }
 
     /**
@@ -58,8 +60,8 @@ public class DocumentService {
      */
     @Transactional
     public void deleteDocumentById(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Получен null id");
+        if (id == null || id < 0) {
+            throw new IllegalArgumentException("Некорректный аргумент: " + id);
         }
         if (!documentRepository.existsById(id)) {
             throw new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS, id);

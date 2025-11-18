@@ -19,17 +19,10 @@ public enum ErrorCode {
      */
     STANDARD_BY_ID_NOT_EXISTS("CANT_FIND_STANDARD_BY_ID", "По переданному id нет стандарта", HttpStatus.NOT_FOUND),
     /**
-     * Код, отвечающий за ситуацию, когда статус документа уже установлен
+     * Код, отвечающий за ситуацию, когда при поиске по полному имени стандарта находится совпадение
      */
-    STATUS_ALREADY_SET("STATUS_ALREADY_SET", "Текущий статус уже установлен", HttpStatus.I_AM_A_TEAPOT),
-    /**
-     * Код, отвечающий за ситуацию, когда происходит попытка совершить невозможный переход по жизненному циклу
-     */
-    INVALID_LIFECYCLE_TRANSITION(
-            "CANT_CHANGE_STATUS",
-            "Невозможно совершить текущий переход по жизненному циклу",
-            HttpStatus.I_AM_A_TEAPOT
-    );
+    STANDARD_EXIST_BY_FULL_NAME("STANDARD_EXIST_BY_FULL_NAME", "Стандарт с таким именем уже существует", HttpStatus.CONFLICT);
+
     private final String code;
     private final String defaultMessage;
     private final HttpStatus status;
