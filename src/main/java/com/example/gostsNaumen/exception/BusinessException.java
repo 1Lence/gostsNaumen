@@ -15,20 +15,29 @@ public class BusinessException extends RuntimeException {
         this.args = args;
     }
 
+    /**
+     * Отформатировать сообщение об ошибке.
+     *
+     * @param errorCode код ошибки.
+     * @param args      аргументы
+     * @return отформатированное сообщение
+     */
+    private static String getFormatterMessage(ErrorCode errorCode, Object[] args) {
+        if (args == null || args.length == 0) {
+            return String.format(errorCode.getDefaultMessage(), args);
+        }
+        return errorCode.getDefaultMessage();
+    }
+
     public ErrorCode getErrorCode() {
         return errorCode;
     }
 
-    /**
-     * Позволяет вывести либо текст ошибки по дефолту из {@link ErrorCode}, либо ту, которую указали при создании ошибки.
-     *
-     * @return текст ошибки
-     */
-    public String getFormattedMessage() {
-        if (args == null || args.length == 0) {
-            return errorCode.getDefaultMessage();
-        }
 
+    public String getArgsString() {
+        return Arrays.toString(args).replace("[", "").replace("]", "");
+    }
+}
         return Arrays.toString(args).replace("[", "").replace("]", "");
     }
 }

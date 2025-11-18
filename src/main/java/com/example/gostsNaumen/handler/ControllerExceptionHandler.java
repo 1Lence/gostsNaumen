@@ -67,7 +67,9 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
      * @return удобочитаемый JSON с описанием ошибки
      */
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessException(final BusinessException exception, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleBusinessException(
+            final BusinessException exception,
+            WebRequest request) {
         log.info("BusinessException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
@@ -92,7 +94,7 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
                 new ErrorResponse()
                         .setTimestamp(LocalDateTime.now())
                         .setMessage("Некорректный аргумент: %s".formatted(exception.getValue()))
-                        .setStatus(HttpStatus.BAD_REQUEST)
+                        .setStatus(BAD_REQUEST)
                         .setUrl(getUrl(request)),
                 HttpStatus.BAD_REQUEST
         );
