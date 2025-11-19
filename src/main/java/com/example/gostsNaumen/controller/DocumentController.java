@@ -9,7 +9,10 @@ import com.example.gostsNaumen.controller.dto.response.StandardIdDtoResponse;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.service.document.DocumentService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Контроллер по работе с гостами
@@ -31,16 +34,28 @@ public class DocumentController {
     }
 
     /**
+     * Получение всех ГОСТов из БД
+     *
+     * @return список с ДТО ГОСТов
+     */
+    @GetMapping("/documents")
+    @PreAuthorize("hasAuthority('user:read')")
+    public List<DocumentDtoResponse> getAll() {
+        return documentService.findAll().stream().map(documentMapper::mapEntityToDto).toList();
+    }
+
+    /**
      * Добавление нового ГОСТа
      *
      * @param documentDtoRequest {@link DocumentDtoRequest} ДТО ГОСТа
      * @return id успешно добавленного ГОСТа
      */
     @PostMapping()
+    @PreAuthorize("hasAuthority('user:read')")
     public StandardIdDtoResponse addDocument(
             @RequestBody @Valid DocumentDtoRequest documentDtoRequest
     ) {
-        Document document = documentMapper.mapToEntity(documentDtoRequest);
+        Document document = documentMapper.createDocumentEntity(documentDtoRequest);
 
         return new StandardIdDtoResponse(documentService.saveDocument(document).getId());
     }
@@ -52,6 +67,7 @@ public class DocumentController {
      * @return ДТО ГОСТа
      */
     @GetMapping("/{docId}")
+    @PreAuthorize("hasAuthority('user:read')")
     public DocumentDtoResponse getDocument(@PathVariable Long docId) {
         Document document = documentService.getDocumentById(docId);
 
@@ -64,6 +80,7 @@ public class DocumentController {
      * @param docId id Документа
      */
     @DeleteMapping("/{docId}")
+    @PreAuthorize("hasAuthority('user:write')")
     public void deleteDocument(@PathVariable Long docId) {
         documentService.deleteDocumentById(docId);
     }
@@ -76,6 +93,7 @@ public class DocumentController {
      * @return обновлённое дто госта
      */
     @PatchMapping("/{docId}")
+    @PreAuthorize("hasAuthority('user:write')")
     public DocumentDtoResponse updateDocument(
             @PathVariable Long docId,
             @RequestBody @Valid ActualizeDtoRequest dtoWithNewValues

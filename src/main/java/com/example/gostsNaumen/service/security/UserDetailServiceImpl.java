@@ -1,4 +1,4 @@
-package com.example.gostsNaumen.security.service;
+package com.example.gostsNaumen.service.security;
 
 import com.example.gostsNaumen.entity.User;
 import com.example.gostsNaumen.repository.UserRepository;

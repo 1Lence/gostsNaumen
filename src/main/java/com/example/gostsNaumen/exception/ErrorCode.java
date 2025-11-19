@@ -21,15 +21,25 @@ public enum ErrorCode {
     /**
      * Код, отвечающий за ситуацию, когда статус документа уже установлен
      */
-    STATUS_ALREADY_SET("STATUS_ALREADY_SET", "Текущий статус уже установлен", HttpStatus.I_AM_A_TEAPOT),
+    STATUS_ALREADY_SET("STATUS_ALREADY_SET", "Текущий статус уже установлен", HttpStatus.CONFLICT),
     /**
      * Код, отвечающий за ситуацию, когда происходит попытка совершить невозможный переход по жизненному циклу
      */
     INVALID_LIFECYCLE_TRANSITION(
             "CANT_CHANGE_STATUS",
             "Невозможно совершить текущий переход по жизненному циклу",
-            HttpStatus.I_AM_A_TEAPOT
-    );
+            HttpStatus.CONFLICT
+    ),
+    /**
+     * Код, отвечающий за ситуацию, когда пользователя не удается найти по каким-либо данным
+     */
+    USER_NOT_FOUND("USER_NOT_FOUND", "Пользователь не найден", HttpStatus.NOT_FOUND),
+    /**
+     * Код, отвечающий за ситуацию, какие-либо поля пользователя уже существуют в БД
+     */
+    USER_FIELDS_ALREADY_EXIST("USER_FIELDS_ALREADY_EXIST", "Пользователь существует", HttpStatus.CONFLICT),
+    ;
+
     private final String code;
     private final String defaultMessage;
     private final HttpStatus status;

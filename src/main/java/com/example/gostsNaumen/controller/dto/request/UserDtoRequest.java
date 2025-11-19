@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotBlank;
  */
 public record UserDtoRequest(
         @NotBlank String userName,
+        @NotBlank String fullName,
         @CustomPasswordValid String password,
         @CustomEmailValid String email
 ) {

@@ -32,13 +32,20 @@ import java.util.Date;
  */
 @Service
 public class JweService {
-    @Value("${app.jws.secret}")
-    private String jwsSecret;
-    @Value("${app.jwe.secret}")
-    private String jweSecret;
-    @Value("${app.expireMinutes}")
-    private Integer expireMinutes;
+    private final String jwsSecret;
+    private final String jweSecret;
+    private final Integer expireMinutes;
     private final Logger log = LoggerFactory.getLogger(JweService.class);
+
+    public JweService(
+            @Value("${app.jws.secret}") String jwsSecret,
+            @Value("${app.jwe.secret}") String jweSecret,
+            @Value("${app.expireMinutes}") Integer expireMinutes
+    ) {
+        this.jwsSecret = jwsSecret;
+        this.jweSecret = jweSecret;
+        this.expireMinutes = expireMinutes;
+    }
 
     /**
      * Создаёт секретный ключ для шифрования на основе {@code jweSecret}.

@@ -3,7 +3,8 @@ package com.example.gostsNaumen.controller.dto.response;
 import java.util.Set;
 
 /**
- * Дто для передачи госта наружу
+ * DTO используемый для передачи информации о документе
+ * в ответ на запрос получения ГОСТа или его создания. Содержит все атрибуты документа
  */
 public class DocumentDtoResponse {
     private Long id;

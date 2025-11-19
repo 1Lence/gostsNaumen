@@ -1,9 +1,9 @@
-package com.example.gostsNaumen.security.config;
+package com.example.gostsNaumen.config;
 
 import com.example.gostsNaumen.security.jwe.JweFilter;
-import com.example.gostsNaumen.security.permission.Permission;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     private final JweFilter jweFilter;
 
@@ -37,10 +38,6 @@ public class SecurityConfig {
         http.httpBasic(AbstractHttpConfigurer::disable).
                 csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/standards/delete/**").hasAuthority(Permission.USER_WRITE.getPermission())
-                        .requestMatchers("/api/standards/**").hasAuthority(Permission.USER_READ.getPermission())
-                        .requestMatchers("/api/user/delete/**").hasAuthority(Permission.USER_WRITE.getPermission())
-                        .requestMatchers("/api/user/**").hasAuthority(Permission.USER_READ.getPermission())
                         .anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jweFilter, UsernamePasswordAuthenticationFilter.class);

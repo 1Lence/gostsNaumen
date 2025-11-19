@@ -134,7 +134,7 @@ class DocumentServiceTest {
 
         BusinessException testException = Assertions.assertThrows(BusinessException.class,
                 () -> documentService.deleteDocumentById(document.getId()));
-        Assertions.assertEquals("По переданному id нет стандарта", testException.getMessage());
+        Assertions.assertEquals("По переданному ID: 1, нет стандарта", testException.getFormattedMessage());
     }
 
     /**

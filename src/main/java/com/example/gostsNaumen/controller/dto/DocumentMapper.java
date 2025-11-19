@@ -1,6 +1,5 @@
 package com.example.gostsNaumen.controller.dto;
 
-import com.example.gostsNaumen.controller.TwoWaysMapper;
 import com.example.gostsNaumen.controller.dto.request.DocumentDtoRequest;
 import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
 import com.example.gostsNaumen.entity.Document;
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Component;
  * Преобразует сущность госта из БД в dto и наоборот
  */
 @Component
-public class DocumentMapper implements TwoWaysMapper<Document, DocumentDtoRequest, DocumentDtoResponse> {
+public class DocumentMapper {
 
     private final RusEngEnumConverter rusEngEnumConverter;
 
@@ -25,26 +24,38 @@ public class DocumentMapper implements TwoWaysMapper<Document, DocumentDtoReques
         this.rusEngEnumConverter = rusEngEnumConverter;
     }
 
-    @Override
-    public Document mapToEntity(DocumentDtoRequest dto) {
-        return new Document().setFullName(dto.getFullName())
-                .setDesignation(dto.getDesignation())
-                .setCodeOKS(dto.getCodeOKS())
-                .setActivityField(dto.getActivityField())
-                .setAuthor(dto.getAuthor())
-                .setApplicationArea(dto.getApplicationArea())
-                .setContentLink(dto.getContentLink())
-                .setAcceptanceYear(dto.getAcceptanceYear())
-                .setCommissionYear(dto.getCommissionYear())
-                .setKeyWords(dto.getKeyWords())
-                .setAdoptionLevel(rusEngEnumConverter.convertToEnglishValue(dto.getAdoptionLevel(), AdoptionLevelEnum.class))
-                .setStatus(rusEngEnumConverter.convertToEnglishValue(dto.getStatus(), StatusEnum.class))
-                .setHarmonization(rusEngEnumConverter.convertToEnglishValue(dto.getHarmonization(), HarmonizationEnum.class))
-                .setAcceptedFirstTimeOrReplaced(rusEngEnumConverter.convertToEnglishValue(dto.getAcceptedFirstTimeOrReplaced(), AcceptedFirstTimeOrReplacedEnum.class))
-                .setReferences(dto.getReferences());
+    /**
+     * Создает сущность документа, которая в последующем используется ТОЛЬКО для сохранения нового ГОСТа
+     *
+     * @param dto ДТО, которое полностью имеет все те же поля, что и сущность, кроме Id
+     * @return сущность ГОСТа, которая в дальнейшем будет сохранена в БД
+     */
+    public Document createDocumentEntity(DocumentDtoRequest dto) {
+        return new Document(
+                dto.getFullName(),
+                dto.getDesignation(),
+                dto.getCodeOKS(),
+                dto.getActivityField(),
+                dto.getAuthor(),
+                dto.getApplicationArea(),
+                dto.getContentLink(),
+                dto.getAcceptanceYear(),
+                dto.getCommissionYear(),
+                dto.getKeyWords(),
+                rusEngEnumConverter.convertToEnglishValue(dto.getAdoptionLevel(), AdoptionLevelEnum.class),
+                rusEngEnumConverter.convertToEnglishValue(dto.getStatus(), StatusEnum.class),
+                rusEngEnumConverter.convertToEnglishValue(dto.getHarmonization(), HarmonizationEnum.class),
+                rusEngEnumConverter.convertToEnglishValue(dto.getAcceptedFirstTimeOrReplaced(), AcceptedFirstTimeOrReplacedEnum.class),
+                dto.getReferences()
+        );
     }
 
-    @Override
+    /**
+     * Преобразование из сущности с БД в ДТО для отправки наружу
+     *
+     * @param fromWhat сущность документа из ДТО
+     * @return дто с документом
+     */
     public DocumentDtoResponse mapEntityToDto(Document fromWhat) {
         return new DocumentDtoResponse()
                 .setId(fromWhat.getId())

@@ -20,12 +20,15 @@ public class AuthService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthService(JweService jweService, UserService userService, PasswordEncoder passwordEncoder) {
+    public AuthService(
+            JweService jweService,
+            UserService userService,
+            PasswordEncoder passwordEncoder
+    ) {
         this.jweService = jweService;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
-    //TODO: Добавить LogOut
     /**
      * Вход в систему.
      * Сверка данных из БД, с введенными данными проходит в методе

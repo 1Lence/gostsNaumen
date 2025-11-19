@@ -25,7 +25,7 @@ public class RusEngEnumConverter {
                 return enumConstant;
             }
         }
-        throw new IllegalArgumentException("Нет значения: " + s + " для энама " + enumClass);
+        throw new IllegalArgumentException("Нет значения: " + s + " для enum-а " + enumClass);
     }
 
     /**
