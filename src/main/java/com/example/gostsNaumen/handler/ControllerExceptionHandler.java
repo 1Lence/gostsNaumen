@@ -94,7 +94,7 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
                 new ErrorResponse()
                         .setTimestamp(LocalDateTime.now())
                         .setMessage("Некорректный аргумент: %s".formatted(exception.getValue()))
-                        .setStatus(BAD_REQUEST)
+                        .setStatus(HttpStatus.BAD_REQUEST)
                         .setUrl(getUrl(request)),
                 HttpStatus.BAD_REQUEST
         );
