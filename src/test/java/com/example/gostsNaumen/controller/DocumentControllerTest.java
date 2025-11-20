@@ -16,11 +16,8 @@ import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.security.jwe.JweFilter;
 import com.example.gostsNaumen.service.document.DocumentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -184,7 +181,7 @@ class DocumentControllerTest {
     @Test
     void addDocumentShouldReturnAddedDocumentId() throws Exception {
 
-        Mockito.when(documentMapper.createDocumentEntity(Mockito.any(DocumentDtoRequest.class)))
+        Mockito.when(documentMapper.mapToEntity(Mockito.any(DocumentDtoRequest.class)))
                 .thenReturn(document);
         Mockito.when(documentService.saveDocument(Mockito.any(Document.class)))
                 .thenAnswer(invocation -> {
@@ -221,7 +218,7 @@ class DocumentControllerTest {
     @Test
     void addDocumentShouldReturnEntityExistsException() throws Exception {
 
-        Mockito.when(documentMapper.createDocumentEntity(Mockito.any(DocumentDtoRequest.class)))
+        Mockito.when(documentMapper.mapToEntity(Mockito.any(DocumentDtoRequest.class)))
                 .thenReturn(document);
         Mockito.when(documentService.saveDocument(Mockito.any(Document.class)))
                 .thenThrow(new BusinessException(ErrorCode.STANDARD_EXIST_BY_FULL_NAME,
