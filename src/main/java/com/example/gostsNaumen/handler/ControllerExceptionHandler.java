@@ -15,8 +15,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-
 /**
  * Централизованный обработчик ошибок контроллера.
  * Здесь необходимо отлавливать ошибки связанные с валидацией/внешней работой приложения.
@@ -53,11 +51,11 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
 
         return new ResponseEntity<>(
                 new ErrorResponse()
-                        .setStatus(BAD_REQUEST)
+                        .setStatus(HttpStatus.BAD_REQUEST)
                         .setUrl(url)
                         .setTimestamp(LocalDateTime.now())
                         .setValidationErrors(validationErrors),
-                BAD_REQUEST
+                HttpStatus.BAD_REQUEST
         );
     }
 
@@ -78,7 +76,7 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
         return new ResponseEntity<>(
                 new ErrorResponse()
                         .setTimestamp(LocalDateTime.now())
-                        .setMessage(exception.getArgsString())
+                        .setMessage(exception.getFormattedMessage())
                         .setStatus(exception.getErrorCode().getStatus())
                         .setUrl(getUrl(request)),
                 exception.getErrorCode().getStatus()
@@ -96,7 +94,7 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
                 new ErrorResponse()
                         .setTimestamp(LocalDateTime.now())
                         .setMessage("Некорректный аргумент: %s".formatted(exception.getValue()))
-                        .setStatus(BAD_REQUEST)
+                        .setStatus(HttpStatus.BAD_REQUEST)
                         .setUrl(getUrl(request)),
                 HttpStatus.BAD_REQUEST
         );
