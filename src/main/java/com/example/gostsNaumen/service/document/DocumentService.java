@@ -7,6 +7,8 @@ import com.example.gostsNaumen.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * Сервис по работе с гостами в БД
  */
@@ -59,11 +61,14 @@ public class DocumentService {
      */
     @Transactional
     public void deleteDocumentById(Long id) {
-        if (id == null || id < 0) {
-            throw new IllegalArgumentException("Некорректный аргумент: " + id);
+        if (id == null) {
+            throw new IllegalArgumentException("Получен null id");
         }
         if (!documentRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS, id);
+            throw new BusinessException(
+                    ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+                    String.format("По переданному ID: %s, нет стандарта", id)
+            );
         }
         documentRepository.deleteById(id);
     }
@@ -84,5 +89,14 @@ public class DocumentService {
         }
 
         return documentRepository.save(document);
+    }
+
+    /**
+     * Получение всех ГОСТов с БД
+     *
+     * @return список сущностей ГОСТов с БД
+     */
+    public List<Document> findAll() {
+        return documentRepository.findAll();
     }
 }
