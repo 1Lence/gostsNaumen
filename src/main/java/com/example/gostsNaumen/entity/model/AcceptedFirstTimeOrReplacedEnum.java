@@ -1,10 +1,16 @@
 package com.example.gostsNaumen.entity.model;
 
 /**
- * Перечисление, содержащее варианты состояния документа
+ * Указывает на то, был документ введён впервые или уже изменялся.
  */
 public enum AcceptedFirstTimeOrReplacedEnum implements HasValue {
+    /**
+     * Документ был введён впервые и не изменялся
+     */
     FIRST_TIME("ВВЕДЕН ВПЕРВЫЕ"),
+    /**
+     * Документ однажды был отредактирован
+     */
     REPLACED("ИЗМЕНЁН");
 
     private final String value;

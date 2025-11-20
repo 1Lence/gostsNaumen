@@ -32,11 +32,20 @@ import java.util.Date;
  */
 @Service
 public class JweService {
-    @Value("${app.jws.secret}")
-    private String jwsSecret;
-    @Value("${app.jwe.secret}")
-    private String jweSecret;
+    private final String jwsSecret;
+    private final String jweSecret;
+    private final Integer expireMinutes;
     private final Logger log = LoggerFactory.getLogger(JweService.class);
+
+    public JweService(
+            @Value("${app.jws.secret}") String jwsSecret,
+            @Value("${app.jwe.secret}") String jweSecret,
+            @Value("${app.expireMinutes}") Integer expireMinutes
+    ) {
+        this.jwsSecret = jwsSecret;
+        this.jweSecret = jweSecret;
+        this.expireMinutes = expireMinutes;
+    }
 
     /**
      * Создаёт секретный ключ для шифрования на основе {@code jweSecret}.
@@ -75,8 +84,8 @@ public class JweService {
      */
     public JwtAuthDto generateAuthToken(String email, Long id) throws JOSEException {
         return new JwtAuthDto(
-                generateJweToken(email, 1440), //TODO: Обговорить время жизни токена
-                generateJweToken(email, 1440),
+                generateJweToken(email, expireMinutes),
+                generateJweToken(email, expireMinutes),
                 id);
     }
 
@@ -137,8 +146,8 @@ public class JweService {
             } else {
                 log.error("Верификация JWS сигнатуры не пройдена.");
             }
-        } catch (Exception e) {
-            log.error("Ошибка валидации JWE токена.", e);
+        } catch (Exception exception) {
+            log.error("Ошибка валидации JWE токена.", exception);
         }
         return false;
     }
@@ -156,7 +165,7 @@ public class JweService {
      */
     public JwtAuthDto refreshBaseToken(String email, String refreshToken, Long id) throws JOSEException {
         return new JwtAuthDto(
-                generateJweToken(email, 1440), //TODO: Обговорить время жизни токена
+                generateJweToken(email, expireMinutes),
                 refreshToken,
                 id);
     }

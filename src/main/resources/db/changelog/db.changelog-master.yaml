@@ -1,13 +1,15 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/db.changelog-1.0.sql
+      file: db/changelog/user-create-1.0.sql
   - include:
-      file: db/changelog/db.changelog-1.1.sql
+      file: db/changelog/document-create-1.0.sql
   - include:
-      file: db/changelog/db.changelog-1.1.1.sql
+      file: db/changelog/document-refactor-1.1.1.sql
   - include:
-      file: db/changelog/db.changelog-2.0.sql
+      file: db/changelog/document-full-refactor-2.0.sql
   - include:
-      file: db/changelog/db.changelog-2.1.sql
+      file: db/changelog/document-refactor2.1.sql
   - include:
-      file: db/changelog/db.changelog-2.2.sql
+      file: db/changelog/document-refactor-2.2.sql
+  - include:
+      file: db/changelog/user-refactor-1.1.2.sql

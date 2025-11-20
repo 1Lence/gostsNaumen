@@ -4,6 +4,7 @@ import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.handler.dto.ValidationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,8 +13,6 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**
  * Централизованный обработчик ошибок контроллера.
@@ -26,8 +25,9 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
     /**
      * Основной обработчик валидации.
      * Отлавливает и обрабатывает все ошибки связанные с входящей валидацией данных.
+     *
      * @param exception ошибка валидации
-     * @param request данные HTTP запроса
+     * @param request   данные HTTP запроса
      * @return удобочитаемый JSON с описанием ошибки
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -50,10 +50,11 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
 
         return new ResponseEntity<>(
                 new ErrorResponse()
-                        .setStatus(BAD_REQUEST)
+                        .setStatus(HttpStatus.BAD_REQUEST)
                         .setUrl(url)
+                        .setTimestamp(LocalDateTime.now())
                         .setValidationErrors(validationErrors),
-                BAD_REQUEST
+                HttpStatus.BAD_REQUEST
         );
     }
 
@@ -72,7 +73,7 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
         return new ResponseEntity<>(
                 new ErrorResponse()
                         .setTimestamp(LocalDateTime.now())
-                        .setMessage(exception.getMessage())
+                        .setMessage(exception.getFormattedMessage())
                         .setStatus(exception.getErrorCode().getStatus())
                         .setUrl(getUrl(request)),
                 exception.getErrorCode().getStatus()

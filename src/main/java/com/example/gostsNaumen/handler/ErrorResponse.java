@@ -10,10 +10,25 @@ import java.util.List;
  * Дто для красивого отображения ошибки.
  */
 public class ErrorResponse {
+    /**
+     * Время выброса ошибки
+     */
     private LocalDateTime timestamp;
+    /**
+     * Http статус ошибки
+     */
     private HttpStatus status;
+    /**
+     * Сообщение ошибки
+     */
     private String message;
+    /**
+     * Эндпоинт вернувший ошибку
+     */
     private String url;
+    /**
+     * Ошибки валидации
+     */
     private List<ValidationError> validationErrors;
 
     public ErrorResponse(LocalDateTime timestamp, HttpStatus status, String message, String url, List<ValidationError> validationErrors) {

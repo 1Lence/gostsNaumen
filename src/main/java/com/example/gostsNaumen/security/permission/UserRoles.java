@@ -12,7 +12,13 @@ import java.util.stream.Collectors;
  * @see Permission
  */
 public enum UserRoles implements GrantedAuthority {
+    /**
+     * Роль администратора, имеет все разрешения
+     */
     ADMIN(Set.of(Permission.USER_READ, Permission.USER_WRITE)),
+    /**
+     * Роль обычного пользователя, имеет только разрешение на чтение
+     */
     USER(Set.of(Permission.USER_READ));
 
     private final Set<Permission> permission;

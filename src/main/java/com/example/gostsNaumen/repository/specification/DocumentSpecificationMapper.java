@@ -6,7 +6,7 @@ import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
 import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
-import com.example.gostsNaumen.entity.model.converter.TwoWaysConverter;
+import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -16,11 +16,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class DocumentSpecificationMapper {
     private final DocumentSpecification specification;
-    private final TwoWaysConverter twoWaysConverter;
+    private final RusEngEnumConverter rusEngEnumConverter;
 
-    public DocumentSpecificationMapper(DocumentSpecification specification, TwoWaysConverter twoWaysConverter) {
+    public DocumentSpecificationMapper(DocumentSpecification specification, RusEngEnumConverter rusEngEnumConverter) {
         this.specification = specification;
-        this.twoWaysConverter = twoWaysConverter;
+        this.rusEngEnumConverter = rusEngEnumConverter;
     }
 
     /**
@@ -43,7 +43,7 @@ public class DocumentSpecificationMapper {
                 .and(specification.withAuthor(filterDtoRequest.getAuthor()))
                 .and(specification.withAcceptedFirstTimeOrReplaced(
                         filterDtoRequest.getAcceptedFirstTimeOrReplaced() != null
-                                ? twoWaysConverter.convertToDatabaseColumn(
+                                ? rusEngEnumConverter.convertToEnglishValue(
                                 filterDtoRequest.getAcceptedFirstTimeOrReplaced(),
                                 AcceptedFirstTimeOrReplacedEnum.class
                         )
@@ -52,7 +52,7 @@ public class DocumentSpecificationMapper {
                 .and(specification.withKeyWords(filterDtoRequest.getKeyWords()))
                 .and(specification.withAdoptionLevel(
                         filterDtoRequest.getAdoptionLevel() != null
-                                ? twoWaysConverter.convertToDatabaseColumn(
+                                ? rusEngEnumConverter.convertToEnglishValue(
                                 filterDtoRequest.getAdoptionLevel(),
                                 AdoptionLevelEnum.class
                         )
@@ -60,7 +60,7 @@ public class DocumentSpecificationMapper {
                 ))
                 .and(specification.withStatus(
                         filterDtoRequest.getStatus() != null
-                                ? twoWaysConverter.convertToDatabaseColumn(
+                                ? rusEngEnumConverter.convertToEnglishValue(
                                 filterDtoRequest.getStatus(),
                                 StatusEnum.class
                         )
@@ -68,7 +68,7 @@ public class DocumentSpecificationMapper {
                 ))
                 .and(specification.withHarmonization(
                         filterDtoRequest.getHarmonization() != null
-                                ? twoWaysConverter.convertToDatabaseColumn(
+                                ? rusEngEnumConverter.convertToEnglishValue(
                                 filterDtoRequest.getHarmonization(),
                                 HarmonizationEnum.class
                         )
