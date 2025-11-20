@@ -31,7 +31,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.HashSet;
 
 /**
- * Класс, предназначенный для тестирования контроллера документов
+ * Класс, предназначенный для тестирования {@link DocumentController}
+ * <p>Содержит тесты, покрывающие успешные и нерабочие кейсы использования контроллера, включая
+ * проверку {@code HttpStatusCode} ответов и содержание поля с сообщением ошибки</p>
+ *
+ *
+ * <p>Для тестирования используется {@link MockMvc} для симуляции HTTP-запросов.</p>
  */
 @WebMvcTest(DocumentController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -175,7 +180,8 @@ class DocumentControllerTest {
     /**
      * Тест, проверяющий кейс с добавлением нового документа без ошибок
      * <ul>
-     *     <li>Контроллер возвращает JSON с единственным полем id</li>
+     *     <li>Проверяется метод {@link DocumentController#addDocument(DocumentDtoRequest)},
+     *     сервер должен вернуть id успешно созданного госта, HTTP-ответ должен содержать статус 200 OK</li>
      * </ul>
      */
     @Test
@@ -200,15 +206,15 @@ class DocumentControllerTest {
     }
 
     /**
-     * Тест, проверяющий кейс с добавлением дублирующего существующий документа
+     * Тест, проверяющий кейс с добавлением документа дублирующего существующий.
      * <p>
-     * Ответ должен быть:
+     * Тестируемый метод {@link DocumentController#addDocument(DocumentDtoRequest)}
      * <ul>
      * <li>DTO корректно маппится в экземпляр сущности</li>
      * <li>При попытке сохранения документа сервис выбрасывает ошибку</li>
      * <li>Контроллер возвращает JSON с полями:
      *     <ul>
-     *         <li>status: CONFLICT</li>
+     *         <li>status: 409 CONFLICT</li>
      *         <li>message: Гост c таким full_name: {@code имя стандарта} уже существует!</li>
      *         <li>timestamp: {@code TimeStamp}</li>
      *         <li>url: /api/standards</li>
@@ -240,8 +246,8 @@ class DocumentControllerTest {
     /**
      * Тест, покрывающий кейс, когда в параметр метода передаётся отрицательное значение id
      * <p>
-     * Ответ должен быть:
-     *
+     * Тестируемый метод {@link DocumentController#getDocument(Long)}
+     * В случае получения отрицательного id метод должен вернуть следующий ответ:
      * <ul>
      *         <li>status: BAD_REQUEST</li>
      *         <li>message: "Некорректный аргумент: {@code некорректное значение id}"</li>
@@ -265,6 +271,8 @@ class DocumentControllerTest {
 
     /**
      * Тест, покрывающий кейс, когда в параметр метода передаётся строка вместо id
+     * Тестируемый метод {@link DocumentController#getDocument(Long)}
+     * В случае получения строки вместо id метод должен вернуть следующий ответ:
      * <ul>
      *         <li>status: BAD_REQUEST</li>
      *         <li>message: "Некорректный аргумент: {@code некорректное значение id}"</li>
@@ -283,6 +291,8 @@ class DocumentControllerTest {
 
     /**
      * Тест, проверяющий кейс, когда сервис успешно возвращает документ по переданному идентификатору
+     * <p>
+     * Тестируемы метод {@link DocumentController#getDocument(Long)}
      * <p>
      * Пример успешно выведенного документа:
      * <ul>
@@ -356,11 +366,11 @@ class DocumentControllerTest {
 
     /**
      * Тест, проверяющий кейс, когда метод получения документа выбрасывает ошибку {@link BusinessException} с кодом
-     * {@code ErrorCode.STANDARD_BY_ID_NOT_EXISTS}
-     * в связи с тем, что по полученному id не найдена запись в бд
+     * {@link  ErrorCode#STANDARD_BY_ID_NOT_EXISTS} в связи с тем, что по полученному id не найдена запись в бд
      * <p>
-     * Ответ должен быть:
-     *
+     * Тестируемы метод {@link DocumentController#getDocument(Long)}
+     * <p>
+     * Ответ должен содержать:
      * <ul>
      *         <li>status: NOT_FOUND</li>
      *         <li>message: "По переданному id: {@code id стандарта} нет стандарта"</li>
@@ -387,7 +397,10 @@ class DocumentControllerTest {
     /**
      * Тест, проверяющий кейс, когда происходит успешная попытка удаления документа
      * <p>
-     * Пользователь получает 200 OK
+     * Тестируемый метод {@link DocumentController#deleteDocument(Long)}
+     * <p>
+     * В случае успешного выполнения метода должен вызваться метод {@link DocumentService#deleteDocumentById(Long)}, а
+     * HTTP-ответ должен содержать статус 200 OK.
      */
     @Test
     void deleteDocumentShouldReturnOk() throws Exception {
@@ -395,6 +408,8 @@ class DocumentControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/standards/{id}", docId))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(documentService).deleteDocumentById(docId);
     }
 
     /**
@@ -470,7 +485,9 @@ class DocumentControllerTest {
     }
 
     /**
-     * Тест, проверяющий корректное выполнение метода documentUpdate, возвращает {@link DocumentDtoResponse}
+     * Тест, проверяющий правильное выполнение метода
+     * {@link DocumentController#updateDocument(Long, ActualizeDtoRequest)}, возвращает {@link DocumentDtoResponse},
+     * содержащее обновленные значения полей документа
      */
     @Test
     void updateDocumentShouldReturnOk() throws Exception {
@@ -520,9 +537,10 @@ class DocumentControllerTest {
     }
 
     /**
-     * Тест, покрывающий кейс, когда получается невалидное дто и возникают ошибки валидации
+     * Тест, покрывающий кейс, когда метод {@link DocumentController#updateDocument(Long, ActualizeDtoRequest)}
+     * получает невалидное дто и возникают ошибки валидации
      * <p>
-     * Пользователю должен возвращаться {@link com.example.gostsNaumen.handler.ErrorResponse}  со следующими значениями
+     * Пользователю должен возвращаться {@link com.example.gostsNaumen.handler.ErrorResponse} со следующими значениями
      * полей:
      * <ul>
      *     <li>{@code message: По переданному id: {id стандарта} нет стандарта}</li>
@@ -564,7 +582,7 @@ class DocumentControllerTest {
      * полей:
      * <ul>
      *     <li>{@code message: По переданному id: {id стандарта} нет стандарта}</li>
-     *     <li>{@code status: NotFound}</li>
+     *     <li>{@code status: NOT_FOUND}</li>
      * </ul>
      */
     @Test
