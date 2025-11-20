@@ -1,15 +1,16 @@
 package com.example.gostsNaumen.service.document;
 
 import com.example.gostsNaumen.entity.Document;
+import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.repository.DocumentRepository;
-import jakarta.persistence.EntityExistsException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Сервис по работе с гостами в БД
@@ -31,8 +32,17 @@ public class DocumentService {
     @Transactional
     public Document saveDocument(Document documentForSave) {
 
-        if (documentRepository.findByFullName(documentForSave.getFullName()).isPresent()) {
-            throw new EntityExistsException("Такой гост уже существует.");
+        Optional<Document> interferingDocument = documentRepository
+                .findByFullNameAndStatus(documentForSave.getFullName(), StatusEnum.CURRENT);
+
+        if (interferingDocument.isPresent()) {
+            Long interferingDocumentId = interferingDocument.get().getId();
+            throw new BusinessException(
+                    ErrorCode.STANDARD_BY_NAME_WITH_CURRENT_STATUS_ALREADY_EXIST,
+                    "Документ с таким fullName: %s и статусом \"Актуален\" уже существует. Пожалуйста, измените его статус перед сохранением новой версии. ID документа: %d"
+                            .formatted(documentForSave.getFullName(), interferingDocumentId)
+
+            );
         }
 
         return documentRepository.save(documentForSave);
@@ -51,7 +61,9 @@ public class DocumentService {
         }
 
         return documentRepository
-                .findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS));
+                .findById(id).orElseThrow(() -> new BusinessException(
+                        ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+                        String.format("По переданному ID: %s, нет стандарта", id)));
     }
 
     /**

@@ -5,10 +5,14 @@ import com.example.gostsNaumen.controller.dto.DocumentMapper;
 import com.example.gostsNaumen.controller.dto.request.ActualizeDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.DocumentDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.FilterDtoRequest;
+import com.example.gostsNaumen.controller.dto.request.NewStatusDtoRequest;
 import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
 import com.example.gostsNaumen.controller.dto.response.StandardIdDtoResponse;
 import com.example.gostsNaumen.entity.Document;
+import com.example.gostsNaumen.entity.model.StatusEnum;
+import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
+import com.example.gostsNaumen.service.document.DocumentLifeCycleService;
 import com.example.gostsNaumen.service.document.DocumentService;
 import jakarta.validation.Valid;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,17 +31,23 @@ public class DocumentController {
     private final DocumentService documentService;
     private final DocumentMapper documentMapper;
     private final DocumentFieldsActualizer documentFieldsActualizer;
+    private final DocumentLifeCycleService documentLifeCycleService;
     private final DocumentSpecificationMapper documentSpecificationMapper;
+    private final RusEngEnumConverter rusEngEnumConverter;
 
     public DocumentController(
             DocumentService documentService,
             DocumentMapper documentMapper,
             DocumentFieldsActualizer documentFieldsActualizer,
-            DocumentSpecificationMapper documentSpecificationMapper) {
+            DocumentSpecificationMapper documentSpecificationMapper,
+            RusEngEnumConverter rusEngEnumConverter,
+            DocumentLifeCycleService documentLifeCycleService) {
         this.documentService = documentService;
         this.documentMapper = documentMapper;
         this.documentFieldsActualizer = documentFieldsActualizer;
         this.documentSpecificationMapper = documentSpecificationMapper;
+        this.rusEngEnumConverter = rusEngEnumConverter;
+        this.documentLifeCycleService = documentLifeCycleService;
     }
 
     /**
@@ -126,4 +136,19 @@ public class DocumentController {
 
         return documentMapper.mapEntityToDto(documentService.updateDocument(documentWithNewFieldsValues));
     }
+
+    @PatchMapping("/{docId}/status")
+    @PreAuthorize("hasAuthority('user:write')")
+    public DocumentDtoResponse updateDocumentStatus(
+            @PathVariable Long docId,
+            @RequestBody @Valid NewStatusDtoRequest newStatus
+    ) {
+        Document documentToUpdate = documentService.getDocumentById(docId);
+        Document documentWithNewStatus = documentLifeCycleService.doLifeCycleTransition(
+                documentToUpdate,
+                rusEngEnumConverter.convertToEnglishValue(newStatus.newStatus(), StatusEnum.class));
+
+        return documentMapper.mapEntityToDto(documentWithNewStatus);
+    }
+
 }
