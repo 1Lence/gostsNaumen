@@ -19,7 +19,7 @@ import java.util.Set;
 @Entity
 public class Document {
     /**
-     * Генерируемый id типа Integer
+     * Генерируемый id типа Long
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -131,6 +131,43 @@ public class Document {
     @Column(name = "references_list")
     private Set<String> references = new HashSet<>();
 
+    public Document() {
+    }
+
+    public Document(
+            String fullName,
+            String designation,
+            String codeOKS,
+            String activityField,
+            String author,
+            String applicationArea,
+            String contentLink,
+            Integer acceptanceYear,
+            Integer commissionYear,
+            String keyWords,
+            AdoptionLevelEnum adoptionLevel,
+            StatusEnum status,
+            HarmonizationEnum harmonization,
+            AcceptedFirstTimeOrReplacedEnum acceptedFirstTimeOrReplaced,
+            Set<String> references
+    ) {
+        this.fullName = fullName;
+        this.designation = designation;
+        this.codeOKS = codeOKS;
+        this.activityField = activityField;
+        this.author = author;
+        this.applicationArea = applicationArea;
+        this.contentLink = contentLink;
+        this.acceptanceYear = acceptanceYear;
+        this.commissionYear = commissionYear;
+        this.keyWords = keyWords;
+        this.adoptionLevel = adoptionLevel;
+        this.status = status;
+        this.harmonization = harmonization;
+        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
+        this.references = references;
+    }
+
     public Long getId() {
         return id;
     }
@@ -143,135 +180,120 @@ public class Document {
         return fullName;
     }
 
-    public AcceptedFirstTimeOrReplacedEnum getAcceptedFirstTimeOrReplaced() {
-        return acceptedFirstTimeOrReplaced;
-    }
-
-    public Document setAcceptedFirstTimeOrReplaced(AcceptedFirstTimeOrReplacedEnum acceptedFirstTimeOrReplaced) {
-        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
-        return this;
-    }
-
-    public Document setFullName(String fullName) {
+    public void setFullName(String fullName) {
         this.fullName = fullName;
-        return this;
     }
 
     public String getDesignation() {
         return designation;
     }
 
-    public Document setDesignation(String designation) {
+    public void setDesignation(String designation) {
         this.designation = designation;
-        return this;
     }
 
     public String getCodeOKS() {
         return codeOKS;
     }
 
-    public Document setCodeOKS(String codeOKS) {
+    public void setCodeOKS(String codeOKS) {
         this.codeOKS = codeOKS;
-        return this;
     }
 
     public String getActivityField() {
         return activityField;
     }
 
-    public Document setActivityField(String activityField) {
+    public void setActivityField(String activityField) {
         this.activityField = activityField;
-        return this;
     }
 
     public String getAuthor() {
         return author;
     }
 
-    public Document setAuthor(String author) {
+    public void setAuthor(String author) {
         this.author = author;
-        return this;
     }
 
     public String getApplicationArea() {
         return applicationArea;
     }
 
-    public Document setApplicationArea(String applicationArea) {
+    public void setApplicationArea(String applicationArea) {
         this.applicationArea = applicationArea;
-        return this;
     }
 
     public String getContentLink() {
         return contentLink;
     }
 
-    public Document setContentLink(String contentLink) {
+    public void setContentLink(String contentLink) {
         this.contentLink = contentLink;
-        return this;
     }
 
-    public int getAcceptanceYear() {
+    public Integer getAcceptanceYear() {
         return acceptanceYear;
     }
 
-    public Document setAcceptanceYear(int acceptanceYear) {
+    public void setAcceptanceYear(Integer acceptanceYear) {
         this.acceptanceYear = acceptanceYear;
-        return this;
     }
 
-    public int getCommissionYear() {
+    public Integer getCommissionYear() {
         return commissionYear;
     }
 
-    public Document setCommissionYear(int commissionYear) {
+    public void setCommissionYear(Integer commissionYear) {
         this.commissionYear = commissionYear;
-        return this;
     }
 
     public String getKeyWords() {
         return keyWords;
     }
 
-    public Document setKeyWords(String keyWords) {
+    public void setKeyWords(String keyWords) {
         this.keyWords = keyWords;
-        return this;
     }
 
     public AdoptionLevelEnum getAdoptionLevel() {
         return adoptionLevel;
     }
 
-    public Document setAdoptionLevel(AdoptionLevelEnum adoptionLevel) {
+    public void setAdoptionLevel(AdoptionLevelEnum adoptionLevel) {
         this.adoptionLevel = adoptionLevel;
-        return this;
     }
 
     public StatusEnum getStatus() {
         return status;
     }
 
-    public Document setStatus(StatusEnum status) {
+    public void setStatus(StatusEnum status) {
         this.status = status;
-        return this;
     }
 
     public HarmonizationEnum getHarmonization() {
         return harmonization;
     }
 
-    public Document setHarmonization(HarmonizationEnum harmonization) {
+    public void setHarmonization(HarmonizationEnum harmonization) {
         this.harmonization = harmonization;
-        return this;
+    }
+
+    public AcceptedFirstTimeOrReplacedEnum getAcceptedFirstTimeOrReplaced() {
+        return acceptedFirstTimeOrReplaced;
+    }
+
+    public void setAcceptedFirstTimeOrReplaced(AcceptedFirstTimeOrReplacedEnum acceptedFirstTimeOrReplaced) {
+        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
     }
 
     public Set<String> getReferences() {
         return references;
     }
 
-    public Document setReferences(Set<String> references) {
+    public void setReferences(Set<String> references) {
         this.references = references;
-        return this;
     }
 
     @Override

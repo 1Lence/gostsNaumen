@@ -18,37 +18,56 @@ public class User {
     private Long id;
     @Column(unique = true, nullable = false, name = "user_name")
     private String username;
+    @Column(nullable = false, name = "full_name")
+    private String fullName;
     @Column(nullable = false, name = "password_hash")
     private String passwordHash;
     @Column(unique = true, nullable = false)
     private String email;
-    @Column(unique = true, name = "telegram_tag")
-    private String telegramTag;
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Enumerated(EnumType.STRING)
     private UserRoles roles = UserRoles.USER;
 
-    public User(Long id, String username, String passwordHash, String email, String telegramTag, UserRoles roles) {
+    public User(
+            Long id,
+            String username,
+            String fullName,
+            String passwordHash,
+            String email,
+            UserRoles roles
+    ) {
         this.id = id;
         this.username = username;
+        this.fullName = fullName;
         this.passwordHash = passwordHash;
         this.email = email;
-        this.telegramTag = telegramTag;
         this.roles = roles;
     }
 
-    public User(String username, String passwordHash, String email, String telegramTag, UserRoles roles) {
+    public User(
+            String username,
+            String fullName,
+            String passwordHash,
+            String email
+    ) {
         this.username = username;
+        this.fullName = fullName;
         this.passwordHash = passwordHash;
         this.email = email;
-        this.telegramTag = telegramTag;
-        this.roles = roles;
     }
 
-    public User(String username, String passwordHash, String email) {
+    public User(
+            String username,
+            String fullName,
+            String passwordHash,
+            String email,
+            UserRoles roles
+    ) {
         this.username = username;
+        this.fullName = fullName;
         this.passwordHash = passwordHash;
         this.email = email;
+        this.roles = roles;
     }
 
     public User() {
@@ -70,6 +89,15 @@ public class User {
         this.username = username;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public User setFullName(String fullName) {
+        this.fullName = fullName;
+        return this;
+    }
+
     public String getPasswordHash() {
         return passwordHash;
     }
@@ -84,14 +112,6 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getTelegramTag() {
-        return telegramTag;
-    }
-
-    public void setTelegramTag(String telegramTag) {
-        this.telegramTag = telegramTag;
     }
 
     public UserRoles getRoles() {

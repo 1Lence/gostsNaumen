@@ -7,72 +7,177 @@ import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.Length;
+import jakarta.validation.constraints.Size;
 
 import java.util.Set;
 
 /**
- * Дто для приема госта извне
+ * Сущность документа (ГОСТа) представляет собой ГОСТ со всеми необходимыми полями.
  */
 public class DocumentDtoRequest {
+    /**
+     * Полное название ГОСТа.
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Максимальная длина <b>512</b> символов;</li>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotEmpty
-    @Length(min = 1, max = 512)
+    @Size(min = 1, max = 512)
     private String fullName;
+    /**
+     * Регистрационный номер ГОСТа.
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Максимальная длина <b>128</b> символов;</li>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotEmpty
-    @Length(min = 1, max = 128)
+    @Size(min = 1, max = 128)
     private String designation;
+    /**
+     * Код ОКС (Общероссийский классификатор стандартов) ГОСТа.<br>
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Максимальная длина <b>64</b> символа;</li>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotEmpty
-    @Length(min = 1, max = 64)
-    private String codeOKS; //TODO: Добавить валидацию формата записи (возможна запись только цифр и точек)
+    @Size(min = 1, max = 64)
+    private String codeOKS;
+    /**
+     * Область применения ГОСТа.
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Максимальная длина <b>128</b> символов;</li>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotEmpty
-    @Length(min = 1, max = 128)
+    @Size(min = 1, max = 128)
     private String activityField;
+    /**
+     * Автор ГОСТа.<br>
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Максимальная длина <b>256</b> символов;</li>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotEmpty
-    @Length(min = 1, max = 256)
+    @Size(min = 1, max = 256)
     private String author;
+    /**
+     * Область применения ГОСТа.
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Максимальная длина <b>1024</b> символа;</li>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotEmpty
-    @Length(min = 1, max = 1024)
+    @Size(min = 1, max = 1024)
     private String applicationArea;
+    /**
+     * Ссылка на полный документ ГОСТа.<br>
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Максимальная длина <b>256</b> символов;</li>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotEmpty
-    @Length(min = 1, max = 256)
+    @Size(min = 1, max = 256)
     private String contentLink;
+    /**
+     * Год принятия ГОСТа.<br>
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotNull
     private Integer acceptanceYear;
+    /**
+     * Год введения ГОСТа в действие.<br>
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotNull
     private Integer commissionYear;
+    /**
+     * Ключевые слова ГОСТа.<br>
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Максимальная длина <b>512</b> символов;</li>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotEmpty
-    @Length(min = 1, max = 512)
+    @Size(min = 1, max = 512)
     private String keyWords;
+    /**
+     * Уровень стандартизации ГОСТа.<br>
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Максимальная длина <b>32</b> символов;</li>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotEmpty
-    @Length(min = 1, max = 32)
-    @CustomEnumValid(
-            enumClass = AdoptionLevelEnum.class,
-            message = "Должно содержать: Национальный, Межгосударственный, Отраслевой, Региональный, Стандарт Организаций"
-    )
+    @Size(min = 1, max = 32)
+    @CustomEnumValid(enumClass = AdoptionLevelEnum.class, message = "Должно содержать: Национальный, Межгосударственный, Отраслевой, Региональный, Стандарт Организаций")
     private String adoptionLevel;
+    /**
+     * Статус ГОСТа.<br>
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Максимальная длина <b>32</b> символов;</li>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotEmpty
-    @Length(min = 1, max = 32)
-    @CustomEnumValid(
-            enumClass = StatusEnum.class,
-            message = "Должно содержать: Актуальный, Отменённый или Заменённый"
-    )
+    @Size(min = 1, max = 32)
+    @CustomEnumValid(enumClass = StatusEnum.class, message = "Должно содержать: Актуальный, Отменённый или Заменённый")
     private String status;
+    /**
+     * Уровень гармонизации ГОСТа<br>
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Максимальная длина <b>32</b> символов;</li>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotEmpty
-    @Length(min = 1, max = 32)
-    @CustomEnumValid(
-            enumClass = HarmonizationEnum.class,
-            message = "Должно содержать: Не гармонизированный, Модифицированный или Гармонизированный"
-    )
+    @Size(min = 1, max = 32)
+    @CustomEnumValid(enumClass = HarmonizationEnum.class, message = "Должно содержать: Не гармонизированный, Модифицированный или Гармонизированный")
     private String harmonization;
+    /**
+     * Информация о том, был ли стандарт введён впервые, или был обновлён<br>
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Максимальная длина <b>32</b> символов;</li>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotEmpty
-    @Length(min = 1, max = 32)
-    @CustomEnumValid(
-            enumClass = AcceptedFirstTimeOrReplacedEnum.class,
-            message = "Должно содержать: ВВЕДЁН ВПЕРВЫЕ, ИЗМЕНЁН"
-    )
+    @Size(min = 1, max = 32)
+    @CustomEnumValid(enumClass = AcceptedFirstTimeOrReplacedEnum.class, message = "Должно содержать: ВВЕДЁН ВПЕРВЫЕ, ИЗМЕНЁН")
     private String acceptedFirstTimeOrReplaced;
+    /**
+     * Нормативные ссылки на другие ГОСТы
+     * <h5>Требования:</h5>
+     * <ul>
+     *     <li>Не может быть пустым</li>
+     * </ul>
+     */
     @NotNull
-    private Set<@Length(min = 1, max = 128) String> references;
+    private Set<@Size(min = 1, max = 128) String> references;
 
     public DocumentDtoRequest() {
     }

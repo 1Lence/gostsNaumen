@@ -1,10 +1,10 @@
 package com.example.gostsNaumen.service.document;
 
 import com.example.gostsNaumen.entity.Document;
+import com.example.gostsNaumen.exception.BusinessException;
+import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,34 +46,56 @@ public class DocumentService {
     @Transactional
     public Document getDocumentById(Long id) {
         if (id == null) {
-            throw new EntityNotFoundException("Поиск по пустому ID");
+            throw new IllegalArgumentException("Поиск по пустому ID");
         }
 
         return documentRepository
-                .findById(id).orElseThrow(() -> new EntityNotFoundException("Документ по ID: " + id + " не найден."));
+                .findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS));
     }
 
     /**
-     * Поиск документов в БД по фильтрам
-     *
-     * @param specification фильтры
-     * @return список сущностей найденных по фильтрам
-     */
-    @Transactional(readOnly = true)
-    public List<Document> getAllDocumentsByFilters(Specification<Document> specification) {
-        return documentRepository.findAll(specification);
-    }
-
-    /**
-     * Удаление госта по Id
+     * Удаление ГОСТа по Id
      *
      * @param id id ГОСТа
      */
     @Transactional
     public void deleteDocumentById(Long id) {
         if (id == null) {
-            throw new EntityNotFoundException("Удаление по пустому ID");
+            throw new IllegalArgumentException("Получен null id");
+        }
+        if (!documentRepository.existsById(id)) {
+            throw new BusinessException(
+                    ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+                    String.format("По переданному ID: %s, нет стандарта", id)
+            );
         }
         documentRepository.deleteById(id);
+    }
+
+    /**
+     * Метод для обновления полей ГОСТа
+     *
+     * @param document документ с уже обновлёнными полями, которые нужно сохранить
+     * @return {@code document} – обновлённый документ
+     */
+    @Transactional
+    public Document updateDocument(Document document) {
+
+        Long id = document.getId();
+
+        if (!documentRepository.existsById(id)) {
+            throw new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS);
+        }
+
+        return documentRepository.save(document);
+    }
+
+    /**
+     * Получение всех ГОСТов с БД
+     *
+     * @return список сущностей ГОСТов с БД
+     */
+    public List<Document> findAll() {
+        return documentRepository.findAll();
     }
 }

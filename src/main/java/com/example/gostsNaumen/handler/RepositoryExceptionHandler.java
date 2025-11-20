@@ -11,8 +11,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
 
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 /**
  * Централизованный обработчик ошибок взаимодействия с репозиторием.
@@ -30,7 +29,7 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
      * @return HTTP Status код и JSON с ответом
      */
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFoundException exception, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException exception, WebRequest request) {
         log.info("EntityNotFoundException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
@@ -41,6 +40,28 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
                         .setStatus(NOT_FOUND)
                         .setUrl(getUrl(request)),
                 NOT_FOUND
+        );
+    }
+
+    /**
+     * Отлавливает ошибки связанные с неверно переданными аргументами в метод
+     *
+     * @param exception возникает при передачи неверных параметров в метод
+     * @param request   http запрос
+     * @return HTTP Status код и JSON с ответом
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException exception, WebRequest request) {
+        log.info("IllegalArgumentException: {}", exception.getMessage());
+        log.debug(exception.getMessage(), exception);
+
+        return new ResponseEntity<>(
+                new ErrorResponse()
+                        .setTimestamp(LocalDateTime.now())
+                        .setMessage(exception.getMessage())
+                        .setStatus(BAD_REQUEST)
+                        .setUrl(getUrl(request)),
+                BAD_REQUEST
         );
     }
 

@@ -11,18 +11,24 @@ import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
 
+/**
+ * Реализует логику авторизации пользователей
+ */
 @Service
 public class AuthService {
     private final JweService jweService;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthService(JweService jweService, UserService userService, PasswordEncoder passwordEncoder) {
+    public AuthService(
+            JweService jweService,
+            UserService userService,
+            PasswordEncoder passwordEncoder
+    ) {
         this.jweService = jweService;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
-
     /**
      * Вход в систему.
      * Сверка данных из БД, с введенными данными проходит в методе
