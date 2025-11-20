@@ -5,8 +5,8 @@ import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
 import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.exception.BusinessException;
-import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.repository.DocumentRepository;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,47 +75,36 @@ class DocumentServiceTest {
     }
 
     /**
-     * Проверка на выброс {@link BusinessException} при попытке сохранить документ со статусом "Актуальный", когда уже
-     * в базе уже существует документ с таким же именем и статусом "Актуальный".
-     * <p>
-     * Также проверяется текст исключения.
+     * Проверка на выброс {@link BusinessException} c
+     * {@link com.example.gostsNaumen.exception.ErrorCode#STANDARD_EXIST_BY_FULL_NAME} при попытке сохранить
+     * существующий документ.
+     * Также проверяется текст исключения, он должен соответствовать
+     * {@code "Гост c таким full_name: {имя документа} уже существует!"}
      */
     @Test
     void saveDocumentShouldThrowExceptionWhenDocumentAlreadyExists() {
-
-        document.setStatus(StatusEnum.CURRENT);
-
-        Mockito.when(documentRepository.findByFullNameAndStatus(document.getFullName(), StatusEnum.CURRENT))
+        Mockito.when(documentRepository.findByFullName(document.getFullName()))
                 .thenReturn(Optional.of(document));
 
         BusinessException testException = Assertions.assertThrows(BusinessException.class,
                 () -> documentService.saveDocument(document));
-        Assertions.assertEquals("Документ с таким fullName: БРОНЕОДЕЖДА Классификация и общие технические" +
-                        " требования и статусом \"Актуален\" уже существует." +
-                        " Пожалуйста, измените его статус перед сохранением новой версии. ID документа: 1",
+
+        Assertions.assertEquals("Гост c таким full_name: " + document.getFullName() + " уже существует!",
                 testException.getFormattedMessage());
     }
 
     /**
-     * Проверка на выброс {@link BusinessException} при попытке получить несуществующий документ
-     * Также проверяет текст ошибки
+     * Проверка на выброс {@link EntityNotFoundException} при попытке получить несуществующий документ
+     * Также проверяет текст ошибки, он должен соответствовать {@code По переданному id нет стандарта}
      */
     @Test
     void getDocumentShouldThrowBusinessExceptionWhenDocumentDoesNotExist() {
-
-        document.setId(2L);
-
-        Mockito.when(documentRepository.findById(document.getId()))
-                .thenThrow(new BusinessException(
-                        ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
-                        String.format("По переданному ID: %s, нет стандарта", document.getId())
-                ));
+        Mockito.when(documentRepository.findById(document.getId())).thenReturn(Optional.empty());
 
         BusinessException testException = Assertions.assertThrows(BusinessException.class,
                 () -> documentService.getDocumentById(document.getId()));
-
-        Assertions.assertEquals("По переданному ID: %s, нет стандарта".formatted(document.getId()),
-                testException.getFormattedMessage());
+        Assertions.assertEquals("По переданному id нет стандарта", testException
+                .getErrorCode().getDefaultMessage());
     }
 
     /**
@@ -124,9 +113,12 @@ class DocumentServiceTest {
      */
     @Test
     void getDocumentShouldThrowIllegalArgumentExceptionWhenProvidedIdIsNull() {
+
+        Long id = null;
+
         IllegalArgumentException testException = Assertions.assertThrows(IllegalArgumentException.class,
                 () -> documentService.getDocumentById(null));
-        Assertions.assertEquals("Поиск по пустому ID", testException.getMessage());
+        Assertions.assertEquals("Некорректный аргумент: " + id, testException.getMessage());
     }
 
     /**
