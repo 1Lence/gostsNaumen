@@ -51,7 +51,9 @@ public class DocumentService {
 
         return documentRepository
                 .findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
-                        "По переданному id: %s нет стандарта".formatted(id)));
+                        String.format(
+                                "По переданному id: %s нет стандарта",
+                                id)));
     }
 
     /**
@@ -85,7 +87,9 @@ public class DocumentService {
         Long id = document.getId();
 
         if (!documentRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS);
+            throw new BusinessException(
+                    ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+                    String.format("По переданному ID: %s, нет стандарта", id));
         }
 
         return documentRepository.save(document);
