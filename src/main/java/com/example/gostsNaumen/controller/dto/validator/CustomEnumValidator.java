@@ -20,7 +20,6 @@ public class CustomEnumValidator implements ConstraintValidator<CustomEnumValid,
     /**
      * Перед валидацией необходимо собрать возможные варианты значения из переданного класса.
      *
-     * @param annotation
      */
     @Override
     public void initialize(CustomEnumValid annotation) {
