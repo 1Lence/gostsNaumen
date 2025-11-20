@@ -3,6 +3,7 @@ package com.example.gostsNaumen.service.document;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.exception.CustomEntityExistsException;
 import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
+import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.EntityExistsException;
@@ -39,6 +40,8 @@ public class DocumentService {
             Long interferingDocumentId = interferingDocument.get().getId();
             throw new CustomEntityExistsException(
                     "Гост c таким full_name: " + documentForSave.getFullName() + " уже существует!");
+
+            );
         }
 
         return documentRepository.save(documentForSave);

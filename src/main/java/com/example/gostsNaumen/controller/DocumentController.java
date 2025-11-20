@@ -5,6 +5,7 @@ import com.example.gostsNaumen.controller.dto.DocumentMapper;
 import com.example.gostsNaumen.controller.dto.request.ActualizeDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.DocumentDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.FilterDtoRequest;
+import com.example.gostsNaumen.controller.dto.request.NewStatusDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.FilterDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.NewStatusDtoRequest;
 import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
@@ -16,7 +17,10 @@ import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
 import com.example.gostsNaumen.service.document.DocumentLifeCycleService;
 import com.example.gostsNaumen.exception.EntityNotFoundException;
+import com.example.gostsNaumen.entity.model.StatusEnum;
+import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
+import com.example.gostsNaumen.service.document.DocumentLifeCycleService;
 import com.example.gostsNaumen.service.document.DocumentService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -138,6 +142,7 @@ public class DocumentController {
      * @return список DTO найденных по фильтрам
      */
     @GetMapping(path = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('user:read')")
     public List<DocumentDtoResponse> getAllDocumentsByFilters(FilterDtoRequest filterDtoRequest) {
         Specification<Document> specification = documentSpecificationMapper.mapFullSpecification(filterDtoRequest);
 
