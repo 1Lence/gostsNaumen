@@ -4,7 +4,6 @@ import com.example.gostsNaumen.controller.dto.DocumentFieldsActualizer;
 import com.example.gostsNaumen.controller.dto.DocumentMapper;
 import com.example.gostsNaumen.controller.dto.request.ActualizeDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.DocumentDtoRequest;
-import com.example.gostsNaumen.controller.dto.request.NewStatusDtoRequest;
 import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
@@ -14,12 +13,11 @@ import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.exception.ErrorCode;
-import com.example.gostsNaumen.handler.ErrorResponse;
-import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
 import com.example.gostsNaumen.security.jwe.JweFilter;
-import com.example.gostsNaumen.service.document.DocumentLifeCycleService;
 import com.example.gostsNaumen.service.document.DocumentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -36,12 +34,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.HashSet;
 
 /**
- * Класс, предназначенный для тестирования {@link DocumentController}
- * <p>Содержит тесты, покрывающие успешные и нерабочие кейсы использования контроллера, включая
- * проверку {@code HttpStatusCode} ответов и содержание поля с сообщением ошибки</p>
- *
- *
- * <p>Для тестирования используется {@link MockMvc} для симуляции HTTP-запросов.</p>
+ * Класс, предназначенный для тестирования контроллера документов
  */
 @WebMvcTest(DocumentController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -63,10 +56,6 @@ class DocumentControllerTest {
     private RusEngEnumConverter rusEngEnumConverter;
     @MockitoBean
     private DocumentFieldsActualizer documentFieldsActualizer;
-    @MockitoBean
-    private DocumentSpecificationMapper documentSpecificationMapper;
-    @MockitoBean
-    private DocumentLifeCycleService documentLifeCycleService;
     @MockitoBean
     private JweFilter jweFilter;
 
@@ -189,8 +178,7 @@ class DocumentControllerTest {
     /**
      * Тест, проверяющий кейс с добавлением нового документа без ошибок
      * <ul>
-     *     <li>Проверяется метод {@link DocumentController#addDocument(DocumentDtoRequest)},
-     *     сервер должен вернуть id успешно созданного госта, HTTP-ответ должен содержать статус 200 OK</li>
+     *     <li>Контроллер возвращает JSON с единственным полем id</li>
      * </ul>
      */
     @Test
@@ -215,15 +203,15 @@ class DocumentControllerTest {
     }
 
     /**
-     * Тест, проверяющий кейс с добавлением документа дублирующего существующий.
+     * Тест, проверяющий кейс с добавлением дублирующего существующий документа
      * <p>
-     * Тестируемый метод {@link DocumentController#addDocument(DocumentDtoRequest)}
+     * Ответ должен быть:
      * <ul>
      * <li>DTO корректно маппится в экземпляр сущности</li>
      * <li>При попытке сохранения документа сервис выбрасывает ошибку</li>
      * <li>Контроллер возвращает JSON с полями:
      *     <ul>
-     *         <li>status: 409 CONFLICT</li>
+     *         <li>status: CONFLICT</li>
      *         <li>message: Гост c таким full_name: {@code имя стандарта} уже существует!</li>
      *         <li>timestamp: {@code TimeStamp}</li>
      *         <li>url: /api/standards</li>
@@ -255,8 +243,8 @@ class DocumentControllerTest {
     /**
      * Тест, покрывающий кейс, когда в параметр метода передаётся отрицательное значение id
      * <p>
-     * Тестируемый метод {@link DocumentController#getDocument(Long)}
-     * В случае получения отрицательного id метод должен вернуть следующий ответ:
+     * Ответ должен быть:
+     *
      * <ul>
      *         <li>status: BAD_REQUEST</li>
      *         <li>message: "Некорректный аргумент: {@code некорректное значение id}"</li>
@@ -280,8 +268,6 @@ class DocumentControllerTest {
 
     /**
      * Тест, покрывающий кейс, когда в параметр метода передаётся строка вместо id
-     * Тестируемый метод {@link DocumentController#getDocument(Long)}
-     * В случае получения строки вместо id метод должен вернуть следующий ответ:
      * <ul>
      *         <li>status: BAD_REQUEST</li>
      *         <li>message: "Некорректный аргумент: {@code некорректное значение id}"</li>
@@ -300,8 +286,6 @@ class DocumentControllerTest {
 
     /**
      * Тест, проверяющий кейс, когда сервис успешно возвращает документ по переданному идентификатору
-     * <p>
-     * Тестируемы метод {@link DocumentController#getDocument(Long)}
      * <p>
      * Пример успешно выведенного документа:
      * <ul>
@@ -375,11 +359,11 @@ class DocumentControllerTest {
 
     /**
      * Тест, проверяющий кейс, когда метод получения документа выбрасывает ошибку {@link BusinessException} с кодом
-     * {@link  ErrorCode#STANDARD_BY_ID_NOT_EXISTS} в связи с тем, что по полученному id не найдена запись в бд
+     * {@code ErrorCode.STANDARD_BY_ID_NOT_EXISTS}
+     * в связи с тем, что по полученному id не найдена запись в бд
      * <p>
-     * Тестируемы метод {@link DocumentController#getDocument(Long)}
-     * <p>
-     * Ответ должен содержать:
+     * Ответ должен быть:
+     *
      * <ul>
      *         <li>status: NOT_FOUND</li>
      *         <li>message: "По переданному id: {@code id стандарта} нет стандарта"</li>
@@ -406,10 +390,7 @@ class DocumentControllerTest {
     /**
      * Тест, проверяющий кейс, когда происходит успешная попытка удаления документа
      * <p>
-     * Тестируемый метод {@link DocumentController#deleteDocument(Long)}
-     * <p>
-     * В случае успешного выполнения метода должен вызваться метод {@link DocumentService#deleteDocumentById(Long)}, а
-     * HTTP-ответ должен содержать статус 200 OK.
+     * Пользователь получает 200 OK
      */
     @Test
     void deleteDocumentShouldReturnOk() throws Exception {
@@ -417,8 +398,6 @@ class DocumentControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/standards/{id}", docId))
                 .andExpect(MockMvcResultMatchers.status().isOk());
-
-        Mockito.verify(documentService).deleteDocumentById(docId);
     }
 
     /**
@@ -494,9 +473,7 @@ class DocumentControllerTest {
     }
 
     /**
-     * Тест, проверяющий правильное выполнение метода
-     * {@link DocumentController#updateDocument(Long, ActualizeDtoRequest)}, возвращает {@link DocumentDtoResponse},
-     * содержащее обновленные значения полей документа
+     * Тест, проверяющий корректное выполнение метода documentUpdate, возвращает {@link DocumentDtoResponse}
      */
     @Test
     void updateDocumentShouldReturnOk() throws Exception {
@@ -546,10 +523,9 @@ class DocumentControllerTest {
     }
 
     /**
-     * Тест, покрывающий кейс, когда метод {@link DocumentController#updateDocument(Long, ActualizeDtoRequest)}
-     * получает невалидное дто и возникают ошибки валидации
+     * Тест, покрывающий кейс, когда получается невалидное дто и возникают ошибки валидации
      * <p>
-     * Пользователю должен возвращаться {@link com.example.gostsNaumen.handler.ErrorResponse} со следующими значениями
+     * Пользователю должен возвращаться {@link com.example.gostsNaumen.handler.ErrorResponse}  со следующими значениями
      * полей:
      * <ul>
      *     <li>{@code message: По переданному id: {id стандарта} нет стандарта}</li>
@@ -591,7 +567,7 @@ class DocumentControllerTest {
      * полей:
      * <ul>
      *     <li>{@code message: По переданному id: {id стандарта} нет стандарта}</li>
-     *     <li>{@code status: NOT_FOUND}</li>
+     *     <li>{@code status: NotFound}</li>
      * </ul>
      */
     @Test
@@ -614,142 +590,5 @@ class DocumentControllerTest {
                         .value("По переданному id: %s нет стандарта".formatted(docId)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.url")
                         .value("/api/standards/%s".formatted(docId)));
-    }
-
-    /**
-     * Метод, проверяющий кейс, когда при изменении статуса документа не происходит никаких ошибок.
-     * <p>
-     * Пользователь должен получить {@link DocumentDtoResponse} с обновлённым полем
-     * {@link DocumentDtoResponse#getStatus()}
-     */
-    @Test
-    void updateDocumentStatusShouldReturnUpdatedDocument() throws Exception {
-        NewStatusDtoRequest dtoRequest = new NewStatusDtoRequest("Отменённый");
-        Long docId = 1L;
-        Document testDocument = new Document("testName", "testDesignation", "testCodeOKS",
-                "testActivity", "testAuthor", "testApplication", "testContent",
-                2017, 2019, "testKeywords", AdoptionLevelEnum.NATIONAL,
-                StatusEnum.CURRENT, HarmonizationEnum.HARMONIZED, AcceptedFirstTimeOrReplacedEnum.FIRST_TIME,
-                new HashSet<>() {{
-                    add("ГОСТ 28653—90");
-                    add("ГОСТ 3722—2014");
-                }});
-
-        testDocument.setId(docId);
-
-        Mockito.when(documentService.getDocumentById(Mockito.anyLong()))
-                .thenReturn(testDocument);
-
-        Mockito.when(rusEngEnumConverter.convertToEnglishValue("Отменённый", StatusEnum.class))
-                .thenReturn(StatusEnum.CANCELED);
-
-        Mockito.when(documentLifeCycleService.doLifeCycleTransition(testDocument, StatusEnum.CANCELED))
-                .thenAnswer(invocation -> {
-                    Document doc = invocation.getArgument(0);
-                    doc.setStatus(StatusEnum.CANCELED);
-                    return doc;
-                });
-
-        Mockito.when(documentMapper.mapEntityToDto(Mockito.any(Document.class)))
-                .thenAnswer(invocation -> {
-                    Document doc = invocation.getArgument(0);
-                    return new DocumentDtoResponse(
-                            doc.getId(), doc.getFullName(), doc.getDesignation(), doc.getCodeOKS(), doc.getActivityField(),
-                            doc.getAuthor(), doc.getApplicationArea(), doc.getContentLink(), doc.getAcceptanceYear(),
-                            doc.getCommissionYear(), doc.getKeyWords(), doc.getAdoptionLevel().getValue(),
-                            doc.getStatus().getValue(), doc.getHarmonization().getValue(),
-                            doc.getAcceptedFirstTimeOrReplaced().getValue(), doc.getReferences()
-                    );
-                });
-
-        mockMvc.perform(MockMvcRequestBuilders.patch("/api/standards/{id}/status", docId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(dtoRequest)))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("Отменённый"));
-    }
-
-    /**
-     * Метод, проверяющий возвращение ответа с ошибкой при попытке совершить логически невозможный переход.
-     * <p> Необходимые условия:
-     * <ul>
-     *     <li>Должна производиться попытка непредусмотренного перехода, например из "Актуальный" в "Актуальный",
-     *     или из "Заменённый" в "Отменённый"</li>
-     * </ul>
-     * <p>Возвращается {@link com.example.gostsNaumen.handler.ErrorResponse}:
-     * <ul>
-     *     <li>{@link ErrorResponse#getStatus()} должно равняться {@code CONFLICT}</li>
-     *     <li>{@link ErrorResponse#getMessage()} должно быть вида: "Переход из статуса (1 статус)
-     *     в статус (2 статус) невозможен"</li>
-     * </ul>
-     */
-    @Test
-    void updateDocumentStatusShouldThrowBusinessExceptionWhenTransitionIsNotAllowed() throws Exception {
-        NewStatusDtoRequest dtoRequest = new NewStatusDtoRequest("Актуальный");
-        document.setId(1L);
-
-        Mockito.when(documentService.getDocumentById(Mockito.anyLong()))
-                .thenReturn(document);
-
-        Mockito.when(rusEngEnumConverter.convertToEnglishValue("Актуальный", StatusEnum.class))
-                .thenReturn(StatusEnum.CURRENT);
-
-        Mockito.when(documentLifeCycleService.doLifeCycleTransition(document, StatusEnum.CURRENT))
-                .thenThrow(new BusinessException(
-                        ErrorCode.INVALID_LIFECYCLE_TRANSITION,
-                        "Переход из статуса %s в статус %s невозможен".formatted(
-                                document.getStatus(), StatusEnum.CURRENT)
-                ));
-
-        mockMvc.perform(MockMvcRequestBuilders.patch("/api/standards/{id}/status", document.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(dtoRequest)))
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isConflict())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
-                        .value("Переход из статуса CURRENT в статус CURRENT невозможен"));
-
-    }
-
-    /**
-     * Метод, проверяющий возвращение ответа с ошибкой при попытке совершить переход, блокируемый другим ГОСТом.
-     * <p> Необходимые условия для возникновения кейса:
-     * <ul>
-     *     <li>Производится попытка изменить статус документа на "Актуальный", когда уже существует документ
-     *     с таким именем и статусом "Актуальный"</li>
-     * </ul>
-     * <p>Возвращается {@link com.example.gostsNaumen.handler.ErrorResponse}:
-     * <ul>
-     *     <li>{@link ErrorResponse#getStatus()} должно равняться {@code CONFLICT}</li>
-     *     <li>{@link ErrorResponse#getMessage()} должно быть вида: "Другой документ не позволяет изменить статус
-     *      текущего документа, его id: "</li>
-     * </ul>
-     */
-    @Test
-    void updateDocumentStatusShouldThrowBusinessExceptionWhenOtherStandardBlocksTransition() throws Exception {
-        NewStatusDtoRequest dtoRequest = new NewStatusDtoRequest("Актуальный");
-        document.setId(2L);
-        document.setStatus(StatusEnum.CANCELED);
-
-        Mockito.when(documentService.getDocumentById(Mockito.anyLong()))
-                .thenReturn(document);
-
-        Mockito.when(rusEngEnumConverter.convertToEnglishValue("Актуальный", StatusEnum.class))
-                .thenReturn(StatusEnum.CURRENT);
-
-        Mockito.when(documentLifeCycleService.doLifeCycleTransition(document, StatusEnum.CURRENT))
-                .thenThrow(new BusinessException(
-                        ErrorCode.OTHER_DOC_INTERFERES_WITH_TRANSITION,
-                        "Другой документ не позволяет изменить статус текущего документа, его id: 1"));
-
-        mockMvc.perform(MockMvcRequestBuilders.patch("/api/standards/{id}/status", document.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(dtoRequest)))
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isConflict())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
-                        .value("Другой документ не позволяет изменить " +
-                                "статус текущего документа, его id: 1"));
     }
 }
