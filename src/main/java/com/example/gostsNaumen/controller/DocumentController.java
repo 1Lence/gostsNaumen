@@ -132,6 +132,21 @@ public class DocumentController {
     }
 
     /**
+     * Поиск ГОСТ-ов по необходимым фильтрам.
+     *
+     * @param filterDtoRequest JSON с фильтрами
+     * @return список DTO найденных по фильтрам
+     */
+    @GetMapping(path = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<DocumentDtoResponse> getAllDocumentsByFilters(FilterDtoRequest filterDtoRequest) {
+        Specification<Document> specification = documentSpecificationMapper.mapFullSpecification(filterDtoRequest);
+
+        List<Document> documentList = documentService.getAllDocumentsByFilters(specification);
+
+        return documentList.stream().map(documentMapper::mapEntityToDto).toList();
+    }
+
+    /**
      * Удаление ГОСТа по ID
      * <p>
      * В случае успешного удаления возвращается HTTP-ответ со статусом 200 OK
