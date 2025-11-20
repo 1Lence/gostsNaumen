@@ -4,11 +4,15 @@ import com.example.gostsNaumen.controller.dto.DocumentFieldsActualizer;
 import com.example.gostsNaumen.controller.dto.DocumentMapper;
 import com.example.gostsNaumen.controller.dto.request.ActualizeDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.DocumentDtoRequest;
+import com.example.gostsNaumen.controller.dto.request.FilterDtoRequest;
 import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
 import com.example.gostsNaumen.controller.dto.response.StandardIdDtoResponse;
 import com.example.gostsNaumen.entity.Document;
+import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
 import com.example.gostsNaumen.service.document.DocumentService;
 import jakarta.validation.Valid;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,14 +27,17 @@ public class DocumentController {
     private final DocumentService documentService;
     private final DocumentMapper documentMapper;
     private final DocumentFieldsActualizer documentFieldsActualizer;
+    private final DocumentSpecificationMapper documentSpecificationMapper;
 
     public DocumentController(
             DocumentService documentService,
             DocumentMapper documentMapper,
-            DocumentFieldsActualizer documentFieldsActualizer) {
+            DocumentFieldsActualizer documentFieldsActualizer,
+            DocumentSpecificationMapper documentSpecificationMapper) {
         this.documentService = documentService;
         this.documentMapper = documentMapper;
         this.documentFieldsActualizer = documentFieldsActualizer;
+        this.documentSpecificationMapper = documentSpecificationMapper;
     }
 
     /**
@@ -72,6 +79,21 @@ public class DocumentController {
         Document document = documentService.getDocumentById(docId);
 
         return documentMapper.mapEntityToDto(document);
+    }
+
+    /**
+     * Поиск ГОСТ-ов по необходимым фильтрам.
+     *
+     * @param filterDtoRequest JSON с фильтрами
+     * @return список DTO найденных по фильтрам
+     */
+    @GetMapping(path = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<DocumentDtoResponse> getAllDocumentsByFilters(FilterDtoRequest filterDtoRequest) {
+        Specification<Document> specification = documentSpecificationMapper.mapFullSpecification(filterDtoRequest);
+
+        List<Document> documentList = documentService.getAllDocumentsByFilters(specification);
+
+        return documentList.stream().map(documentMapper::mapEntityToDto).toList();
     }
 
     /**

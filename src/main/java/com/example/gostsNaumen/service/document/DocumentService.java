@@ -5,6 +5,7 @@ import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import jakarta.persistence.EntityExistsException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +52,17 @@ public class DocumentService {
 
         return documentRepository
                 .findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS));
+    }
+
+    /**
+     * Поиск документов в БД по фильтрам
+     *
+     * @param specification фильтры
+     * @return список сущностей найденных по фильтрам
+     */
+    @Transactional(readOnly = true)
+    public List<Document> getAllDocumentsByFilters(Specification<Document> specification) {
+        return documentRepository.findAll(specification);
     }
 
     /**
