@@ -17,6 +17,11 @@ public class CustomEnumValidator implements ConstraintValidator<CustomEnumValid,
 
     private List<String> acceptedValues;
 
+    /**
+     * Перед валидацией необходимо собрать возможные варианты значения из переданного класса.
+     *
+     * @param annotation
+     */
     @Override
     public void initialize(CustomEnumValid annotation) {
         Class<? extends HasValue> enumClass = annotation.enumClass();
@@ -25,6 +30,13 @@ public class CustomEnumValidator implements ConstraintValidator<CustomEnumValid,
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Метод сверки полученного значения с возможным значением enum-а.
+     *
+     * @param value   полученная строка.
+     * @param context не используется в данной реализации.
+     * @return true - есть совпадения, false - нет, проверка провалена
+     */
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (value == null) return true;

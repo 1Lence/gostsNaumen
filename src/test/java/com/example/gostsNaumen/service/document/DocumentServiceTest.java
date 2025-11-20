@@ -75,16 +75,22 @@ class DocumentServiceTest {
     }
 
     /**
-     * Проверка на выброс {@link EntityExistsException} при попытке сохранить существующий документ.
-     * Также проверяется текст исключения, он должен соответствовать {@code Такой гост уже существует}
+     * Проверка на выброс {@link BusinessException} c
+     * {@link com.example.gostsNaumen.exception.ErrorCode#STANDARD_EXIST_BY_FULL_NAME} при попытке сохранить
+     * существующий документ.
+     * Также проверяется текст исключения, он должен соответствовать
+     * {@code "Гост c таким full_name: {имя документа} уже существует!"}
      */
     @Test
     void saveDocumentShouldThrowExceptionWhenDocumentAlreadyExists() {
-        Mockito.when(documentRepository.findByFullName(document.getFullName())).thenReturn(Optional.of(document));
+        Mockito.when(documentRepository.findByFullName(document.getFullName()))
+                .thenReturn(Optional.of(document));
 
-        EntityExistsException testException = Assertions.assertThrows(EntityExistsException.class,
+        BusinessException testException = Assertions.assertThrows(BusinessException.class,
                 () -> documentService.saveDocument(document));
-        Assertions.assertEquals("Такой гост уже существует.", testException.getMessage());
+
+        Assertions.assertEquals("Гост c таким full_name: " + document.getFullName() + " уже существует!",
+                testException.getFormattedMessage());
     }
 
     /**
@@ -107,9 +113,12 @@ class DocumentServiceTest {
      */
     @Test
     void getDocumentShouldThrowIllegalArgumentExceptionWhenProvidedIdIsNull() {
+
+        Long id = null;
+
         IllegalArgumentException testException = Assertions.assertThrows(IllegalArgumentException.class,
                 () -> documentService.getDocumentById(null));
-        Assertions.assertEquals("Поиск по пустому ID", testException.getMessage());
+        Assertions.assertEquals("Некорректный аргумент: " + id, testException.getMessage());
     }
 
     /**
