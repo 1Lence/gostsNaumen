@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 /**
  * Дто с данными пользователя, которое проходит с фронтенда.
  * @param userName имя/никнейм пользователя.
+ * @param fullName полное имя пользователя.
  * @param password пароль пользователя.
  * @param email почта пользователя.
  */
