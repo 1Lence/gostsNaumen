@@ -8,6 +8,7 @@ import com.example.gostsNaumen.controller.dto.response.UserIdDtoResponse;
 import com.example.gostsNaumen.entity.User;
 import com.example.gostsNaumen.service.user.UserService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +22,10 @@ public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
-    public UserController(UserService userService, UserMapper userMapper) {
+    public UserController(
+            UserService userService,
+            UserMapper userMapper
+    ) {
         this.userService = userService;
         this.userMapper = userMapper;
     }
@@ -32,6 +36,7 @@ public class UserController {
      * @return список пользователей.
      */
     @GetMapping("/users")
+    @PreAuthorize("hasAuthority('user:write')")
     public List<UserDtoResponse> getAllUsers() {
         List<User> users = userService.findAll();
 
@@ -44,7 +49,8 @@ public class UserController {
      * @param id айди пользователя в БД.
      * @return дто с обновленной сущностью пользователя.
      */
-    @PatchMapping("/user/update/{id}")
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('user:write')")
     public UserDtoResponse updateUserData(
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserDtoRequest updateUserDtoRequest
@@ -61,7 +67,8 @@ public class UserController {
      * @param passwordDtoRequest дто с новым паролем
      * @return айди пользователя у которого обновился пароль
      */
-    @PatchMapping("/user/update/password")
+    @PatchMapping("/password")
+    @PreAuthorize("hasAuthority('user:read')")
     public UserIdDtoResponse updatePassword(
             @RequestBody @Valid PasswordDtoRequest passwordDtoRequest
     ) {
@@ -75,7 +82,8 @@ public class UserController {
      *
      * @param id айди пользователя из БД.
      */
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('user:write')")
     public void deleteUserById(@PathVariable Long id) {
         userService.deleteUserById(id);
     }

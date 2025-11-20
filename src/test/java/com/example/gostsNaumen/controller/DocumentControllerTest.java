@@ -26,8 +26,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.HashSet;
@@ -192,7 +192,7 @@ class DocumentControllerTest {
     @Test
     void addDocumentShouldReturnAddedDocumentId() throws Exception {
 
-        Mockito.when(documentMapper.mapToEntity(Mockito.any(DocumentDtoRequest.class))).thenReturn(document);
+        Mockito.when(documentMapper.createDocumentEntity(Mockito.any(DocumentDtoRequest.class))).thenReturn(document);
         Mockito.when(documentService.saveDocument(document)).thenReturn(document);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/standards")
@@ -210,7 +210,7 @@ class DocumentControllerTest {
     @Test
     void addDocumentShouldReturnEntityExistsException() throws Exception {
 
-        Mockito.when(documentMapper.mapToEntity(Mockito.any(DocumentDtoRequest.class))).thenReturn(document);
+        Mockito.when(documentMapper.createDocumentEntity(Mockito.any(DocumentDtoRequest.class))).thenReturn(document);
         Mockito.when(documentService.saveDocument(document))
                 .thenThrow(new EntityExistsException("Такой гост уже существует."));
 

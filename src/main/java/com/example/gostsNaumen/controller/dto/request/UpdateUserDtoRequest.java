@@ -1,9 +1,6 @@
 package com.example.gostsNaumen.controller.dto.request;
 
-import com.example.gostsNaumen.controller.dto.validator.CustomEmailValid;
-import com.example.gostsNaumen.security.permission.UserRoles;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import com.example.gostsNaumen.controller.dto.validator.CustomNullAndRegexEmailValid;
 
 /**
  * Дто с данными пользователя, которые необходимо обновить.
@@ -14,9 +11,9 @@ import jakarta.validation.constraints.NotNull;
  * @param role     роли пользователя
  */
 public record UpdateUserDtoRequest(
-        @NotBlank String userName,
-        @NotBlank String fullName,
-        @CustomEmailValid String email,
-        @NotNull UserRoles role
+        String userName,
+        String fullName,
+        @CustomNullAndRegexEmailValid String email,
+        String role
 ) {
 }

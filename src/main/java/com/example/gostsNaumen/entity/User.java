@@ -28,18 +28,46 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRoles roles = UserRoles.USER;
 
-    public User(Long id, String username, String passwordHash, String email, UserRoles roles) {
+    public User(
+            Long id,
+            String username,
+            String fullName,
+            String passwordHash,
+            String email,
+            UserRoles roles
+    ) {
         this.id = id;
         this.username = username;
+        this.fullName = fullName;
         this.passwordHash = passwordHash;
         this.email = email;
         this.roles = roles;
     }
 
-    public User(String username, String passwordHash, String email) {
+    public User(
+            String username,
+            String fullName,
+            String passwordHash,
+            String email
+    ) {
         this.username = username;
+        this.fullName = fullName;
         this.passwordHash = passwordHash;
         this.email = email;
+    }
+
+    public User(
+            String username,
+            String fullName,
+            String passwordHash,
+            String email,
+            UserRoles roles
+    ) {
+        this.username = username;
+        this.fullName = fullName;
+        this.passwordHash = passwordHash;
+        this.email = email;
+        this.roles = roles;
     }
 
     public User() {

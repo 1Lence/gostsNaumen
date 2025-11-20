@@ -1,4 +1,4 @@
-package com.example.gostsNaumen.security.service;
+package com.example.gostsNaumen.service.security;
 
 import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.exception.ErrorCode;

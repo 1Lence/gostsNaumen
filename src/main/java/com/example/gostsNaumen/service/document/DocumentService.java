@@ -8,6 +8,8 @@ import jakarta.persistence.EntityExistsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * Сервис по работе с гостами в БД
  */
@@ -62,7 +64,10 @@ public class DocumentService {
             throw new IllegalArgumentException("Получен null id");
         }
         if (!documentRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS, id);
+            throw new BusinessException(
+                    ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+                    String.format("По переданному ID: %s, нет стандарта", id)
+            );
         }
         documentRepository.deleteById(id);
     }
@@ -83,5 +88,14 @@ public class DocumentService {
         }
 
         return documentRepository.save(document);
+    }
+
+    /**
+     * Получение всех ГОСТов с БД
+     *
+     * @return список сущностей ГОСТов с БД
+     */
+    public List<Document> findAll() {
+        return documentRepository.findAll();
     }
 }
