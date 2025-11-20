@@ -88,6 +88,7 @@ public class DocumentController {
      * @return список DTO найденных по фильтрам
      */
     @GetMapping(path = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('user:read')")
     public List<DocumentDtoResponse> getAllDocumentsByFilters(FilterDtoRequest filterDtoRequest) {
         Specification<Document> specification = documentSpecificationMapper.mapFullSpecification(filterDtoRequest);
 
