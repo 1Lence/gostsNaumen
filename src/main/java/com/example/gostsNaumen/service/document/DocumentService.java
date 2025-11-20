@@ -4,7 +4,6 @@ import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.repository.DocumentRepository;
-import jakarta.persistence.EntityExistsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +30,8 @@ public class DocumentService {
     public Document saveDocument(Document documentForSave) {
 
         if (documentRepository.findByFullName(documentForSave.getFullName()).isPresent()) {
-            throw new EntityExistsException("Такой гост уже существует.");
+            throw new BusinessException(ErrorCode.STANDARD_EXIST_BY_FULL_NAME,
+                    "Гост c таким full_name: " + documentForSave.getFullName() + " уже существует!");
         }
 
         return documentRepository.save(documentForSave);
@@ -45,12 +45,15 @@ public class DocumentService {
      */
     @Transactional
     public Document getDocumentById(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Поиск по пустому ID");
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("Некорректный аргумент: " + id);
         }
 
         return documentRepository
-                .findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS));
+                .findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+                        String.format(
+                                "По переданному id: %s нет стандарта",
+                                id)));
     }
 
     /**
@@ -84,7 +87,9 @@ public class DocumentService {
         Long id = document.getId();
 
         if (!documentRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS);
+            throw new BusinessException(
+                    ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+                    String.format("По переданному ID: %s, нет стандарта", id));
         }
 
         return documentRepository.save(document);

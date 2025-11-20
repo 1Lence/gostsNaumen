@@ -4,14 +4,13 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
-
-import static org.springframework.http.HttpStatus.*;
 
 /**
  * Централизованный обработчик ошибок взаимодействия с репозиторием.
@@ -37,16 +36,16 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
                 new ErrorResponse()
                         .setTimestamp(LocalDateTime.now())
                         .setMessage(exception.getMessage())
-                        .setStatus(NOT_FOUND)
+                        .setStatus(HttpStatus.NOT_FOUND)
                         .setUrl(getUrl(request)),
-                NOT_FOUND
+                HttpStatus.NOT_FOUND
         );
     }
 
     /**
      * Отлавливает ошибки связанные с неверно переданными аргументами в метод
      *
-     * @param exception возникает при передачи неверных параметров в метод
+     * @param exception возникает при передаче неверных параметров в метод
      * @param request   http запрос
      * @return HTTP Status код и JSON с ответом
      */
@@ -59,10 +58,9 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
                 new ErrorResponse()
                         .setTimestamp(LocalDateTime.now())
                         .setMessage(exception.getMessage())
-                        .setStatus(BAD_REQUEST)
+                        .setStatus(HttpStatus.BAD_REQUEST)
                         .setUrl(getUrl(request)),
-                BAD_REQUEST
-        );
+                HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -82,9 +80,9 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
                 new ErrorResponse()
                         .setTimestamp(LocalDateTime.now())
                         .setMessage(exception.getMessage())
-                        .setStatus(CONFLICT)
+                        .setStatus(HttpStatus.CONFLICT)
                         .setUrl(getUrl(request)),
-                CONFLICT
+                HttpStatus.CONFLICT
         );
     }
 }
