@@ -38,6 +38,27 @@ public enum ErrorCode {
      * Код, отвечающий за ситуацию, какие-либо поля пользователя уже существуют в БД
      */
     USER_FIELDS_ALREADY_EXIST("USER_FIELDS_ALREADY_EXIST", "Пользователь существует", HttpStatus.CONFLICT),
+    /**
+     * Код, отвечающий за ситуацию, когда происходит попытка некорректного перехода по жизненному циклу
+     */
+    INCORRECT_LIFECYCLE_TRANSITION(
+            "INCORRECT_LIFECYCLE_TRANSITION",
+            "Такой переход по жизненному циклу невозможен",
+            HttpStatus.CONFLICT),
+    /**
+     * Код, отвечающий за ситуацию, когда переходу по жизненному циклу мешает другой стандарт в базе данных.
+     */
+    OTHER_DOC_INTERFERES_WITH_TRANSITION(
+            "OTHER_DOC_INTERFERES_WITH_TRANSITION",
+            "Переходу по жизненному циклу мешает другой стандарт",
+            HttpStatus.CONFLICT),
+    /**
+     * Код, отвечающий за ситуацию, когда происходит попытка сохранить документ, актуальная версия которого уже существует
+     */
+    STANDARD_BY_NAME_WITH_CURRENT_STATUS_ALREADY_EXIST(
+            "STANDARD_BY_NAME_WITH_CURRENT_STATUS_ALREADY_EXIST",
+            "Уже существует актуальынй стандарт с таким именем, сначала архивируйте его",
+            HttpStatus.CONFLICT),
     ;
 
     private final String code;
