@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Сервис необходимый для управления переходами документов по жизненному циклу
+ */
 @Service
 public class DocumentLifeCycleService {
     private final DocumentRepository documentRepository;
@@ -18,6 +21,17 @@ public class DocumentLifeCycleService {
         this.documentRepository = documentRepository;
     }
 
+    /**
+     * Метод для совершения перехода по жизненному циклу документа, в случае если метод
+     * {@link DocumentLifeCycleService#isTransitionAllowed(StatusEnum, StatusEnum)} возвращает false, выбрасывается
+     * исключение {@link BusinessException} с {@link ErrorCode#INCORRECT_LIFECYCLE_TRANSITION}
+     * <p>
+     * При успешном изменении статуса обновляет документ в бд
+     *
+     * @param document экземпляр документа, который совершает переход
+     * @param status   целевой статус
+     * @return документ с новым статусом
+     */
     public Document doLifeCycleTransition(Document document, StatusEnum status) {
 
         if (!isTransitionAllowed(document.getStatus(), status)) {
@@ -35,7 +49,8 @@ public class DocumentLifeCycleService {
     /**
      * Вспомогательный метод, необходим для проверки возникновения конфликтов в связи с изменением документа в базе данных.
      *
-     * @param document документ, у которого хотят поменять статус
+     * @param document     документ, у которого хотят поменять статус
+     * @param targetStatus целевой статус, на который производится попытка замены
      */
     private void checkInterferingDocuments(Document document, StatusEnum targetStatus) {
         Optional<Document> interferingDocument = documentRepository.findByFullNameAndStatus(
@@ -63,7 +78,8 @@ public class DocumentLifeCycleService {
 
 
     /**
-     * Вспомогательный метод, необходимый для проверки возможности совершения транзакции на логическом уровне
+     * Вспомогательный метод, необходимый для проверки возможности совершения транзакции на уровне других
+     * документов и возможных конфликтов
      *
      * @param oldStatus старый статус документа
      * @param newStatus новый статус документа
