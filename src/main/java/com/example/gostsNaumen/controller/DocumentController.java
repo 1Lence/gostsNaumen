@@ -87,6 +87,8 @@ public class DocumentController {
 
     /**
      * Удаление ГОСТа по ID
+     * <p>
+     * В случае успешного удаления возвращается HTTP-ответ со статусом 200 OK
      *
      * @param docId id Документа
      */

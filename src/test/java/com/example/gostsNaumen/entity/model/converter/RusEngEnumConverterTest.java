@@ -16,7 +16,7 @@ class RusEngEnumConverterTest {
     RusEngEnumConverter rusEngEnumConverter = new RusEngEnumConverter();
 
     /**
-     * Проверяет корректность работы на стандартных данных
+     * Проверяет корректность работы на корректных данных
      */
     @Test
     void convertToDatabaseColumShouldReturnCorrectValues() {
