@@ -83,6 +83,18 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
         );
     }
 
+    /**
+     * Обрабатывает исключение {@link MethodArgumentTypeMismatchException}, которое возникает,
+     * когда значение параметра метода контроллера не может быть преобразовано к ожидаемому типу.
+     * Логирует информацию об ошибке и возвращает {@link ErrorResponse} с деталями.
+     *
+     * @param exception исключение {@link MethodArgumentTypeMismatchException}, содержащее
+     *                  информацию о несовпадении типа аргумента
+     * @param request   объект {@link WebRequest}, представляющий текущий HTTP-запрос,
+     *                  используется для получения URL, на который был отправлен запрос
+     * @return {@link ResponseEntity}, содержащий {@link ErrorResponse} с информацией об ошибке
+     * и статусом {@link HttpStatus#BAD_REQUEST}
+     */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
             final MethodArgumentTypeMismatchException exception,
