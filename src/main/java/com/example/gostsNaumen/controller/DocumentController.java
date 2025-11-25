@@ -139,6 +139,16 @@ public class DocumentController {
         return documentMapper.mapEntityToDto(documentService.updateDocument(documentWithNewFieldsValues));
     }
 
+    /**
+     * Метод для обновления статуса документа
+     *
+     * @param docId     идентификатор документа, у которого мы меняем статус
+     * @param newStatus новый статус документа
+     * @return <ul>
+     *     <li>В случае успеха возвращает {@link DocumentDtoResponse} с обновлённым статусом</li>
+     *     <li>В случае ошибки возвращается {@link com.example.gostsNaumen.handler.ErrorResponse} с причиной ошибки</li>
+     * </ul>
+     */
     @PatchMapping("/{docId}/status")
     @PreAuthorize("hasAuthority('user:write')")
     public DocumentDtoResponse updateDocumentStatus(

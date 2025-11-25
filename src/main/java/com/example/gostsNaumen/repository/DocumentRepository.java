@@ -18,5 +18,8 @@ public interface DocumentRepository extends JpaRepository<Document, Long>, JpaSp
 
     Optional<List<Document>> findAllByFullName(String fullName);
 
+    /**
+     * Метод, необходимый для поиска стандарта по его полному имени и статусу
+     */
     Optional<Document> findByFullNameAndStatus(String fullName, StatusEnum status);
 }

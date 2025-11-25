@@ -22,11 +22,12 @@ public class DocumentLifeCycleService {
     }
 
     /**
-     * Метод для совершения перехода по жизненному циклу документа, в случае если метод
-     * {@link DocumentLifeCycleService#isTransitionAllowed(StatusEnum, StatusEnum)} возвращает false, выбрасывается
-     * исключение {@link BusinessException} с {@link ErrorCode#INCORRECT_LIFECYCLE_TRANSITION}
-     * <p>
-     * При успешном изменении статуса обновляет документ в бд
+     * Метод для совершения перехода по жизненному циклу документа.
+     * Сначала проверяется возможность совершения перехода методом
+     * {@link DocumentLifeCycleService#isTransitionAllowed(StatusEnum, StatusEnum)}, затем вызывается метод проверки
+     * наложений {@link DocumentLifeCycleService#checkInterferingDocuments(Document, StatusEnum)},
+     * который в случае наложения статусов выбрасывает ошибку, если ошибка не была выброшена,
+     * то метод успешно меняет статус документа и возвращает обновлённый экземпляр документа.
      *
      * @param document экземпляр документа, который совершает переход
      * @param status   целевой статус
@@ -47,10 +48,15 @@ public class DocumentLifeCycleService {
     }
 
     /**
-     * Вспомогательный метод, необходим для проверки возникновения конфликтов в связи с изменением документа в базе данных.
+     * Вспомогательный метод, служащий для проверки появления наложений в случае перехода документа по циклу.
+     * <ul>
+     *     <li>В случае если наложений нет, метод ничего не возвращает</li>
+     *     <li>Если есть проблемы с наложением, код выбрасывает ошибку {@link BusinessException}</li>
+     * </ul>
      *
      * @param document     документ, у которого хотят поменять статус
      * @param targetStatus целевой статус, на который производится попытка замены
+     * @throws BusinessException с кодом {@link ErrorCode#OTHER_DOC_INTERFERES_WITH_TRANSITION} и id мешающего документа
      */
     private void checkInterferingDocuments(Document document, StatusEnum targetStatus) {
         Optional<Document> interferingDocument = documentRepository.findByFullNameAndStatus(
@@ -71,15 +77,15 @@ public class DocumentLifeCycleService {
                                     + interferingDocument.get().getId().toString());
 
                 }
-            case REPLACED:
+            case REPLACED, CANCELED:
         }
 
     }
 
 
     /**
-     * Вспомогательный метод, необходимый для проверки возможности совершения транзакции на уровне других
-     * документов и возможных конфликтов
+     * Вспомогательный метод, необходимый для проверки возможности совершения транзакции на уровне текущего и
+     * целевого статуса
      *
      * @param oldStatus старый статус документа
      * @param newStatus новый статус документа
