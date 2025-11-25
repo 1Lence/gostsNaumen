@@ -58,7 +58,7 @@ public class DocumentLifeCycleService {
      * @param targetStatus целевой статус, на который производится попытка замены
      * @throws BusinessException с кодом {@link ErrorCode#OTHER_DOC_INTERFERES_WITH_TRANSITION} и id мешающего документа
      */
-    private void checkInterferingDocuments(Document document, StatusEnum targetStatus) {
+    public void checkInterferingDocuments(Document document, StatusEnum targetStatus) {
         Optional<Document> interferingDocument = documentRepository.findByFullNameAndStatus(
                 document.getFullName(), StatusEnum.CURRENT);
 
