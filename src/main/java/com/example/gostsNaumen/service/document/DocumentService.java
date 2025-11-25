@@ -35,7 +35,7 @@ public class DocumentService {
         Optional<Document> interferingDocument = documentRepository
                 .findByFullNameAndStatus(documentForSave.getFullName(), StatusEnum.CURRENT);
 
-        if (interferingDocument.isPresent()) {
+        if (interferingDocument.isPresent() && documentForSave.getStatus() == StatusEnum.CURRENT) {
             Long interferingDocumentId = interferingDocument.get().getId();
             throw new BusinessException(
                     ErrorCode.STANDARD_BY_NAME_WITH_CURRENT_STATUS_ALREADY_EXIST,
