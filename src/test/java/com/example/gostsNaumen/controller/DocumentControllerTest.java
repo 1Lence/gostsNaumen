@@ -14,6 +14,7 @@ import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.exception.ErrorCode;
+import com.example.gostsNaumen.handler.ErrorResponse;
 import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
 import com.example.gostsNaumen.security.jwe.JweFilter;
 import com.example.gostsNaumen.service.document.DocumentLifeCycleService;
@@ -668,6 +669,49 @@ class DocumentControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("Отменённый"));
+    }
+
+    /**
+     * Метод, проверяющий возвращение ответа с ошибкой при попытке совершить логически невозможный переход.
+     * <p> Необходимые условия:
+     * <ul>
+     *     <li>Должна производиться попытка непредусмотренного перехода, например из "Актуальный" в "Актуальный",
+     *     или из "Заменённый" в "Отменённый"</li>
+     * </ul>
+     * <p>Возвращается {@link com.example.gostsNaumen.handler.ErrorResponse}:
+     * <ul>
+     *     <li>{@link ErrorResponse#getStatus()} должно равняться {@code CONFLICT}</li>
+     *     <li>{@link ErrorResponse#getMessage()} должно быть вида: "Переход из статуса (1 статус)
+     *     в статус (2 статус) невозможен"</li>
+     * </ul>
+     */
+    @Test
+    void updateDocumentShouldThrowBusinessExceptionWhenTransitionIsNotAllowed() throws Exception {
+        NewStatusDtoRequest dtoRequest = new NewStatusDtoRequest("Актуальный");
+        document.setId(1L);
+
+        Mockito.when(documentService.getDocumentById(Mockito.anyLong()))
+                .thenReturn(document);
+
+        Mockito.when(rusEngEnumConverter.convertToEnglishValue("Актуальный", StatusEnum.class))
+                .thenReturn(StatusEnum.CURRENT);
+
+        Mockito.when(documentLifeCycleService.doLifeCycleTransition(document, StatusEnum.CURRENT))
+                .thenThrow(new BusinessException(
+                        ErrorCode.INVALID_LIFECYCLE_TRANSITION,
+                        "Переход из статуса %s в статус %s невозможен".formatted(
+                                document.getStatus(), StatusEnum.CURRENT)
+                ));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/standards/{id}/status", document.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dtoRequest)))
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value("Переход из статуса CURRENT в статус CURRENT невозможен"));
 
     }
+
+
 }
