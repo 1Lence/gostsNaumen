@@ -612,4 +612,15 @@ class DocumentControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.url")
                         .value("/api/standards/%s".formatted(docId)));
     }
+
+    /**
+     * Метод, проверяющий кейс, когда при изменении статуса документа не происходит никаких ошибок.
+     * <p>
+     * Пользователь должен получить {@link DocumentDtoResponse} с обновлённым полем
+     * {@link DocumentDtoResponse#getStatus()}
+     */
+    @Test
+    void updateDocumentStatusShouldReturnUpdatedDocument() throws Exception {
+
+    }
 }
