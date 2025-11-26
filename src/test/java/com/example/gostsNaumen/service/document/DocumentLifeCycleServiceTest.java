@@ -180,7 +180,7 @@ class DocumentLifeCycleServiceTest {
                         StatusEnum.CURRENT));
 
         Assertions.assertEquals(
-                "Другой документ не позволяет изменить статус текущего документа его id: 3",
+                "Другой документ не позволяет изменить статус текущего документа, его id: 3",
                 businessException.getFormattedMessage());
     }
 }
