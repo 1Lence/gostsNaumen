@@ -13,7 +13,9 @@ import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.exception.ErrorCode;
+import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
 import com.example.gostsNaumen.security.jwe.JweFilter;
+import com.example.gostsNaumen.service.document.DocumentLifeCycleService;
 import com.example.gostsNaumen.service.document.DocumentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityExistsException;
@@ -55,6 +57,10 @@ class DocumentControllerTest {
     private RusEngEnumConverter rusEngEnumConverter;
     @MockitoBean
     private DocumentFieldsActualizer documentFieldsActualizer;
+    @MockitoBean
+    private DocumentSpecificationMapper documentSpecificationMapper;
+    @MockitoBean
+    private DocumentLifeCycleService documentLifeCycleService;
     @MockitoBean
     private JweFilter jweFilter;
 
