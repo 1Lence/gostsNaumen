@@ -21,7 +21,7 @@ class JweServiceTest {
     /**
      * Секрет для подписи токена
      */
-    private final String SECRET = "tPpMbX+5QkX1qKp3iPh4mfrc5D0F3eG9HvA2BcD4Efg";
+    private final static String SECRET = "tPpMbX+5QkX1qKp3iPh4mfrc5D0F3eG9HvA2BcD4Efg";
 
     public JweServiceTest() {
         this.jweService = new JweService(
