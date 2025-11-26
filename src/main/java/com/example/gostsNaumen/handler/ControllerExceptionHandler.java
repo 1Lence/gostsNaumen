@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -77,6 +78,23 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
                         .setStatus(exception.getErrorCode().getStatus())
                         .setUrl(getUrl(request)),
                 exception.getErrorCode().getStatus()
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+            final MethodArgumentTypeMismatchException exception,
+            WebRequest request) {
+        log.info("Method Argument Type Mismatch Exception: {}", exception.getMessage());
+        log.debug(exception.getMessage(), exception);
+
+        return new ResponseEntity<>(
+                new ErrorResponse()
+                        .setTimestamp(LocalDateTime.now())
+                        .setMessage("Некорректный аргумент: %s".formatted(exception.getValue()))
+                        .setStatus(HttpStatus.BAD_REQUEST)
+                        .setUrl(getUrl(request)),
+                HttpStatus.BAD_REQUEST
         );
     }
 }
