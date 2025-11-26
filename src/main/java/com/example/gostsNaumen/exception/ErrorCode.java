@@ -59,6 +59,14 @@ public enum ErrorCode {
             "STANDARD_BY_NAME_WITH_CURRENT_STATUS_ALREADY_EXIST",
             "Уже существует актуальынй стандарт с таким именем, сначала архивируйте его",
             HttpStatus.CONFLICT),
+    /**
+     * Код, отвечающий за ситуацию, когда докумет с таким именем ужесуществует
+     */
+    STANDARD_EXIST_BY_FULL_NAME(
+            "STANDARD_EXIST_BY_FULL_NAME",
+            "ГОСТ с таким именем уже существует",
+            HttpStatus.CONFLICT),
+
     ;
 
     private final String code;
