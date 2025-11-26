@@ -67,7 +67,7 @@ public class DocumentLifeCycleService {
                 } else {
                     throw new BusinessException(
                             ErrorCode.OTHER_DOC_INTERFERES_WITH_TRANSITION,
-                            "Другой документ не позволяет изменить статус текущего документа его id: "
+                            "Другой документ не позволяет изменить статус текущего документа, его id: "
                                     + interferingDocument.getId().toString());
                 }
             case REPLACED, CANCELED:

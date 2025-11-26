@@ -5,8 +5,8 @@ import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
 import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.exception.BusinessException;
+import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.repository.DocumentRepository;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,30 +75,47 @@ class DocumentServiceTest {
     }
 
     /**
-     * Проверка на выброс {@link EntityExistsException} при попытке сохранить существующий документ.
-     * Также проверяется текст исключения, он должен соответствовать {@code Такой гост уже существует}
+     * Проверка на выброс {@link BusinessException} при попытке сохранить документ со статусом "Актуальный", когда уже
+     * в базе уже существует документ с таким же именем и статусом "Актуальный".
+     * <p>
+     * Также проверяется текст исключения.
      */
     @Test
     void saveDocumentShouldThrowExceptionWhenDocumentAlreadyExists() {
-        Mockito.when(documentRepository.findByFullName(document.getFullName())).thenReturn(Optional.of(document));
 
-        EntityExistsException testException = Assertions.assertThrows(EntityExistsException.class,
+        document.setStatus(StatusEnum.CURRENT);
+
+        Mockito.when(documentRepository.findByFullNameAndStatus(document.getFullName(), StatusEnum.CURRENT))
+                .thenReturn(Optional.of(document));
+
+        BusinessException testException = Assertions.assertThrows(BusinessException.class,
                 () -> documentService.saveDocument(document));
-        Assertions.assertEquals("Такой гост уже существует.", testException.getMessage());
+        Assertions.assertEquals("Документ с таким fullName: БРОНЕОДЕЖДА Классификация и общие технические" +
+                        " требования и статусом \"Актуален\" уже существует." +
+                        " Пожалуйста, измените его статус перед сохранением новой версии. ID документа: 1",
+                testException.getFormattedMessage());
     }
 
     /**
-     * Проверка на выброс {@link EntityNotFoundException} при попытке получить несуществующий документ
-     * Также проверяет текст ошибки, он должен соответствовать {@code По переданному id нет стандарта}
+     * Проверка на выброс {@link BusinessException} при попытке получить несуществующий документ
+     * Также проверяет текст ошибки
      */
     @Test
     void getDocumentShouldThrowBusinessExceptionWhenDocumentDoesNotExist() {
-        Mockito.when(documentRepository.findById(document.getId())).thenReturn(Optional.empty());
+
+        document.setId(2L);
+
+        Mockito.when(documentRepository.findById(document.getId()))
+                .thenThrow(new BusinessException(
+                        ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+                        String.format("По переданному ID: %s, нет стандарта", document.getId())
+                ));
 
         BusinessException testException = Assertions.assertThrows(BusinessException.class,
                 () -> documentService.getDocumentById(document.getId()));
-        Assertions.assertEquals("По переданному id нет стандарта", testException
-                .getErrorCode().getDefaultMessage());
+
+        Assertions.assertEquals("По переданному ID: %s, нет стандарта".formatted(document.getId()),
+                testException.getFormattedMessage());
     }
 
     /**

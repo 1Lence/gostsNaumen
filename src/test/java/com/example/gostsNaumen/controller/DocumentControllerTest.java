@@ -686,7 +686,7 @@ class DocumentControllerTest {
      * </ul>
      */
     @Test
-    void updateDocumentShouldThrowBusinessExceptionWhenTransitionIsNotAllowed() throws Exception {
+    void updateDocumentStatusShouldThrowBusinessExceptionWhenTransitionIsNotAllowed() throws Exception {
         NewStatusDtoRequest dtoRequest = new NewStatusDtoRequest("Актуальный");
         document.setId(1L);
 
@@ -713,5 +713,45 @@ class DocumentControllerTest {
 
     }
 
+    /**
+     * Метод, проверяющий возвращение ответа с ошибкой при попытке совершить переход, блокируемый другим ГОСТом.
+     * <p> Необходимые условия для возникновения кейса:
+     * <ul>
+     *     <li>Производится попытка изменить статус документа на "Актуальный", когда уже существует документ
+     *     с таким именем и статусом "Актуальный"</li>
+     * </ul>
+     * <p>Возвращается {@link com.example.gostsNaumen.handler.ErrorResponse}:
+     * <ul>
+     *     <li>{@link ErrorResponse#getStatus()} должно равняться {@code CONFLICT}</li>
+     *     <li>{@link ErrorResponse#getMessage()} должно быть вида: "Другой документ не позволяет изменить статус
+     *      текущего документа, его id: "</li>
+     * </ul>
+     * @throws Exception
+     */
+    @Test
+    void updateDocumentStatusShouldThrowBusinessExceptionWhenOtherStandardBlocksTransition() throws Exception {
+        NewStatusDtoRequest dtoRequest = new NewStatusDtoRequest("Актуальный");
+        document.setId(2L);
+        document.setStatus(StatusEnum.CANCELED);
 
+        Mockito.when(documentService.getDocumentById(Mockito.anyLong()))
+                .thenReturn(document);
+
+        Mockito.when(rusEngEnumConverter.convertToEnglishValue("Актуальный", StatusEnum.class))
+                .thenReturn(StatusEnum.CURRENT);
+
+        Mockito.when(documentLifeCycleService.doLifeCycleTransition(document, StatusEnum.CURRENT))
+                .thenThrow(new BusinessException(
+                        ErrorCode.OTHER_DOC_INTERFERES_WITH_TRANSITION,
+                        "Другой документ не позволяет изменить статус текущего документа, его id: 1"));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/standards/{id}/status", document.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dtoRequest)))
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value("Другой документ не позволяет изменить " +
+                                "статус текущего документа, его id: 1"));
+    }
 }
