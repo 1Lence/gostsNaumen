@@ -222,7 +222,7 @@ class DocumentControllerTest {
      * </ul>
      */
     @Test
-    void addDocumentShouldReturnEntityExistsException() throws Exception {
+    void addDocumentShouldBusinesExceptionWhenDocumentAlreadyExists() throws Exception {
 
         Mockito.when(documentMapper.createDocumentEntity(Mockito.any(DocumentDtoRequest.class)))
                 .thenReturn(document);
@@ -379,7 +379,7 @@ class DocumentControllerTest {
      * </ul>
      */
     @Test
-    void getDocumentShouldReturnBusinessException() throws Exception {
+    void getDocumentShouldReturnBusinessExceptionWhyenDocByIdNotFound() throws Exception {
         Long id = 1L;
         Mockito.when(documentService.getDocumentById(
                 Mockito.anyLong())).thenThrow(new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
