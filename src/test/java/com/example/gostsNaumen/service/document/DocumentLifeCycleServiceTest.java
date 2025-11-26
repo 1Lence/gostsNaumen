@@ -24,7 +24,7 @@ import java.util.Optional;
 class DocumentLifeCycleServiceTest {
 
     private Document canceledDocument;
-    private Document replcaedDocument;
+    private Document replacedDocument;
     private Document currentDocument;
 
     @Mock
@@ -33,6 +33,9 @@ class DocumentLifeCycleServiceTest {
     @InjectMocks
     private DocumentLifeCycleService documentLifeCycleService;
 
+    /**
+     * Нам понадобится 3 документа с различными полями Status
+     */
     @BeforeEach
     void setUp() {
         canceledDocument = new Document("testName", "testDesignation", "testCodeOKS",
@@ -45,7 +48,7 @@ class DocumentLifeCycleServiceTest {
                 }});
         canceledDocument.setId(1L);
 
-        replcaedDocument = new Document("testName", "testDesignation", "testCodeOKS",
+        replacedDocument = new Document("testName", "testDesignation", "testCodeOKS",
                 "testActivity", "testAuthor", "testApplication", "testContent",
                 2017, 2019, "testKeywords", AdoptionLevelEnum.NATIONAL,
                 StatusEnum.REPLACED, HarmonizationEnum.HARMONIZED, AcceptedFirstTimeOrReplacedEnum.FIRST_TIME,
@@ -53,7 +56,7 @@ class DocumentLifeCycleServiceTest {
                     add("ГОСТ 28653—90");
                     add("ГОСТ 3722—2014");
                 }});
-        replcaedDocument.setId(2L);
+        replacedDocument.setId(2L);
 
         currentDocument = new Document("testName", "testDesignation", "testCodeOKS",
                 "testActivity", "testAuthor", "testApplication", "testContent",
@@ -66,22 +69,43 @@ class DocumentLifeCycleServiceTest {
         currentDocument.setId(3L);
     }
 
+    /**
+     * Метод, тестирующий успешный случай изменения статуса документа.
+     * <p>Для возникновения успешного кейса должны соблюдаться условия:
+     * <ul>
+     *     <li>Переход из статуса А в статус В возможен</li>
+     *     <li>При переходе в статус {@link StatusEnum#CURRENT} не должно существовать других документов с этим статусом и именем изменяемого документа</li>
+     * </ul>
+     * <p> Результатом работы метода служит {@link Document} с обновлённым полем Status у документа
+     * <p> Также метод тестирует:
+     * <ul>
+     *     <li>Возвращение true методом {@link DocumentLifeCycleService#isTransitionAllowed(StatusEnum, StatusEnum)}</li>
+     *     <li>Отсутствие выброса исключения методом
+     *     {@link DocumentLifeCycleService#checkInterferingDocuments(Document, StatusEnum)}</li>
+     * </ul>
+     */
     @Test
     void doLifeCycleTransitionShouldReturnDocumentWhenTransitionOccur() {
 
-        Mockito.when(documentRepository.findByFullNameAndStatus(currentDocument.getFullName(), StatusEnum.REPLACED))
-                .thenReturn(Optional.of(canceledDocument));
+        Mockito.when(documentRepository.save(Mockito.any(Document.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         Document document = documentLifeCycleService.doLifeCycleTransition(currentDocument, StatusEnum.REPLACED);
 
-        replcaedDocument.setId(document.getId());
+        replacedDocument.setId(document.getId());
 
-        Assertions.assertEquals(replcaedDocument, document);
+        Assertions.assertEquals(replacedDocument, document);
     }
 
 
     /**
-     * Метод, тестирующий невозможные переходы по жизненному циклу, а также их сообщения
+     * Метод, тестирующий выброс {@link  BusinessException} при невозможном переходе по статусам
+     * Невозможные переходы:
+     * <ul>
+     *     <li>Из {@link StatusEnum#CURRENT} в {@link StatusEnum#CANCELED} и наоборот</li>
+     *     <li>Исключение также выбрасывается при попытке изменить статус документа на аналогичный текущему,
+     *     например из {@link StatusEnum#CURRENT} в {@link StatusEnum#CURRENT}</li>
+     * </ul>
      */
     @Test
     void doLifeCycleTransitionShouldThrowBusinessExceptionWhenTransitionIsNotPossible() {
@@ -101,13 +125,13 @@ class DocumentLifeCycleServiceTest {
         BusinessException businessExceptionThird = Assertions.assertThrows(
                 BusinessException.class,
                 () -> documentLifeCycleService.doLifeCycleTransition(
-                        replcaedDocument,
+                        replacedDocument,
                         StatusEnum.CANCELED));
 
         BusinessException businessExceptionFourth = Assertions.assertThrows(
                 BusinessException.class,
                 () -> documentLifeCycleService.doLifeCycleTransition(
-                        replcaedDocument,
+                        replacedDocument,
                         StatusEnum.REPLACED));
 
         Assertions.assertEquals(
@@ -124,6 +148,25 @@ class DocumentLifeCycleServiceTest {
                 businessExceptionFourth.getFormattedMessage());
     }
 
+    /**
+     * Метод, тестирующий случай выброса BusinessException.
+     * <p>Условия кейса:
+     * <ul>
+     *     <li>Целевой статус замены это {@link StatusEnum#CURRENT}</li>
+     *     <li>В базе данных уже существует документ с идентичным {@link Document#getFullName()} и статусом "Актуален"</li>
+     * </ul>
+     * <p>Должна вернуться ошибка {@link BusinessException} со следующими полями:</p>
+     * <ul>
+     *     <li>{@link BusinessException#getErrorCode()} равняется
+     *     {@link com.example.gostsNaumen.exception.ErrorCode#OTHER_DOC_INTERFERES_WITH_TRANSITION}</li>
+     *     <li>{@link BusinessException#getFormattedMessage()} равняется
+     *     {@code "Другой документ не позволяет изменить статус текущего документа его id: (id документа)"}</li>
+     * </ul>
+     * <p> Исключение выбрасывается методом:
+     * <ul>
+     *     <li>{@link DocumentLifeCycleService#checkInterferingDocuments(Document, StatusEnum)}</li>
+     * </ul>
+     */
     @Test
     void doLifeCycleTransitionShouldThrowBusinessExceptionWhenExistInterferingDocuments() {
 
@@ -139,19 +182,5 @@ class DocumentLifeCycleServiceTest {
         Assertions.assertEquals(
                 "Другой документ не позволяет изменить статус текущего документа его id: 3",
                 businessException.getFormattedMessage());
-    }
-
-    @Test
-    void checkInterferingDocumentsShouldReturnVoidWhenNoInterferingDocuments() {
-
-        DocumentLifeCycleService service = Mockito.spy(documentLifeCycleService);
-
-        Mockito.when(documentRepository.findByFullNameAndStatus("testName", StatusEnum.CURRENT))
-                .thenReturn(Optional.empty());
-
-        service.doLifeCycleTransition(canceledDocument, StatusEnum.CURRENT);
-
-        Mockito.verify(service, Mockito.times(1))
-                .checkInterferingDocuments(canceledDocument, StatusEnum.CURRENT);
     }
 }

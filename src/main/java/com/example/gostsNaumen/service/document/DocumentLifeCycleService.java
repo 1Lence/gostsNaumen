@@ -30,20 +30,20 @@ public class DocumentLifeCycleService {
      * то метод успешно меняет статус документа и возвращает обновлённый экземпляр документа.
      *
      * @param document экземпляр документа, который совершает переход
-     * @param status   целевой статус
+     * @param targetStatus   целевой статус
      * @return документ с новым статусом
      */
-    public Document doLifeCycleTransition(Document document, StatusEnum status) {
+    public Document doLifeCycleTransition(Document document, StatusEnum targetStatus) {
 
-        if (!isTransitionAllowed(document.getStatus(), status)) {
+        if (!isTransitionAllowed(document.getStatus(), targetStatus)) {
             throw new BusinessException(
                     ErrorCode.INCORRECT_LIFECYCLE_TRANSITION,
-                    "Переход из статуса %s в статус %s невозможен".formatted(document.getStatus(), status));
+                    "Переход из статуса %s в статус %s невозможен".formatted(document.getStatus(), targetStatus));
         }
 
-        checkInterferingDocuments(document, status);
+        checkInterferingDocuments(document, targetStatus);
 
-        document.setStatus(status);
+        document.setStatus(targetStatus);
         return documentRepository.save(document);
     }
 
@@ -59,27 +59,22 @@ public class DocumentLifeCycleService {
      * @throws BusinessException с кодом {@link ErrorCode#OTHER_DOC_INTERFERES_WITH_TRANSITION} и id мешающего документа
      */
     public void checkInterferingDocuments(Document document, StatusEnum targetStatus) {
-        Optional<Document> interferingDocument = documentRepository.findByFullNameAndStatus(
-                document.getFullName(), StatusEnum.CURRENT);
-
-        if (interferingDocument.isPresent()) {
-            if (Objects.equals(interferingDocument.get().getId(), document.getId())) {
-                return;
-            }
-        }
 
         switch (targetStatus) {
             case CURRENT:
-                if (interferingDocument.isPresent()) {
+                Document interferingDocument = documentRepository.findByFullNameAndStatus(
+                        document.getFullName(), StatusEnum.CURRENT).orElse(null);
+                if (interferingDocument == null || interferingDocument.getId() == document.getId()) {
+                    return;
+                } else {
                     throw new BusinessException(
                             ErrorCode.OTHER_DOC_INTERFERES_WITH_TRANSITION,
                             "Другой документ не позволяет изменить статус текущего документа его id: "
-                                    + interferingDocument.get().getId().toString());
-
+                                    + interferingDocument.getId().toString());
                 }
             case REPLACED, CANCELED:
+                return;
         }
-
     }
 
 
