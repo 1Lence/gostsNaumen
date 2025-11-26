@@ -4,6 +4,7 @@ import com.example.gostsNaumen.controller.dto.DocumentFieldsActualizer;
 import com.example.gostsNaumen.controller.dto.DocumentMapper;
 import com.example.gostsNaumen.controller.dto.request.ActualizeDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.DocumentDtoRequest;
+import com.example.gostsNaumen.controller.dto.request.NewStatusDtoRequest;
 import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
@@ -30,7 +31,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  * Класс, предназначенный для тестирования {@link DocumentController}
@@ -621,6 +624,50 @@ class DocumentControllerTest {
      */
     @Test
     void updateDocumentStatusShouldReturnUpdatedDocument() throws Exception {
+        NewStatusDtoRequest dtoRequest = new NewStatusDtoRequest("Отменённый");
+        Long docId = 1L;
+        Document testDocument = new Document("testName", "testDesignation", "testCodeOKS",
+                "testActivity", "testAuthor", "testApplication", "testContent",
+                2017, 2019, "testKeywords", AdoptionLevelEnum.NATIONAL,
+                StatusEnum.CURRENT, HarmonizationEnum.HARMONIZED, AcceptedFirstTimeOrReplacedEnum.FIRST_TIME,
+                new HashSet<>() {{
+                    add("ГОСТ 28653—90");
+                    add("ГОСТ 3722—2014");
+                }});
+
+        testDocument.setId(docId);
+
+        Mockito.when(documentService.getDocumentById(Mockito.anyLong()))
+                .thenReturn(testDocument);
+
+        Mockito.when(rusEngEnumConverter.convertToEnglishValue("Отменённый", StatusEnum.class))
+                .thenReturn(StatusEnum.CANCELED);
+
+        Mockito.when(documentLifeCycleService.doLifeCycleTransition(testDocument, StatusEnum.CANCELED))
+                .thenAnswer(invocation -> {
+                    Document doc = invocation.getArgument(0);
+                    doc.setStatus(StatusEnum.CANCELED);
+                    return doc;
+                });
+
+        Mockito.when(documentMapper.mapEntityToDto(Mockito.any(Document.class)))
+                .thenAnswer(invocation -> {
+                    Document doc = invocation.getArgument(0);
+                    return new DocumentDtoResponse(
+                            doc.getId(), doc.getFullName(), doc.getDesignation(), doc.getCodeOKS(), doc.getActivityField(),
+                            doc.getAuthor(), doc.getApplicationArea(), doc.getContentLink(), doc.getAcceptanceYear(),
+                            doc.getCommissionYear(), doc.getKeyWords(), doc.getAdoptionLevel().getValue(),
+                            doc.getStatus().getValue(), doc.getHarmonization().getValue(),
+                            doc.getAcceptedFirstTimeOrReplaced().getValue(), doc.getReferences()
+                    );
+                });
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/standards/{id}/status", docId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dtoRequest)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("Отменённый"));
 
     }
 }
