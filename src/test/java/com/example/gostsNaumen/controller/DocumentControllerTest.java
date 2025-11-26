@@ -32,9 +32,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 /**
  * Класс, предназначенный для тестирования {@link DocumentController}
@@ -726,7 +724,6 @@ class DocumentControllerTest {
      *     <li>{@link ErrorResponse#getMessage()} должно быть вида: "Другой документ не позволяет изменить статус
      *      текущего документа, его id: "</li>
      * </ul>
-     * @throws Exception
      */
     @Test
     void updateDocumentStatusShouldThrowBusinessExceptionWhenOtherStandardBlocksTransition() throws Exception {
