@@ -7,8 +7,6 @@ import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Сервис необходимый для управления переходами документов по жизненному циклу
@@ -64,7 +62,7 @@ public class DocumentLifeCycleService {
             case CURRENT:
                 Document interferingDocument = documentRepository.findByFullNameAndStatus(
                         document.getFullName(), StatusEnum.CURRENT).orElse(null);
-                if (interferingDocument == null || interferingDocument.getId() == document.getId()) {
+                if (interferingDocument == null || interferingDocument.getId().equals(document.getId())) {
                     return;
                 } else {
                     throw new BusinessException(
@@ -73,7 +71,6 @@ public class DocumentLifeCycleService {
                                     + interferingDocument.getId().toString());
                 }
             case REPLACED, CANCELED:
-                return;
         }
     }
 
