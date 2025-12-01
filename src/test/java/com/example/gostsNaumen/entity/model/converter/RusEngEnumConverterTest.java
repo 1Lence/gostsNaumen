@@ -6,7 +6,6 @@ import com.example.gostsNaumen.entity.model.StatusEnum;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Класс для тестирования конвертера Enum-ов, тестирует как успешные случаи, так и ошибочные
@@ -20,14 +19,14 @@ class RusEngEnumConverterTest {
      */
     @Test
     void convertToDatabaseColumShouldReturnCorrectValues() {
-        assertEquals(
+        Assertions.assertEquals(
                 AdoptionLevelEnum.NATIONAL,
                 rusEngEnumConverter.convertToEnglishValue("Национальный", AdoptionLevelEnum.class));
-        assertEquals(
+        Assertions.assertEquals(
                 StatusEnum.CURRENT,
                 rusEngEnumConverter.convertToEnglishValue("Актуальный", StatusEnum.class)
         );
-        assertEquals(
+        Assertions.assertEquals(
                 HarmonizationEnum.HARMONIZED,
                 rusEngEnumConverter.convertToEnglishValue("Гармонизированный", HarmonizationEnum.class)
         );
