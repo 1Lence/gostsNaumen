@@ -68,26 +68,26 @@ class DocumentControllerTest {
      */
     @BeforeEach
     void setUp() {
-        documentRequest = new DocumentDtoRequest();
-        documentRequest.setFullName("testName");
-        documentRequest.setDesignation("ГОСТ 34286-2017");
-        documentRequest.setCodeOKS("13.340.10");
-        documentRequest.setActivityField("testField");
-        documentRequest.setAuthor("testAuthor");
-        documentRequest.setApplicationArea("testApplicationArea");
-        documentRequest.setContentLink("testLink");
-        documentRequest.setAcceptanceYear(2017);
-        documentRequest.setCommissionYear(2019);
-        documentRequest.setKeyWords("testKeyWords");
-        documentRequest.setStatus("Актуальный");
-        documentRequest.setAdoptionLevel("Национальный");
-        documentRequest.setHarmonization("Гармонизированный");
-        documentRequest.setAcceptedFirstTimeOrReplaced("ВВЕДЕН ВПЕРВЫЕ");
-        documentRequest.setReferences(new HashSet<>() {{
-            add("test1");
-            add("test2");
-        }});
-
+        documentRequest = new DocumentDtoRequest(
+                "testName",
+                "ГОСТ 34286-2017",
+                "13.340.10",
+                "testField",
+                "testAuthor",
+                "testApplicationArea",
+                "testLink",
+                2017,
+                2019,
+                "testKeyWords",
+                "Национальный",
+                "Актуальный",
+                "Гармонизированный",
+                "ВВЕДЕН ВПЕРВЫЕ",
+                new HashSet<>() {{
+                    add("test1");
+                    add("test2");
+                }}
+        );
 
         document = new Document();
         document.setFullName("testName");
