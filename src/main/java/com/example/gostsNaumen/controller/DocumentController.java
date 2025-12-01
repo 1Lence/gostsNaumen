@@ -174,7 +174,6 @@ public class DocumentController {
      *     <li>В случае ошибки возвращается {@link com.example.gostsNaumen.handler.ErrorResponse} с причиной ошибки</li>
      * </ul>
      */
-    //TODO написать тесты
     @PatchMapping("/{docId}/status")
     @PreAuthorize("hasAuthority('user:write')")
     public DocumentDtoResponse updateDocumentStatus(
