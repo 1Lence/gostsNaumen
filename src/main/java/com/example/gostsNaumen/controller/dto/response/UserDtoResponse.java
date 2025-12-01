@@ -2,11 +2,12 @@ package com.example.gostsNaumen.controller.dto.response;
 
 /**
  * DTO с данными пользователя для передачи его клиенту, не имеет пароля пользователя
- * @param id
- * @param userName
- * @param fullName
- * @param email
- * @param role
+ *
+ * @param id       идентификатор пользователя
+ * @param userName имя пользователя
+ * @param fullName полное имя пользователя
+ * @param email    почта пользователя
+ * @param role     роль пользователя
  */
 public record UserDtoResponse(
         Long id,
