@@ -182,138 +182,155 @@ public class DocumentDtoRequest {
     public DocumentDtoRequest() {
     }
 
+    public DocumentDtoRequest(String fullName,
+                              String designation,
+                              String codeOKS,
+                              String activityField,
+                              String author,
+                              String applicationArea,
+                              String contentLink,
+                              Integer acceptanceYear,
+                              Integer commissionYear,
+                              String keyWords,
+                              String adoptionLevel,
+                              String status,
+                              String harmonization,
+                              String acceptedFirstTimeOrReplaced,
+                              Set<@Size(min = 1, max = 128) String> references) {
+        this.fullName = fullName;
+        this.designation = designation;
+        this.codeOKS = codeOKS;
+        this.activityField = activityField;
+        this.author = author;
+        this.applicationArea = applicationArea;
+        this.contentLink = contentLink;
+        this.acceptanceYear = acceptanceYear;
+        this.commissionYear = commissionYear;
+        this.keyWords = keyWords;
+        this.adoptionLevel = adoptionLevel;
+        this.status = status;
+        this.harmonization = harmonization;
+        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
+        this.references = references;
+    }
+
     public String getFullName() {
         return fullName;
     }
 
-    public String getAcceptedFirstTimeOrReplaced() {
-        return acceptedFirstTimeOrReplaced;
-    }
-
-    public DocumentDtoRequest setAcceptedFirstTimeOrReplaced(String acceptedFirstTimeOrReplaced) {
-        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
-        return this;
-    }
-
-    public DocumentDtoRequest setFullName(String fullName) {
+    public void setFullName(String fullName) {
         this.fullName = fullName;
-        return this;
     }
 
     public String getDesignation() {
         return designation;
     }
 
-    public DocumentDtoRequest setDesignation(String designation) {
+    public void setDesignation(String designation) {
         this.designation = designation;
-        return this;
     }
 
     public String getCodeOKS() {
         return codeOKS;
     }
 
-    public DocumentDtoRequest setCodeOKS(String codeOKS) {
+    public void setCodeOKS(String codeOKS) {
         this.codeOKS = codeOKS;
-        return this;
     }
 
     public String getActivityField() {
         return activityField;
     }
 
-    public DocumentDtoRequest setActivityField(String activityField) {
+    public void setActivityField(String activityField) {
         this.activityField = activityField;
-        return this;
     }
 
     public String getAuthor() {
         return author;
     }
 
-    public DocumentDtoRequest setAuthor(String author) {
+    public void setAuthor(String author) {
         this.author = author;
-        return this;
     }
 
     public String getApplicationArea() {
         return applicationArea;
     }
 
-    public DocumentDtoRequest setApplicationArea(String applicationArea) {
+    public void setApplicationArea(String applicationArea) {
         this.applicationArea = applicationArea;
-        return this;
     }
 
     public String getContentLink() {
         return contentLink;
     }
 
-    public DocumentDtoRequest setContentLink(String contentLink) {
+    public void setContentLink(String contentLink) {
         this.contentLink = contentLink;
-        return this;
     }
 
-    public int getAcceptanceYear() {
+    public Integer getAcceptanceYear() {
         return acceptanceYear;
     }
 
-    public DocumentDtoRequest setAcceptanceYear(int acceptanceYear) {
+    public void setAcceptanceYear(Integer acceptanceYear) {
         this.acceptanceYear = acceptanceYear;
-        return this;
     }
 
-    public int getCommissionYear() {
+    public Integer getCommissionYear() {
         return commissionYear;
     }
 
-    public DocumentDtoRequest setCommissionYear(int commissionYear) {
+    public void setCommissionYear(Integer commissionYear) {
         this.commissionYear = commissionYear;
-        return this;
     }
 
     public String getKeyWords() {
         return keyWords;
     }
 
-    public DocumentDtoRequest setKeyWords(String keyWords) {
+    public void setKeyWords(String keyWords) {
         this.keyWords = keyWords;
-        return this;
     }
 
     public String getAdoptionLevel() {
         return adoptionLevel;
     }
 
-    public DocumentDtoRequest setAdoptionLevel(String adoptionLevel) {
+    public void setAdoptionLevel(String adoptionLevel) {
         this.adoptionLevel = adoptionLevel;
-        return this;
     }
 
     public String getStatus() {
         return status;
     }
 
-    public DocumentDtoRequest setStatus(String status) {
+    public void setStatus(String status) {
         this.status = status;
-        return this;
     }
 
     public String getHarmonization() {
         return harmonization;
     }
 
-    public DocumentDtoRequest setHarmonization(String harmonization) {
+    public void setHarmonization(String harmonization) {
         this.harmonization = harmonization;
-        return this;
+    }
+
+    public String getAcceptedFirstTimeOrReplaced() {
+        return acceptedFirstTimeOrReplaced;
+    }
+
+    public void setAcceptedFirstTimeOrReplaced(String acceptedFirstTimeOrReplaced) {
+        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
     }
 
     public Set<String> getReferences() {
         return references;
     }
 
-    public DocumentDtoRequest setReferences(Set<String> references) {
+    public void setReferences(Set<String> references) {
         this.references = references;
-        return this;
     }
 }
