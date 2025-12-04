@@ -1,5 +1,6 @@
 package com.example.gostsNaumen.security.jwe;
 
+import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.security.dto.JwtAuthDto;
 import com.nimbusds.jose.JOSEException;
 import org.junit.jupiter.api.Assertions;
@@ -47,7 +48,7 @@ class JweServiceTest {
      * @throws JOSEException если возникает ошибка при генерации или обработке токена
      */
     @Test
-    void shouldGenerateTokenWithoutException() throws JOSEException {
+    void shouldGenerateTokenWithoutException() throws JOSEException, BusinessException {
         JwtAuthDto jwtAuthenticationDto = jweService.generateAuthToken("example@example.com", 1L);
         Assertions.assertEquals(
                 "example@example.com",
@@ -70,7 +71,7 @@ class JweServiceTest {
      * @throws JOSEException если возникает ошибка при генерации или обработке токена
      */
     @Test
-    void shouldGetEmailFromTokenWithoutException() throws JOSEException {
+    void shouldGetEmailFromTokenWithoutException() throws JOSEException, BusinessException {
         JwtAuthDto jwtAuthenticationDto = jweService.generateAuthToken("example@example.com", 1L);
         Assertions.assertEquals(
                 "example@example.com",

@@ -18,7 +18,7 @@ public class SecurityContextService {
      *
      * @return id залогиненного из БД
      */
-    public Long getLoggedInUserId() {
+    public Long getLoggedInUserId() throws BusinessException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {

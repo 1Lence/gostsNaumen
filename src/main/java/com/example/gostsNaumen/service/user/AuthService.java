@@ -1,6 +1,7 @@
 package com.example.gostsNaumen.service.user;
 
 import com.example.gostsNaumen.entity.User;
+import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.security.dto.JwtAuthDto;
 import com.example.gostsNaumen.security.dto.RefreshTokenDto;
 import com.example.gostsNaumen.security.dto.UserCredentialsDto;
@@ -40,7 +41,8 @@ public class AuthService {
      * @throws JOSEException           общая ошибка работы с JWT, проблемы с подписями, шифрованием.
      * @see #checkUserCredentials
      */
-    public JwtAuthDto signIn(UserCredentialsDto userCredentialsDto) throws AuthenticationException, JOSEException {
+    public JwtAuthDto signIn(UserCredentialsDto userCredentialsDto)
+            throws AuthenticationException, JOSEException, BusinessException {
         User user = checkUserCredentials(userCredentialsDto);
         return jweService.generateAuthToken(user.getEmail(), user.getId());
     }
@@ -53,7 +55,8 @@ public class AuthService {
      * @throws AuthenticationException какие-либо проблемы с аутентификацией.
      * @throws JOSEException           общая ошибка работы с JWT, проблемы с подписями, шифрованием.
      */
-    public JwtAuthDto refreshToken(RefreshTokenDto refreshTokenDto) throws AuthenticationException, JOSEException {
+    public JwtAuthDto refreshToken(RefreshTokenDto refreshTokenDto)
+            throws AuthenticationException, JOSEException, BusinessException {
         String refreshedToken = refreshTokenDto.refreshToken();
 
         if (refreshedToken != null && jweService.validateJweToken(refreshedToken)) {
@@ -70,7 +73,8 @@ public class AuthService {
      * @return сущность пользователя из БД.
      * @throws AuthenticationException ошибка сверки данных.
      */
-    private User checkUserCredentials(UserCredentialsDto userCredentialsDto) throws AuthenticationException {
+    private User checkUserCredentials(UserCredentialsDto userCredentialsDto)
+            throws AuthenticationException, BusinessException {
         User user = userService.findEntityByEmail(userCredentialsDto.email());
 
         if (passwordEncoder.matches(userCredentialsDto.password(), user.getPasswordHash())) {

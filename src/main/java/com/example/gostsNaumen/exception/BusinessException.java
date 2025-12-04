@@ -6,7 +6,7 @@ import java.util.Arrays;
  * Ошибка, используемая для реализации бизнес логики.
  * Используется для единообразного и удобного создания Handlers.
  */
-public class BusinessException extends RuntimeException {
+public class BusinessException extends Exception {
     private final ErrorCode errorCode;
     private final Object[] args;
 

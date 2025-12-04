@@ -209,7 +209,7 @@ class UserServiceTest {
      * и что имя пользователя в сущности обновляется.
      */
     @Test
-    void updateUserDataShouldUpdateUsernameWhenValidUsernameProvided() {
+    void updateUserDataShouldUpdateUsernameWhenValidUsernameProvided() throws BusinessException {
         Long userId = 1L;
         String newUsername = "newUsername";
         UpdateUserDtoRequest request = new UpdateUserDtoRequest(
@@ -270,7 +270,7 @@ class UserServiceTest {
      * и что email пользователя в сущности обновляется.
      */
     @Test
-    void updateUserDataShouldUpdateEmailWhenValidEmailProvided() {
+    void updateUserDataShouldUpdateEmailWhenValidEmailProvided() throws BusinessException {
         UpdateUserDtoRequest request = new UpdateUserDtoRequest(
                 null, null, "new@example.com", null
         );
@@ -327,7 +327,7 @@ class UserServiceTest {
      * корректно обновляет полное имя пользователя, если оно передано и не является пустым.
      */
     @Test
-    void updateUserDataShouldUpdateFullNameWhenValidFullNameProvided() {
+    void updateUserDataShouldUpdateFullNameWhenValidFullNameProvided() throws BusinessException {
         UpdateUserDtoRequest request = new UpdateUserDtoRequest(
                 null, "New Full Name", null, null
         );
@@ -344,7 +344,7 @@ class UserServiceTest {
      * корректно обновляет роль пользователя, если она передана и не является пустой.
      */
     @Test
-    void updateUserDataShouldUpdateRoleWhenValidRoleProvided() {
+    void updateUserDataShouldUpdateRoleWhenValidRoleProvided() throws BusinessException {
         UpdateUserDtoRequest request = new UpdateUserDtoRequest(
                 null, null, null, "ADMIN"
         );
@@ -362,7 +362,7 @@ class UserServiceTest {
      * Поля, равные null или пустые строки, не изменяются.
      */
     @Test
-    void updateUserDataShouldUpdateOnlyNonNullAndNonEmptyFields() {
+    void updateUserDataShouldUpdateOnlyNonNullAndNonEmptyFields() throws BusinessException {
         UpdateUserDtoRequest request = new UpdateUserDtoRequest(
                 "newUsername", "", null, null
         );

@@ -6,6 +6,7 @@ import com.example.gostsNaumen.controller.dto.request.UpdateUserDtoRequest;
 import com.example.gostsNaumen.controller.dto.response.UserDtoResponse;
 import com.example.gostsNaumen.controller.dto.response.UserIdDtoResponse;
 import com.example.gostsNaumen.entity.User;
+import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.service.user.UserService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -54,7 +55,7 @@ public class UserController {
     public UserDtoResponse updateUserData(
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserDtoRequest updateUserDtoRequest
-    ) {
+    ) throws BusinessException {
         User user = userService.updateUserData(id, updateUserDtoRequest);
 
         return userMapper.mapEntityToDto(user);
@@ -71,7 +72,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('user:read')")
     public UserIdDtoResponse updatePassword(
             @RequestBody @Valid PasswordDtoRequest passwordDtoRequest
-    ) {
+    ) throws BusinessException {
         Long userId = userService.updatePassword(passwordDtoRequest);
 
         return new UserIdDtoResponse(userId);
@@ -84,7 +85,7 @@ public class UserController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('user:write')")
-    public void deleteUserById(@PathVariable Long id) {
+    public void deleteUserById(@PathVariable Long id) throws BusinessException {
         userService.deleteUserById(id);
     }
 }

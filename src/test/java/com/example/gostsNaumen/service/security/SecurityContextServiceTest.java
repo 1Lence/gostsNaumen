@@ -81,7 +81,7 @@ class SecurityContextServiceTest {
      * и principal является экземпляром {@link CustomUserDetails}.
      */
     @Test
-    void getLoggedInUserIdShouldReturnUserIdWhenAuthenticated() {
+    void getLoggedInUserIdShouldReturnUserIdWhenAuthenticated() throws BusinessException {
         UserDetails customUserDetails = new CustomUserDetails(
                 user,
                 List.of(UserRoles.USER)

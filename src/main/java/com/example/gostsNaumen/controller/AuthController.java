@@ -4,6 +4,7 @@ import com.example.gostsNaumen.controller.dto.UserMapper;
 import com.example.gostsNaumen.controller.dto.request.UserDtoRequest;
 import com.example.gostsNaumen.controller.dto.response.UserDtoResponse;
 import com.example.gostsNaumen.entity.User;
+import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.security.dto.JwtAuthDto;
 import com.example.gostsNaumen.security.dto.RefreshTokenDto;
 import com.example.gostsNaumen.security.dto.UserCredentialsDto;
@@ -56,6 +57,8 @@ public class AuthController {
         } catch (AuthenticationException | JOSEException e) {
             logger.error("Authentication failed: {}", e.getMessage(), e);
             throw new RuntimeException("Auth failed: " + e.getMessage(), e);
+        } catch (BusinessException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -70,7 +73,7 @@ public class AuthController {
     @PostMapping("/refresh")
     public JwtAuthDto refresh(
             @RequestBody RefreshTokenDto refreshTokenDto
-    ) throws AuthenticationException, JOSEException {
+    ) throws AuthenticationException, JOSEException, BusinessException {
         return authService.refreshToken(refreshTokenDto);
     }
 
@@ -81,7 +84,7 @@ public class AuthController {
      * @return Сущность записанную в бд.
      */
     @PostMapping("/registration")
-    public ResponseEntity<UserDtoResponse> register(@RequestBody @Valid UserDtoRequest userDtoRequest) {
+    public ResponseEntity<UserDtoResponse> register(@RequestBody @Valid UserDtoRequest userDtoRequest) throws BusinessException {
         User user = userMapper.mapToEntity(userDtoRequest);
         UserDtoResponse userDtoResponse = userMapper.mapEntityToDto(userService.saveUser(user));
         return new ResponseEntity<>(userDtoResponse, HttpStatus.CREATED);

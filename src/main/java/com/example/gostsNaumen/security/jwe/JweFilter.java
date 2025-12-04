@@ -63,7 +63,11 @@ public class JweFilter extends OncePerRequestFilter {
 
         if (token != null) {
             if (jweService.validateJweToken(token)) {
-                setCustomUserDetailsToSecurityContextHolder(token);
+                try {
+                    setCustomUserDetailsToSecurityContextHolder(token);
+                } catch (BusinessException e) {
+                    throw new RuntimeException(e);
+                }
             } else {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Невалидный токен.");
                 return;
@@ -82,7 +86,7 @@ public class JweFilter extends OncePerRequestFilter {
      *
      * @param token Валидный JWE-токен, из которого будет извлечён email.
      */
-    private void setCustomUserDetailsToSecurityContextHolder(String token) {
+    private void setCustomUserDetailsToSecurityContextHolder(String token) throws BusinessException {
         try {
             String email = jweService.getEmailFromToken(token);
 

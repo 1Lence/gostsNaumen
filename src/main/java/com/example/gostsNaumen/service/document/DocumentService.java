@@ -30,7 +30,7 @@ public class DocumentService {
      * @return сохраненная сущность в бд
      */
     @Transactional
-    public Document saveDocument(Document documentForSave) {
+    public Document saveDocument(Document documentForSave) throws BusinessException {
 
         Optional<Document> interferingDocument = documentRepository
                 .findByFullNameAndStatus(documentForSave.getFullName(), StatusEnum.CURRENT);
@@ -55,7 +55,7 @@ public class DocumentService {
      * @return найденный по ID ГОСТ
      */
     @Transactional
-    public Document getDocumentById(Long id) {
+    public Document getDocumentById(Long id) throws BusinessException {
         if (id == null) {
             throw new IllegalArgumentException("Поиск по пустому ID");
         }
@@ -83,7 +83,7 @@ public class DocumentService {
      * @param id id ГОСТа
      */
     @Transactional
-    public void deleteDocumentById(Long id) {
+    public void deleteDocumentById(Long id) throws BusinessException {
         if (id == null) {
             throw new IllegalArgumentException("Получен null id");
         }
@@ -103,7 +103,7 @@ public class DocumentService {
      * @return {@code document} – обновлённый документ
      */
     @Transactional
-    public Document updateDocument(Document document) {
+    public Document updateDocument(Document document) throws BusinessException {
 
         Long id = document.getId();
 
