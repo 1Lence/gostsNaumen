@@ -59,6 +59,22 @@ public enum ErrorCode {
             "STANDARD_BY_NAME_WITH_CURRENT_STATUS_ALREADY_EXIST",
             "Уже существует актуальынй стандарт с таким именем, сначала архивируйте его",
             HttpStatus.CONFLICT),
+    /**
+     * Код, отвечающий за ситуацию, когда происходит попытка загрузки файла, но файл не был передан
+     */
+    NULL_FILE_DATA_REQUEST("NULL_FILE_DATA", "Не было загружено документа", HttpStatus.BAD_REQUEST),
+    /**
+     * Код, отвечающий за ситуацию, когда происходит попытка скачивания файла, но файл у ГОСТа отсутствует
+     */
+    NULL_FILE_DATA_RESPONSE("NULL_FILE_DATA", "Документ у данного госта отсутствует", HttpStatus.BAD_REQUEST),
+    /**
+     * Код, отвечающий за ситуацию, когда происходит попытка удаления файла, но файл у ГОСТа отсутствует
+     */
+    FILE_ALREADY_NULL("FILE_ALREADY_NULL", "Файл отсутствует у ГОСТа", HttpStatus.BAD_REQUEST),
+    /**
+     * Код, отвечающий за ситуацию, когда происходит попытка <b>сохранения</b>, но гост уже имеет файл
+     */
+    FILE_ALREADY_EXIST("FILE_ALREADY_NULL", "Файл уже существует у ГОСТа", HttpStatus.CONFLICT),
     ;
 
     private final String code;

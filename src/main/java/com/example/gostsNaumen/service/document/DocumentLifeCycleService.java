@@ -32,7 +32,7 @@ public class DocumentLifeCycleService {
      * @param status   целевой статус
      * @return документ с новым статусом
      */
-    public Document doLifeCycleTransition(Document document, StatusEnum status) {
+    public Document doLifeCycleTransition(Document document, StatusEnum status) throws BusinessException {
 
         if (!isTransitionAllowed(document.getStatus(), status)) {
             throw new BusinessException(
@@ -52,7 +52,7 @@ public class DocumentLifeCycleService {
      * @param document     документ, у которого хотят поменять статус
      * @param targetStatus целевой статус, на который производится попытка замены
      */
-    private void checkInterferingDocuments(Document document, StatusEnum targetStatus) {
+    private void checkInterferingDocuments(Document document, StatusEnum targetStatus) throws BusinessException {
         Optional<Document> interferingDocument = documentRepository.findByFullNameAndStatus(
                 document.getFullName(), StatusEnum.CURRENT);
 

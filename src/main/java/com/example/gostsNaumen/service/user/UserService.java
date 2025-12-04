@@ -41,7 +41,7 @@ public class UserService {
      * @return сохранённая сущность в БД.
      */
     @Transactional
-    public User saveUser(User user) {
+    public User saveUser(User user) throws BusinessException {
         if (userRepository.findUserByEmail(user.getEmail()).isPresent()) {
             throw new BusinessException(
                     ErrorCode.USER_FIELDS_ALREADY_EXIST,
@@ -66,7 +66,7 @@ public class UserService {
      * @param email почта пользователя.
      * @return сущность пользователя из БД.
      */
-    public User findEntityByEmail(String email) {
+    public User findEntityByEmail(String email) throws BusinessException {
         return userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new BusinessException(
                         ErrorCode.USER_NOT_FOUND,
@@ -82,7 +82,7 @@ public class UserService {
      * @param id айди пользователя
      * @return сущность пользователя из БД.
      */
-    public User findEntityById(Long id) {
+    public User findEntityById(Long id) throws BusinessException {
         return userRepository.findById(id).orElseThrow(() -> new BusinessException(
                 ErrorCode.USER_NOT_FOUND,
                 String.format("Пользователя по ID: %s не существует", id))
@@ -98,14 +98,18 @@ public class UserService {
      * @return обновленная сущность пользователя
      */
     @Transactional
-    public User updateUserData(Long id, UpdateUserDtoRequest updateUserDtoRequest) {
+    public User updateUserData(Long id, UpdateUserDtoRequest updateUserDtoRequest) throws BusinessException {
         User user = findEntityById(id);
 
         if (updateUserDtoRequest.userName() != null && !updateUserDtoRequest.userName().isEmpty()) {
             userRepository.findUserByUsername(updateUserDtoRequest.userName())
                     .ifPresent(u -> {
-                        throw new BusinessException(ErrorCode.USER_FIELDS_ALREADY_EXIST,
-                                String.format("Пользователь с ником: %s уже существует", u.getUsername()));
+                        try {
+                            throw new BusinessException(ErrorCode.USER_FIELDS_ALREADY_EXIST,
+                                    String.format("Пользователь с ником: %s уже существует", u.getUsername()));
+                        } catch (BusinessException e) {
+                            throw new RuntimeException(e);
+                        }
                     });
 
             user.setUsername(updateUserDtoRequest.userName());
@@ -113,8 +117,12 @@ public class UserService {
         if (updateUserDtoRequest.email() != null && !updateUserDtoRequest.email().isEmpty()) {
             userRepository.findUserByEmail(updateUserDtoRequest.email())
                     .ifPresent(u -> {
-                        throw new BusinessException(ErrorCode.USER_FIELDS_ALREADY_EXIST,
-                                String.format("Пользователь с почтой: %s уже существует", u.getEmail()));
+                        try {
+                            throw new BusinessException(ErrorCode.USER_FIELDS_ALREADY_EXIST,
+                                    String.format("Пользователь с почтой: %s уже существует", u.getEmail()));
+                        } catch (BusinessException e) {
+                            throw new RuntimeException(e);
+                        }
                     });
 
             user.setEmail(updateUserDtoRequest.email());
@@ -136,7 +144,7 @@ public class UserService {
      * @param newPassword ДТО с новым паролем пользователя
      */
     @Transactional
-    public Long updatePassword(PasswordDtoRequest newPassword) {
+    public Long updatePassword(PasswordDtoRequest newPassword) throws BusinessException {
         Long userId = securityContextService.getLoggedInUserId();
 
         User user = findEntityById(userId);
@@ -163,7 +171,7 @@ public class UserService {
      * @param id id пользователя в БД
      */
     @Transactional
-    public void deleteUserById(Long id) {
+    public void deleteUserById(Long id) throws BusinessException {
         findEntityById(id);
 
         userRepository.deleteById(id);

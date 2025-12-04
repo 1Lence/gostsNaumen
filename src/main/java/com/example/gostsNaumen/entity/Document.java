@@ -131,6 +131,11 @@ public class Document {
     @Column(name = "references_list")
     private Set<String> references = new HashSet<>();
 
+    @Lob
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "file_data")
+    private byte[] fileData;
+
     public Document() {
     }
 
@@ -282,6 +287,14 @@ public class Document {
 
     public AcceptedFirstTimeOrReplacedEnum getAcceptedFirstTimeOrReplaced() {
         return acceptedFirstTimeOrReplaced;
+    }
+
+    public byte[] getFileData() {
+        return fileData;
+    }
+
+    public void setFileData(byte[] fileData) {
+        this.fileData = fileData;
     }
 
     public void setAcceptedFirstTimeOrReplaced(AcceptedFirstTimeOrReplacedEnum acceptedFirstTimeOrReplaced) {

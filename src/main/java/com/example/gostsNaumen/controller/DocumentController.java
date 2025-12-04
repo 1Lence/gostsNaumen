@@ -11,6 +11,7 @@ import com.example.gostsNaumen.controller.dto.response.StandardIdDtoResponse;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
+import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
 import com.example.gostsNaumen.service.document.DocumentLifeCycleService;
 import com.example.gostsNaumen.service.document.DocumentService;
@@ -69,11 +70,11 @@ public class DocumentController {
      * @param documentDtoRequest {@link DocumentDtoRequest} ДТО ГОСТа
      * @return id успешно добавленного ГОСТа
      */
-    @PostMapping()
+    @PostMapping
     @PreAuthorize("hasAuthority('user:read')")
     public StandardIdDtoResponse addDocument(
             @RequestBody @Valid DocumentDtoRequest documentDtoRequest
-    ) {
+    ) throws BusinessException {
         Document document = documentMapper.createDocumentEntity(documentDtoRequest);
 
         return new StandardIdDtoResponse(documentService.saveDocument(document).getId());
@@ -87,7 +88,7 @@ public class DocumentController {
      */
     @GetMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:read')")
-    public DocumentDtoResponse getDocument(@PathVariable Long docId) {
+    public DocumentDtoResponse getDocument(@PathVariable Long docId) throws BusinessException {
         Document document = documentService.getDocumentById(docId);
 
         return documentMapper.mapEntityToDto(document);
@@ -116,7 +117,7 @@ public class DocumentController {
      */
     @DeleteMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:write')")
-    public void deleteDocument(@PathVariable Long docId) {
+    public void deleteDocument(@PathVariable Long docId) throws BusinessException {
         documentService.deleteDocumentById(docId);
     }
 
@@ -132,7 +133,7 @@ public class DocumentController {
     public DocumentDtoResponse updateDocument(
             @PathVariable Long docId,
             @RequestBody @Valid ActualizeDtoRequest dtoWithNewValues
-    ) {
+    ) throws BusinessException {
         Document oldDocument = documentService.getDocumentById(docId);
         Document documentWithNewFieldsValues = documentFieldsActualizer.setNewValues(oldDocument, dtoWithNewValues);
 
@@ -144,7 +145,7 @@ public class DocumentController {
     public DocumentDtoResponse updateDocumentStatus(
             @PathVariable Long docId,
             @RequestBody @Valid NewStatusDtoRequest newStatus
-    ) {
+    ) throws BusinessException {
         Document documentToUpdate = documentService.getDocumentById(docId);
         Document documentWithNewStatus = documentLifeCycleService.doLifeCycleTransition(
                 documentToUpdate,
@@ -152,5 +153,4 @@ public class DocumentController {
 
         return documentMapper.mapEntityToDto(documentWithNewStatus);
     }
-
 }

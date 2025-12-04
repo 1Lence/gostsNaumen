@@ -98,7 +98,7 @@ public class JweService {
      * <p>
      * Пользователю ничего не говорится, т.к. ошибки связанные с токеном могут говорить о попытке взлома.
      */
-    public String getEmailFromToken(String token) {
+    public String getEmailFromToken(String token) throws BusinessException {
         try {
             SignedJWT signedJWT = parseJweToSignedJWT(token);
 
@@ -222,7 +222,7 @@ public class JweService {
      * @throws JOSEException         в случае ошибки при расшифровке JWE.
      * @throws IllegalStateException если длина ключа дешифрования некорректна для A256GCM.
      */
-    private SignedJWT parseJweToSignedJWT(String jweString) throws ParseException, JOSEException {
+    private SignedJWT parseJweToSignedJWT(String jweString) throws ParseException, JOSEException, BusinessException {
         JWEObject jweObject = JWEObject.parse(jweString);
 
         SecretKey decryptionKey = getEncryptionKey();

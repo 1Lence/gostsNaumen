@@ -13,6 +13,14 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  servlet:
+    multipart:
+      max-file-size: ${MULTIPART_SIZE}
+      max-request-size: ${MULTIPART_REQUEST_SIZE}
+      location: ${MULTIPART_LOCATION}
+      file-size-threshold: ${MULTIPART_SIZE_THRESHOLD}
+      enabled: ${MULTIPART_ENABLED}
+
 app:
   jws:
     secret: ${JWS_SECRET}
