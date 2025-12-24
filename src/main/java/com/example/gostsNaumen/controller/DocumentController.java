@@ -9,11 +9,13 @@ import com.example.gostsNaumen.controller.dto.request.NewStatusDtoRequest;
 import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
 import com.example.gostsNaumen.controller.dto.response.StandardIdDtoResponse;
 import com.example.gostsNaumen.entity.Document;
+import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
 import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
 import com.example.gostsNaumen.service.document.DocumentLifeCycleService;
 import com.example.gostsNaumen.service.document.DocumentService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
@@ -21,6 +23,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Контроллер по работе с гостами
@@ -57,6 +60,7 @@ public class DocumentController {
      */
     @GetMapping("/documents")
     @PreAuthorize("hasAuthority('user:read')")
+    @Transactional
     public List<DocumentDtoResponse> getAll() {
         return documentService.findAll().stream().map(documentMapper::mapEntityToDto).toList();
     }
@@ -67,10 +71,16 @@ public class DocumentController {
      * "Заменённый"
      *
      * @param documentDtoRequest {@link DocumentDtoRequest} ДТО ГОСТа
-     * @return id успешно добавленного ГОСТа
+     * @return <ul><li>В случае успешного добавления возвращается {"id":{@code id госта}}</li>
+     * <li>В случае попытки добавления существующего стандарта возвращается
+     * {@link com.example.gostsNaumen.handler.ErrorResponse} с кодом {@code 409 CONFLICT}</li>
+     * <li>В случае некорректных полей возвращается {@link com.example.gostsNaumen.handler.ErrorResponse}
+     * с перечислением ошибок валидации</li>
+     * </ul>
      */
     @PostMapping()
     @PreAuthorize("hasAuthority('user:read')")
+    @Transactional
     public StandardIdDtoResponse addDocument(
             @RequestBody @Valid DocumentDtoRequest documentDtoRequest
     ) {
@@ -83,12 +93,21 @@ public class DocumentController {
      * Получение ГОСТа по ID
      *
      * @param docId ID приходящий в запросе
-     * @return ДТО ГОСТа
+     * @return <ul>
+     * <li>В случае успешного поиска документа по id, возвращает {@link DocumentDtoResponse}</li>
+     * <li>В случае, если документ не был найден, возвращается {@link com.example.gostsNaumen.handler.ErrorResponse}
+     * с кодом {@code 404 NOT FOUND}</li>
+     * <li>В случае передачи некорректного {@code /{docId}} возвращается
+     * {@link com.example.gostsNaumen.handler.ErrorResponse} с кодом {@code 400 BAD REQUEST}</li>
+     * </ul>
      */
     @GetMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:read')")
+    @Transactional
     public DocumentDtoResponse getDocument(@PathVariable Long docId) {
-        Document document = documentService.getDocumentById(docId);
+        Document document = documentService.getDocumentById(docId).orElseThrow(
+                () -> new CustomEntityNotFoundException("По id - %d документ не найден!".formatted(docId))
+        );
 
         return documentMapper.mapEntityToDto(document);
     }
@@ -111,11 +130,14 @@ public class DocumentController {
 
     /**
      * Удаление ГОСТа по ID
+     * <p>
+     * В случае успешного удаления возвращается HTTP-ответ со статусом 200 OK
      *
      * @param docId id Документа
      */
     @DeleteMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:write')")
+    @Transactional
     public void deleteDocument(@PathVariable Long docId) {
         documentService.deleteDocumentById(docId);
     }
@@ -129,25 +151,43 @@ public class DocumentController {
      */
     @PatchMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:write')")
+    @Transactional
     public DocumentDtoResponse updateDocument(
             @PathVariable Long docId,
             @RequestBody @Valid ActualizeDtoRequest dtoWithNewValues
     ) {
-        Document oldDocument = documentService.getDocumentById(docId);
+        Document oldDocument = documentService.getDocumentById(docId).orElseThrow(
+                () -> new CustomEntityNotFoundException("По id - %d документ не найден!".formatted(docId))
+        );
         Document documentWithNewFieldsValues = documentFieldsActualizer.setNewValues(oldDocument, dtoWithNewValues);
 
         return documentMapper.mapEntityToDto(documentService.updateDocument(documentWithNewFieldsValues));
     }
 
+    /**
+     * Метод для обновления статуса документа
+     *
+     * @param docId     идентификатор документа, у которого мы меняем статус
+     * @param newStatus новый статус документа
+     * @return <ul>
+     *     <li>В случае успеха возвращает {@link DocumentDtoResponse} с обновлённым статусом</li>
+     *     <li>В случае ошибки возвращается {@link com.example.gostsNaumen.handler.ErrorResponse} с причиной ошибки</li>
+     * </ul>
+     */
     @PatchMapping("/{docId}/status")
     @PreAuthorize("hasAuthority('user:write')")
     public DocumentDtoResponse updateDocumentStatus(
             @PathVariable Long docId,
             @RequestBody @Valid NewStatusDtoRequest newStatus
     ) {
-        Document documentToUpdate = documentService.getDocumentById(docId);
+        Optional<Document> documentToUpdate = documentService.getDocumentById(docId);
+
+        if (documentToUpdate.isEmpty()) {
+            throw new CustomEntityNotFoundException("Документ для обновления по id - %d не найден".formatted(docId));
+        }
+
         Document documentWithNewStatus = documentLifeCycleService.doLifeCycleTransition(
-                documentToUpdate,
+                documentToUpdate.get(),
                 rusEngEnumConverter.convertToEnglishValue(newStatus.newStatus(), StatusEnum.class));
 
         return documentMapper.mapEntityToDto(documentWithNewStatus);

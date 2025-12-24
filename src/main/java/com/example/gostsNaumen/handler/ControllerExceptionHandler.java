@@ -1,6 +1,6 @@
 package com.example.gostsNaumen.handler;
 
-import com.example.gostsNaumen.exception.BusinessException;
+import com.example.gostsNaumen.exception.InvalidTokenException;
 import com.example.gostsNaumen.handler.dto.ValidationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -58,25 +59,37 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
         );
     }
 
-    /**
-     * Обработка ошибок бизнес-логики приложения
-     *
-     * @param exception возникает при ошибках в бизнес-логике
-     * @param request   данные HTTP запроса
-     * @return удобочитаемый JSON с описанием ошибки
-     */
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessException(final BusinessException exception, WebRequest request) {
-        log.info("BusinessException: {}", exception.getMessage());
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+            final MethodArgumentTypeMismatchException exception,
+            WebRequest request) {
+        log.info("Method Argument Type Mismatch Exception: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
         return new ResponseEntity<>(
                 new ErrorResponse()
                         .setTimestamp(LocalDateTime.now())
-                        .setMessage(exception.getFormattedMessage())
-                        .setStatus(exception.getErrorCode().getStatus())
+                        .setMessage("Некорректный аргумент: %s".formatted(exception.getValue()))
+                        .setStatus(HttpStatus.BAD_REQUEST)
                         .setUrl(getUrl(request)),
-                exception.getErrorCode().getStatus()
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidTokenError(
+            final InvalidTokenException exception,
+            WebRequest request) {
+        log.info("Invalid Token Exception: {}", exception.getMessage());
+        log.debug(exception.getMessage(), exception);
+
+        return new ResponseEntity<>(
+                new ErrorResponse()
+                        .setTimestamp(LocalDateTime.now())
+                        .setMessage(exception.getMessage())
+                        .setStatus(HttpStatus.UNAUTHORIZED)
+                        .setUrl(getUrl(request)),
+                HttpStatus.UNAUTHORIZED
         );
     }
 }

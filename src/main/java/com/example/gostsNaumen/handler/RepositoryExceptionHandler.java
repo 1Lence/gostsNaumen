@@ -1,7 +1,8 @@
 package com.example.gostsNaumen.handler;
 
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
+import com.example.gostsNaumen.exception.CustomEntityExistsException;
+import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
+import com.example.gostsNaumen.exception.LifeCycleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -27,9 +28,11 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
      * @param request   http запрос
      * @return HTTP Status код и JSON с ответом
      */
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException exception, WebRequest request) {
-        log.info("EntityNotFoundException: {}", exception.getMessage());
+    @ExceptionHandler(CustomEntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(
+            CustomEntityNotFoundException exception,
+            WebRequest request) {
+        log.info("CustomEntityNotFoundException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
         return new ResponseEntity<>(
@@ -45,12 +48,14 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
     /**
      * Отлавливает ошибки связанные с неверно переданными аргументами в метод
      *
-     * @param exception возникает при передачи неверных параметров в метод
+     * @param exception возникает при передаче неверных параметров в метод
      * @param request   http запрос
      * @return HTTP Status код и JSON с ответом
      */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException exception, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(
+            IllegalArgumentException exception,
+            WebRequest request) {
         log.info("IllegalArgumentException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
@@ -68,13 +73,40 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
      * Отлавливает ошибки связанные с попыткой добавить сущность/данные в сущность,
      * которые уже существуют в бд и/или помечены как unique.
      *
-     * @param exception возникает при отсутствии сущности при попытке вставить повторяющиеся данные
+     * @param exception возникает если сохраняемая сущность уже существует
      * @param request   http запрос
      * @return HTTP Status код и JSON с ответом
      */
-    @ExceptionHandler(EntityExistsException.class)
-    public ResponseEntity<?> handleEntityExistingException(EntityExistsException exception, WebRequest request) {
-        log.info("EntityExistsException: {}", exception.getMessage());
+    @ExceptionHandler(CustomEntityExistsException.class)
+    public ResponseEntity<?> handleEntityExistingException(
+            CustomEntityExistsException exception,
+            WebRequest request) {
+        log.info("CustomEntityExistsException: {}", exception.getMessage());
+        log.debug(exception.getMessage(), exception);
+
+        return new ResponseEntity<>(
+                new ErrorResponse()
+                        .setTimestamp(LocalDateTime.now())
+                        .setMessage(exception.getMessage())
+                        .setStatus(HttpStatus.CONFLICT)
+                        .setUrl(getUrl(request)),
+                HttpStatus.CONFLICT
+        );
+    }
+
+    /**
+     * Отлавливает ошибки связанные с попыткой добавить сущность/данные в сущность,
+     * которые уже существуют в бд и/или помечены как unique.
+     *
+     * @param exception возникает если сохраняемая сущность уже существует
+     * @param request   http запрос
+     * @return HTTP Status код и JSON с ответом
+     */
+    @ExceptionHandler(LifeCycleException.class)
+    public ResponseEntity<?> handleEntityExistingException(
+            LifeCycleException exception,
+            WebRequest request) {
+        log.info("LifeCycleException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
         return new ResponseEntity<>(

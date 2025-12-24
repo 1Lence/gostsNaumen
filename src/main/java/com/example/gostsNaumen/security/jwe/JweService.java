@@ -1,7 +1,6 @@
 package com.example.gostsNaumen.security.jwe;
 
-import com.example.gostsNaumen.exception.BusinessException;
-import com.example.gostsNaumen.exception.ErrorCode;
+import com.example.gostsNaumen.exception.InvalidTokenException;
 import com.example.gostsNaumen.security.dto.JwtAuthDto;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.DirectDecrypter;
@@ -105,14 +104,14 @@ public class JweService {
             String subject = signedJWT.getJWTClaimsSet().getSubject();
 
             if (subject == null) {
-                throw new BusinessException(ErrorCode.INVALID_TOKEN);
+                throw new InvalidTokenException("Неправильный токен");
             }
 
             return signedJWT.getJWTClaimsSet().getSubject();
 
         } catch (ParseException | JOSEException e) {
             log.error("Не удалось получить почту из JWE токена", e);
-            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+            throw new InvalidTokenException("Неправильный токен");
         }
     }
 
@@ -234,7 +233,7 @@ public class JweService {
 
         if (!"JWT".equals(jweObject.getHeader().getContentType())) {
             log.error("Ожидается, что Header JWE будет представлять собой JWT");
-            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+            throw new InvalidTokenException("Неправильный токен");
         }
 
         return SignedJWT.parse(jweObject.getPayload().toString());

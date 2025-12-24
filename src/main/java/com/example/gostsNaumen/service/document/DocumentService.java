@@ -1,13 +1,12 @@
 package com.example.gostsNaumen.service.document;
 
 import com.example.gostsNaumen.entity.Document;
+import com.example.gostsNaumen.exception.CustomEntityExistsException;
+import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
 import com.example.gostsNaumen.entity.model.StatusEnum;
-import com.example.gostsNaumen.exception.BusinessException;
-import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,20 +28,14 @@ public class DocumentService {
      * @param documentForSave Сущность из БД
      * @return сохраненная сущность в бд
      */
-    @Transactional
     public Document saveDocument(Document documentForSave) {
 
         Optional<Document> interferingDocument = documentRepository
                 .findByFullNameAndStatus(documentForSave.getFullName(), StatusEnum.CURRENT);
 
-        if (interferingDocument.isPresent()) {
-            Long interferingDocumentId = interferingDocument.get().getId();
-            throw new BusinessException(
-                    ErrorCode.STANDARD_BY_NAME_WITH_CURRENT_STATUS_ALREADY_EXIST,
-                    "Документ с таким fullName: %s и статусом \"Актуален\" уже существует. Пожалуйста, измените его статус перед сохранением новой версии. ID документа: %d"
-                            .formatted(documentForSave.getFullName(), interferingDocumentId)
-
-            );
+        if (interferingDocument.isPresent() && documentForSave.getStatus() == StatusEnum.CURRENT) {
+            throw new CustomEntityExistsException(
+                    "Гост c таким full_name: " + documentForSave.getFullName() + " уже существует!");
         }
 
         return documentRepository.save(documentForSave);
@@ -54,16 +47,13 @@ public class DocumentService {
      * @param id id ГОСТа
      * @return найденный по ID ГОСТ
      */
-    @Transactional
-    public Document getDocumentById(Long id) {
+    public Optional<Document> getDocumentById(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("Поиск по пустому ID");
+            throw new IllegalArgumentException("Некорректный аргумент: " + id);
         }
 
         return documentRepository
-                .findById(id).orElseThrow(() -> new BusinessException(
-                        ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
-                        String.format("По переданному ID: %s, нет стандарта", id)));
+                .findById(id);
     }
 
     /**
@@ -72,7 +62,6 @@ public class DocumentService {
      * @param specification фильтры
      * @return список сущностей найденных по фильтрам
      */
-    @Transactional(readOnly = true)
     public List<Document> getAllDocumentsByFilters(Specification<Document> specification) {
         return documentRepository.findAll(specification);
     }
@@ -82,14 +71,12 @@ public class DocumentService {
      *
      * @param id id ГОСТа
      */
-    @Transactional
     public void deleteDocumentById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("Получен null id");
         }
         if (!documentRepository.existsById(id)) {
-            throw new BusinessException(
-                    ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+            throw new CustomEntityNotFoundException(
                     String.format("По переданному ID: %s, нет стандарта", id)
             );
         }
@@ -102,13 +89,13 @@ public class DocumentService {
      * @param document документ с уже обновлёнными полями, которые нужно сохранить
      * @return {@code document} – обновлённый документ
      */
-    @Transactional
     public Document updateDocument(Document document) {
 
         Long id = document.getId();
 
         if (!documentRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS);
+            throw new CustomEntityNotFoundException(
+                    String.format("По переданному ID: %s, нет стандарта", id));
         }
 
         return documentRepository.save(document);

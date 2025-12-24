@@ -204,7 +204,7 @@ class UserControllerTest {
     }
 
     /**
-     * Проверяет, что метод удаления пользователя возвращает статус 200 OK.
+     * Проверяет, что метод удаления пользователя возвращает статус 200 OK и никнейм удалённого пользователя.
      *
      * <P>Этот тест проверяет, что при вызове метода {@link UserController#deleteUserById(Long)}
      * сервис вызывает удаление пользователя по ID, и что HTTP-ответ возвращает статус 200 OK.</P>
@@ -213,9 +213,16 @@ class UserControllerTest {
     void deleteUserByIdShouldReturnStatusOk() throws Exception {
         Long userId = 1L;
 
+        Mockito.when(userService.deleteUserById(userId)
+        ).thenReturn("username");
+
         mockMvc.perform(
-                MockMvcRequestBuilders.delete("/api/user/{id}", userId)
-        ).andExpect(MockMvcResultMatchers.status().isOk());
+                        MockMvcRequestBuilders.delete("/api/user/{id}", userId)
+                ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                        .value("Пользователь успешно удалён"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.deletedUsername")
+                        .value("username"));
 
         Mockito.verify(userService).deleteUserById(userId);
     }

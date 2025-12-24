@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -14,9 +13,17 @@ import java.util.Optional;
  */
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Long>, JpaSpecificationExecutor<Document> {
+    /**
+     * Поиск пользователя по полному имени записанному в БД
+     *
+     * @param fullName полное имя пользователя
+     * @return сущность Document обернутую в {@link Optional}
+     */
     Optional<Document> findByFullName(String fullName);
 
-    Optional<List<Document>> findAllByFullName(String fullName);
-
+    /**
+     * Метод, необходимый для поиска стандарта по его полному имени и статусу
+     */
     Optional<Document> findByFullNameAndStatus(String fullName, StatusEnum status);
+
 }

@@ -3,14 +3,13 @@ package com.example.gostsNaumen.service.user;
 import com.example.gostsNaumen.controller.dto.request.PasswordDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.UpdateUserDtoRequest;
 import com.example.gostsNaumen.entity.User;
-import com.example.gostsNaumen.exception.BusinessException;
-import com.example.gostsNaumen.exception.ErrorCode;
+import com.example.gostsNaumen.exception.CustomEntityExistsException;
+import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
 import com.example.gostsNaumen.repository.UserRepository;
 import com.example.gostsNaumen.security.permission.UserRoles;
 import com.example.gostsNaumen.service.security.SecurityContextService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,16 +39,13 @@ public class UserService {
      * @param user сущность пригодная для сохранения.
      * @return сохранённая сущность в БД.
      */
-    @Transactional
     public User saveUser(User user) {
         if (userRepository.findUserByEmail(user.getEmail()).isPresent()) {
-            throw new BusinessException(
-                    ErrorCode.USER_FIELDS_ALREADY_EXIST,
+            throw new CustomEntityExistsException(
                     String.format("Пользователь с почтой %s, уже существует", user.getEmail())
             );
         } else if (userRepository.findUserByUsername(user.getUsername()).isPresent()) {
-            throw new BusinessException(
-                    ErrorCode.USER_FIELDS_ALREADY_EXIST,
+            throw new CustomEntityExistsException(
                     String.format("Пользователь с ником %s, уже существует", user.getUsername())
             );
         }
@@ -68,8 +64,7 @@ public class UserService {
      */
     public User findEntityByEmail(String email) {
         return userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new BusinessException(
-                        ErrorCode.USER_NOT_FOUND,
+                .orElseThrow(() -> new CustomEntityNotFoundException(
                         String.format("Пользователя по почте: %s не существует", email)));
     }
 
@@ -83,8 +78,7 @@ public class UserService {
      * @return сущность пользователя из БД.
      */
     public User findEntityById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new BusinessException(
-                ErrorCode.USER_NOT_FOUND,
+        return userRepository.findById(id).orElseThrow(() -> new CustomEntityNotFoundException(
                 String.format("Пользователя по ID: %s не существует", id))
         );
     }
@@ -97,14 +91,13 @@ public class UserService {
      * @param updateUserDtoRequest дто с данными пользователя
      * @return обновленная сущность пользователя
      */
-    @Transactional
     public User updateUserData(Long id, UpdateUserDtoRequest updateUserDtoRequest) {
         User user = findEntityById(id);
 
         if (updateUserDtoRequest.userName() != null && !updateUserDtoRequest.userName().isEmpty()) {
             userRepository.findUserByUsername(updateUserDtoRequest.userName())
                     .ifPresent(u -> {
-                        throw new BusinessException(ErrorCode.USER_FIELDS_ALREADY_EXIST,
+                        throw new CustomEntityExistsException(
                                 String.format("Пользователь с ником: %s уже существует", u.getUsername()));
                     });
 
@@ -113,7 +106,7 @@ public class UserService {
         if (updateUserDtoRequest.email() != null && !updateUserDtoRequest.email().isEmpty()) {
             userRepository.findUserByEmail(updateUserDtoRequest.email())
                     .ifPresent(u -> {
-                        throw new BusinessException(ErrorCode.USER_FIELDS_ALREADY_EXIST,
+                        throw new CustomEntityExistsException(
                                 String.format("Пользователь с почтой: %s уже существует", u.getEmail()));
                     });
 
@@ -135,7 +128,6 @@ public class UserService {
      *
      * @param newPassword ДТО с новым паролем пользователя
      */
-    @Transactional
     public Long updatePassword(PasswordDtoRequest newPassword) {
         Long userId = securityContextService.getLoggedInUserId();
 
@@ -152,7 +144,6 @@ public class UserService {
      *
      * @return список пользователей
      */
-    @Transactional(readOnly = true)
     public List<User> findAll() {
         return Collections.unmodifiableList(userRepository.findAll());
     }
@@ -162,10 +153,11 @@ public class UserService {
      *
      * @param id id пользователя в БД
      */
-    @Transactional
-    public void deleteUserById(Long id) {
-        findEntityById(id);
+    public String deleteUserById(Long id) {
+        String username = findEntityById(id).getUsername();
 
         userRepository.deleteById(id);
+
+        return username;
     }
 }
