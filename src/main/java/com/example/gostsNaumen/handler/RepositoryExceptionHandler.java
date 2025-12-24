@@ -28,7 +28,9 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
      * @return HTTP Status код и JSON с ответом
      */
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException exception, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(
+            com.example.gostsNaumen.exception.EntityNotFoundException exception,
+            WebRequest request) {
         log.info("EntityNotFoundException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
@@ -68,11 +70,11 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
      * Отлавливает ошибки связанные с попыткой добавить сущность/данные в сущность,
      * которые уже существуют в бд и/или помечены как unique.
      *
-     * @param exception возникает при отсутствии сущности при попытке вставить повторяющиеся данные
+     * @param exception возникает если сохраняемая сущность уже существует
      * @param request   http запрос
      * @return HTTP Status код и JSON с ответом
      */
-    @ExceptionHandler(EntityExistsException.class)
+    @ExceptionHandler(com.example.gostsNaumen.exception.EntityExistsException.class)
     public ResponseEntity<?> handleEntityExistingException(EntityExistsException exception, WebRequest request) {
         log.info("EntityExistsException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
