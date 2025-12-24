@@ -81,7 +81,10 @@ class DocumentServiceTest {
      */
     @Test
     void saveDocumentShouldThrowExceptionWhenDocumentAlreadyExists() {
-        Mockito.when(documentRepository.findByFullName(document.getFullName()))
+
+        document.setStatus(StatusEnum.CURRENT);
+
+        Mockito.when(documentRepository.findByFullNameAndStatus(document.getFullName(), StatusEnum.CURRENT))
                 .thenReturn(Optional.of(document));
 
         CustomEntityExistsException testException = Assertions.assertThrows(CustomEntityExistsException.class,
@@ -121,7 +124,7 @@ class DocumentServiceTest {
      * Также проверяет текст ошибки, он должен соответствовать {@code По переданному id нет стандарта}
      */
     @Test
-    void deleteDocumentShouldThrowBusinessExceptionWhenDocumentDoesNotExist() {
+    void deleteDocumentShouldThrowCustomEntityNotFoundExceptionWhenDocumentDoesNotExist() {
         Mockito.when(documentRepository.existsById(document.getId())).thenReturn(false);
 
         CustomEntityNotFoundException testException = Assertions.assertThrows(CustomEntityNotFoundException.class,
@@ -135,7 +138,7 @@ class DocumentServiceTest {
      * Также проверяет текст ошибки, он должен соответствовать {@code По переданному id нет стандарта}
      */
     @Test
-    void updateDocumentShouldThrowBusinessExceptionWhenDocumentDoesNotExist() {
+    void updateDocumentShouldThrowCustomEntityNotFoundExceptionWhenDocumentDoesNotExist() {
         Document testDocument = new Document();
         testDocument.setId(2L);
 

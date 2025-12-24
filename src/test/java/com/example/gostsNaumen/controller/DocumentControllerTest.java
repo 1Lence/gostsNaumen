@@ -13,7 +13,9 @@ import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import com.example.gostsNaumen.exception.CustomEntityExistsException;
 import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
+import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
 import com.example.gostsNaumen.security.jwe.JweFilter;
+import com.example.gostsNaumen.service.document.DocumentLifeCycleService;
 import com.example.gostsNaumen.service.document.DocumentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,6 +63,10 @@ class DocumentControllerTest {
     private DocumentFieldsActualizer documentFieldsActualizer;
     @MockitoBean
     private JweFilter jweFilter;
+    @MockitoBean
+    private DocumentSpecificationMapper documentSpecificationMapper;
+    @MockitoBean
+    private DocumentLifeCycleService documentLifeCycleService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

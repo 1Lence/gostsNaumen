@@ -5,7 +5,7 @@ import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
 import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
-import com.example.gostsNaumen.exception.BusinessException;
+import com.example.gostsNaumen.exception.LifeCycleException;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -99,7 +99,7 @@ class DocumentLifeCycleServiceTest {
 
 
     /**
-     * Метод, тестирующий выброс {@link  BusinessException} при невозможном переходе по статусам
+     * Метод, тестирующий выброс {@link  com.example.gostsNaumen.exception.LifeCycleException} при невозможном переходе по статусам
      * Невозможные переходы:
      * <ul>
      *     <li>Из {@link StatusEnum#CURRENT} в {@link StatusEnum#CANCELED} и наоборот</li>
@@ -110,42 +110,42 @@ class DocumentLifeCycleServiceTest {
     @Test
     void doLifeCycleTransitionShouldThrowBusinessExceptionWhenTransitionIsNotPossible() {
 
-        BusinessException businessExceptionFirst = Assertions.assertThrows(
-                BusinessException.class,
+        LifeCycleException businessExceptionFirst = Assertions.assertThrows(
+                LifeCycleException.class,
                 () -> documentLifeCycleService.doLifeCycleTransition(
                         canceledDocument,
                         StatusEnum.REPLACED));
 
-        BusinessException businessExceptionSecond = Assertions.assertThrows(
-                BusinessException.class,
+        LifeCycleException businessExceptionSecond = Assertions.assertThrows(
+                LifeCycleException.class,
                 () -> documentLifeCycleService.doLifeCycleTransition(
                         canceledDocument,
                         StatusEnum.CANCELED));
 
-        BusinessException businessExceptionThird = Assertions.assertThrows(
-                BusinessException.class,
+        LifeCycleException businessExceptionThird = Assertions.assertThrows(
+                LifeCycleException.class,
                 () -> documentLifeCycleService.doLifeCycleTransition(
                         replacedDocument,
                         StatusEnum.CANCELED));
 
-        BusinessException businessExceptionFourth = Assertions.assertThrows(
-                BusinessException.class,
+        LifeCycleException businessExceptionFourth = Assertions.assertThrows(
+                LifeCycleException.class,
                 () -> documentLifeCycleService.doLifeCycleTransition(
                         replacedDocument,
                         StatusEnum.REPLACED));
 
         Assertions.assertEquals(
                 "Переход из статуса CANCELED в статус REPLACED невозможен",
-                businessExceptionFirst.getFormattedMessage());
+                businessExceptionFirst.getMessage());
         Assertions.assertEquals(
                 "Переход из статуса CANCELED в статус CANCELED невозможен",
-                businessExceptionSecond.getFormattedMessage());
+                businessExceptionSecond.getMessage());
         Assertions.assertEquals(
                 "Переход из статуса REPLACED в статус CANCELED невозможен",
-                businessExceptionThird.getFormattedMessage());
+                businessExceptionThird.getMessage());
         Assertions.assertEquals(
                 "Переход из статуса REPLACED в статус REPLACED невозможен",
-                businessExceptionFourth.getFormattedMessage());
+                businessExceptionFourth.getMessage());
     }
 
     /**
@@ -155,11 +155,9 @@ class DocumentLifeCycleServiceTest {
      *     <li>Целевой статус замены это {@link StatusEnum#CURRENT}</li>
      *     <li>В базе данных уже существует документ с идентичным {@link Document#getFullName()} и статусом "Актуален"</li>
      * </ul>
-     * <p>Должна вернуться ошибка {@link BusinessException} со следующими полями:</p>
+     * <p>Должна вернуться ошибка {@link LifeCycleException} со следующими полями:</p>
      * <ul>
-     *     <li>{@link BusinessException#getErrorCode()} равняется
-     *     {@link com.example.gostsNaumen.exception.ErrorCode#OTHER_DOC_INTERFERES_WITH_TRANSITION}</li>
-     *     <li>{@link BusinessException#getFormattedMessage()} равняется
+     *     <li>{@link LifeCycleException#getMessage()} равняется
      *     {@code "Другой документ не позволяет изменить статус текущего документа его id: (id документа)"}</li>
      * </ul>
      * <p> Исключение выбрасывается методом:
@@ -173,14 +171,14 @@ class DocumentLifeCycleServiceTest {
         Mockito.when(documentRepository.findByFullNameAndStatus("testName", StatusEnum.CURRENT))
                 .thenReturn(Optional.of(currentDocument));
 
-        BusinessException businessException = Assertions.assertThrows(
-                BusinessException.class,
+        LifeCycleException businessException = Assertions.assertThrows(
+                LifeCycleException.class,
                 () -> documentLifeCycleService.doLifeCycleTransition(
                         canceledDocument,
                         StatusEnum.CURRENT));
 
         Assertions.assertEquals(
                 "Другой документ не позволяет изменить статус текущего документа, его id: 3",
-                businessException.getFormattedMessage());
+                businessException.getMessage());
     }
 }
