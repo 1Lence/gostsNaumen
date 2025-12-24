@@ -43,7 +43,7 @@ public class DocumentService {
      * @return найденный по ID ГОСТ
      */
     public Optional<Document> getDocumentById(Long id) {
-        if (id == null || id <= 0) {
+        if (id == null) {
             throw new IllegalArgumentException("Некорректный аргумент: " + id);
         }
 
