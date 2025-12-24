@@ -34,7 +34,6 @@ public class DocumentService {
                 .findByFullNameAndStatus(documentForSave.getFullName(), StatusEnum.CURRENT);
 
         if (interferingDocument.isPresent() && documentForSave.getStatus() == StatusEnum.CURRENT) {
-            Long interferingDocumentId = interferingDocument.get().getId();
             throw new CustomEntityExistsException(
                     "Гост c таким full_name: " + documentForSave.getFullName() + " уже существует!");
         }
