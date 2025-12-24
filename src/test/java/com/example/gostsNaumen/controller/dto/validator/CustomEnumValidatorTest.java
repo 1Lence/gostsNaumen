@@ -47,25 +47,25 @@ public class CustomEnumValidatorTest {
         FakeCustomEnumValid fakeCustomEnumValidStatus = new FakeCustomEnumValid(StatusEnum.class);
         FakeCustomEnumValid fakeCustomEnumValidAdoption = new FakeCustomEnumValid(AdoptionLevelEnum.class);
 
-        validator.initialize(fakeCustomEnumValidHarmonization);
+        String[] harmonizationValues = new String[]{"Гармонизированный", "Не гармонизированный", "Модифицированный"};
+        String[] statusValues = new String[]{"Актуальный", "Заменённый", "Отменённый"};
+        String[] adoptionValues = new String[]{"Национальный", "Межгосударственный", "Отраслевой",
+                "Региональный", "Стандарт Организаций"};
 
-        Assertions.assertTrue(validator.isValid("Гармонизированный", context));
-        Assertions.assertTrue(validator.isValid("Не гармонизированный", context));
-        Assertions.assertTrue(validator.isValid("Модифицированный", context));
+        validator.initialize(fakeCustomEnumValidHarmonization);
+        for (String harmonization : harmonizationValues) {
+            Assertions.assertTrue(validator.isValid(harmonization, context));
+        }
 
         validator.initialize(fakeCustomEnumValidStatus);
-
-        Assertions.assertTrue(validator.isValid("Актуальный", context));
-        Assertions.assertTrue(validator.isValid("Заменённый", context));
-        Assertions.assertTrue(validator.isValid("Отменённый", context));
+        for (String status : statusValues) {
+            Assertions.assertTrue(validator.isValid(status, context));
+        }
 
         validator.initialize(fakeCustomEnumValidAdoption);
-
-        Assertions.assertTrue(validator.isValid("Национальный", context));
-        Assertions.assertTrue(validator.isValid("Межгосударственный", context));
-        Assertions.assertTrue(validator.isValid("Отраслевой", context));
-        Assertions.assertTrue(validator.isValid("Региональный", context));
-        Assertions.assertTrue(validator.isValid("Стандарт Организаций", context));
+        for (String adoption : adoptionValues) {
+            Assertions.assertTrue(validator.isValid(adoption, context));
+        }
     }
 
     /**
