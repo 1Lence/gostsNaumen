@@ -60,8 +60,7 @@ public class DocumentService {
         }
 
         return documentRepository
-                .findById(id).orElseThrow(() -> new EntityNotFoundException(
-                        String.format("По переданному id: %s нет стандарта", id)));
+                .findById(id);
     }
 
     /**
