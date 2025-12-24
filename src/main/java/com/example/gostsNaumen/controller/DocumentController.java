@@ -14,6 +14,7 @@ import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
 import com.example.gostsNaumen.service.document.DocumentLifeCycleService;
 import com.example.gostsNaumen.service.document.DocumentService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
@@ -57,6 +58,7 @@ public class DocumentController {
      */
     @GetMapping("/documents")
     @PreAuthorize("hasAuthority('user:read')")
+    @Transactional
     public List<DocumentDtoResponse> getAll() {
         return documentService.findAll().stream().map(documentMapper::mapEntityToDto).toList();
     }
@@ -76,6 +78,7 @@ public class DocumentController {
      */
     @PostMapping()
     @PreAuthorize("hasAuthority('user:read')")
+    @Transactional
     public StandardIdDtoResponse addDocument(
             @RequestBody @Valid DocumentDtoRequest documentDtoRequest
     ) {
@@ -98,6 +101,7 @@ public class DocumentController {
      */
     @GetMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:read')")
+    @Transactional
     public DocumentDtoResponse getDocument(@PathVariable Long docId) {
         Document document = documentService.getDocumentById(docId);
 
@@ -129,6 +133,7 @@ public class DocumentController {
      */
     @DeleteMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:write')")
+    @Transactional
     public void deleteDocument(@PathVariable Long docId) {
         documentService.deleteDocumentById(docId);
     }
@@ -142,6 +147,7 @@ public class DocumentController {
      */
     @PatchMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:write')")
+    @Transactional
     public DocumentDtoResponse updateDocument(
             @PathVariable Long docId,
             @RequestBody @Valid ActualizeDtoRequest dtoWithNewValues
