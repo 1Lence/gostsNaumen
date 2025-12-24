@@ -92,21 +92,4 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
                 HttpStatus.UNAUTHORIZED
         );
     }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
-            final MethodArgumentTypeMismatchException exception,
-            WebRequest request) {
-        log.info("Method Argument Type Mismatch Exception: {}", exception.getMessage());
-        log.debug(exception.getMessage(), exception);
-
-        return new ResponseEntity<>(
-                new ErrorResponse()
-                        .setTimestamp(LocalDateTime.now())
-                        .setMessage("Некорректный аргумент: %s".formatted(exception.getValue()))
-                        .setStatus(HttpStatus.BAD_REQUEST)
-                        .setUrl(getUrl(request)),
-                HttpStatus.BAD_REQUEST
-        );
-    }
 }

@@ -2,6 +2,7 @@ package com.example.gostsNaumen.repository;
 
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.entity.model.StatusEnum;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -28,4 +29,6 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
      * Метод, необходимый для поиска стандарта по его полному имени и статусу
      */
     Optional<Document> findByFullNameAndStatus(String fullName, StatusEnum status);
+
+    List<Document> findAll(Specification<Document> specification);
 }
