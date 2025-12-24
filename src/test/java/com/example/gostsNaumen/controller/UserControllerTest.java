@@ -36,13 +36,33 @@ import java.util.List;
  */
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
+    /**
+     * Сервис для работы с пользователями
+     */
     private final UserService userService;
+    /**
+     * Маппер пользователей
+     */
     private final UserMapper userMapper;
+    /**
+     * Кодировщик паролей
+     */
     private final PasswordEncoder passwordEncoder;
+    /**
+     * Контроллер для работы с пользователями
+     */
     private final UserController userController;
+    /**
+     * MockMvc для тестирования MVC-слоя контроллеров.
+     */
     private final MockMvc mockMvc;
+    /**
+     * Маппер обджектов
+     */
     private final ObjectMapper objectMapper;
-
+    /**
+     * Экземпляр пользователя
+     */
     private User testUser;
 
     public UserControllerTest(

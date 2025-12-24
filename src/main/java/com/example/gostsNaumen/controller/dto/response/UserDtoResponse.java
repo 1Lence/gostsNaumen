@@ -10,10 +10,25 @@ package com.example.gostsNaumen.controller.dto.response;
  * @param role     роль пользователя
  */
 public record UserDtoResponse(
+        /**
+         * Уникальный идентификатор пользователя
+         */
         Long id,
+        /**
+         * Никнейм пользователя
+         */
         String userName,
+        /**
+         * Полное имя пользователя
+         */
         String fullName,
+        /**
+         * Почта пользователя
+         */
         String email,
+        /*
+        Роль пользователя
+         */
         String role
 ) {
 }

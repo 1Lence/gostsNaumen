@@ -33,12 +33,21 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 class DocumentServiceTest {
 
+    /**
+     * Репозиторий для работы с документами
+     */
     @Mock
     private DocumentRepository documentRepository;
 
+    /**
+     * Тестируемый сервис для рабоыт с документами
+     */
     @InjectMocks
     private DocumentService documentService;
 
+    /**
+     * экземпляр документа
+     */
     private Document document;
 
     /**
