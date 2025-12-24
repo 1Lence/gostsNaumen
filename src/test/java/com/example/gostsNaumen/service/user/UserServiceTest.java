@@ -2,8 +2,8 @@ package com.example.gostsNaumen.service.user;
 
 import com.example.gostsNaumen.controller.dto.request.UpdateUserDtoRequest;
 import com.example.gostsNaumen.entity.User;
-import com.example.gostsNaumen.exception.EntityExistsException;
-import com.example.gostsNaumen.exception.EntityNotFoundException;
+import com.example.gostsNaumen.exception.CustomEntityExistsException;
+import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
 import com.example.gostsNaumen.repository.UserRepository;
 import com.example.gostsNaumen.security.permission.UserRoles;
 import com.example.gostsNaumen.service.security.SecurityContextService;
@@ -87,7 +87,7 @@ class UserServiceTest {
 
     /**
      * Проверяет, что метод {@link UserService#saveUser(User)}
-     * выбрасывает {@link EntityExistsException} с кодом
+     * выбрасывает {@link CustomEntityExistsException} с кодом
      * {@code ErrorCode#USER_FIELDS_ALREADY_EXIST} и корректным сообщением,
      * если пользователь с такой почтой уже существует в БД.
      */
@@ -95,8 +95,8 @@ class UserServiceTest {
     void saveUserShouldThrowBusinessExceptionWhenUserWithCurrenEmailPresent() {
         Mockito.when(userRepository.findUserByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
-        EntityExistsException exception = Assertions.assertThrows(
-                EntityExistsException.class,
+        CustomEntityExistsException exception = Assertions.assertThrows(
+                CustomEntityExistsException.class,
                 () -> userService.saveUser(user)
         );
 
@@ -108,7 +108,7 @@ class UserServiceTest {
 
     /**
      * Проверяет, что метод {@link UserService#saveUser(User)}
-     * выбрасывает {@link EntityExistsException} с кодом
+     * выбрасывает {@link CustomEntityExistsException} с кодом
      * {@code ErrorCode.USER_FIELDS_ALREADY_EXIST} и корректным сообщением,
      * если пользователь с таким {@code username} уже существует в БД.
      * Также проверяется, что были вызваны методы {@link UserRepository#findUserByEmail(String)}
@@ -119,8 +119,8 @@ class UserServiceTest {
         Mockito.when(userRepository.findUserByEmail(user.getEmail())).thenReturn(Optional.empty());
         Mockito.when(userRepository.findUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
-        EntityExistsException exception = Assertions.assertThrows(
-                EntityExistsException.class,
+        CustomEntityExistsException exception = Assertions.assertThrows(
+                CustomEntityExistsException.class,
                 () -> userService.saveUser(user)
         );
 
@@ -142,7 +142,7 @@ class UserServiceTest {
 
     /**
      * Проверяет, что метод {@link UserService#findEntityByEmail(String)}
-     * выбрасывает {@link EntityNotFoundException} с кодом
+     * выбрасывает {@link CustomEntityNotFoundException} с кодом
      * {@code ErrorCode.USER_NOT_FOUND} и корректным сообщением,
      * если пользователь с указанной электронной почтой не в БД.
      */
@@ -150,8 +150,8 @@ class UserServiceTest {
     void findEntityByEmailShouldThrowBusinessExceptionWhenUserWithCurrenEmailNotPresent() {
         Mockito.when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.empty());
 
-        EntityNotFoundException exception = Assertions.assertThrows(
-                EntityNotFoundException.class,
+        CustomEntityNotFoundException exception = Assertions.assertThrows(
+                CustomEntityNotFoundException.class,
                 () -> userService.findEntityByEmail("test@example.com")
         );
 
@@ -163,7 +163,7 @@ class UserServiceTest {
 
     /**
      * Проверяет, что метод {@link UserService#findEntityById(Long)}
-     * выбрасывает {@link EntityNotFoundException} с кодом
+     * выбрасывает {@link CustomEntityNotFoundException} с кодом
      * {@code ErrorCode.USER_NOT_FOUND} и корректным сообщением,
      * если пользователь с указанным идентификатором не БД.
      */
@@ -171,8 +171,8 @@ class UserServiceTest {
     void findEntityByIdShouldThrowBusinessExceptionWhenUserWithCurrenIdNotPresent() {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        EntityNotFoundException exception = Assertions.assertThrows(
-                EntityNotFoundException.class,
+        CustomEntityNotFoundException exception = Assertions.assertThrows(
+                CustomEntityNotFoundException.class,
                 () -> userService.findEntityById(1L)
         );
 
@@ -207,7 +207,7 @@ class UserServiceTest {
 
     /**
      * Проверяет, что метод {@link UserService#updateUserData(Long, UpdateUserDtoRequest)}
-     * выбрасывает {@link EntityExistsException}, если имя пользователя, которое нужно обновить,
+     * выбрасывает {@link CustomEntityExistsException}, если имя пользователя, которое нужно обновить,
      * уже занято другим пользователем.
      */
     @Test
@@ -227,8 +227,8 @@ class UserServiceTest {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         Mockito.when(userRepository.findUserByUsername("existingUsername")).thenReturn(Optional.of(conflictingUser));
 
-        EntityExistsException exception = Assertions.assertThrows(
-                EntityExistsException.class,
+        CustomEntityExistsException exception = Assertions.assertThrows(
+                CustomEntityExistsException.class,
                 () -> userService.updateUserData(1L, request)
         );
 
@@ -261,7 +261,7 @@ class UserServiceTest {
 
     /**
      * Проверяет, что метод {@link UserService#updateUserData(Long, UpdateUserDtoRequest)}
-     * выбрасывает {@link EntityExistsException}, если email, который нужно обновить,
+     * выбрасывает {@link CustomEntityExistsException}, если email, который нужно обновить,
      * уже занят другим пользователем.
      */
     @Test
@@ -281,8 +281,8 @@ class UserServiceTest {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         Mockito.when(userRepository.findUserByEmail("existing@example.com")).thenReturn(Optional.of(conflictingUser));
 
-        EntityExistsException exception = Assertions.assertThrows(
-                EntityExistsException.class,
+        CustomEntityExistsException exception = Assertions.assertThrows(
+                CustomEntityExistsException.class,
                 () -> userService.updateUserData(1L, request)
         );
 

@@ -1,11 +1,8 @@
 package com.example.gostsNaumen.service.document;
 
 import com.example.gostsNaumen.entity.Document;
-import com.example.gostsNaumen.entity.model.StatusEnum;
-import com.example.gostsNaumen.exception.BusinessException;
-import com.example.gostsNaumen.exception.ErrorCode;
-import com.example.gostsNaumen.exception.EntityExistsException;
-import com.example.gostsNaumen.exception.EntityNotFoundException;
+import com.example.gostsNaumen.exception.CustomEntityExistsException;
+import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -38,11 +35,8 @@ public class DocumentService {
 
         if (interferingDocument.isPresent()) {
             Long interferingDocumentId = interferingDocument.get().getId();
-            throw new EntityExistsException(
-                    "Документ с таким fullName: %s и статусом \"Актуален\" уже существует. Пожалуйста, измените его статус перед сохранением новой версии. ID документа: %d"
-                            .formatted(documentForSave.getFullName(), interferingDocumentId)
-
-            );
+            throw new CustomEntityExistsException(
+                    "Гост c таким full_name: " + documentForSave.getFullName() + " уже существует!");
         }
 
         return documentRepository.save(documentForSave);
@@ -84,7 +78,7 @@ public class DocumentService {
             throw new IllegalArgumentException("Получен null id");
         }
         if (!documentRepository.existsById(id)) {
-            throw new EntityNotFoundException(
+            throw new CustomEntityNotFoundException(
                     String.format("По переданному ID: %s, нет стандарта", id)
             );
         }
@@ -102,7 +96,7 @@ public class DocumentService {
         Long id = document.getId();
 
         if (!documentRepository.existsById(id)) {
-            throw new EntityNotFoundException(
+            throw new CustomEntityNotFoundException(
                     String.format("По переданному ID: %s, нет стандарта", id));
         }
 
