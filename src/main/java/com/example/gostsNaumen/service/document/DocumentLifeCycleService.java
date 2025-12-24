@@ -2,8 +2,7 @@ package com.example.gostsNaumen.service.document;
 
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.entity.model.StatusEnum;
-import com.example.gostsNaumen.exception.BusinessException;
-import com.example.gostsNaumen.exception.ErrorCode;
+import com.example.gostsNaumen.exception.LifeCycleException;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +33,7 @@ public class DocumentLifeCycleService {
     public Document doLifeCycleTransition(Document document, StatusEnum targetStatus) {
 
         if (!isTransitionAllowed(document.getStatus(), targetStatus)) {
-            throw new BusinessException(
-                    ErrorCode.INCORRECT_LIFECYCLE_TRANSITION,
+            throw new LifeCycleException(
                     "Переход из статуса %s в статус %s невозможен".formatted(document.getStatus(), targetStatus));
         }
 
@@ -49,12 +47,12 @@ public class DocumentLifeCycleService {
      * Вспомогательный метод, служащий для проверки появления наложений в случае перехода документа по циклу.
      * <ul>
      *     <li>В случае если наложений нет, метод ничего не возвращает</li>
-     *     <li>Если есть проблемы с наложением, код выбрасывает ошибку {@link BusinessException}</li>
+     *     <li>Если есть проблемы с наложением, код выбрасывает ошибку {@link LifeCycleException}</li>
      * </ul>
      *
      * @param document     документ, у которого хотят поменять статус
      * @param targetStatus целевой статус, на который производится попытка замены
-     * @throws BusinessException с кодом {@link ErrorCode#OTHER_DOC_INTERFERES_WITH_TRANSITION} и id мешающего документа
+     * @throws LifeCycleException
      */
     public void checkInterferingDocuments(Document document, StatusEnum targetStatus) {
 
@@ -65,8 +63,7 @@ public class DocumentLifeCycleService {
                 if (interferingDocument == null || interferingDocument.getId().equals(document.getId())) {
                     return;
                 } else {
-                    throw new BusinessException(
-                            ErrorCode.OTHER_DOC_INTERFERES_WITH_TRANSITION,
+                    throw new LifeCycleException(
                             "Другой документ не позволяет изменить статус текущего документа, его id: "
                                     + interferingDocument.getId().toString());
                 }

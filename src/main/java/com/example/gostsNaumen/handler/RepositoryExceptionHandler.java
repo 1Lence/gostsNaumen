@@ -2,6 +2,7 @@ package com.example.gostsNaumen.handler;
 
 import com.example.gostsNaumen.exception.CustomEntityExistsException;
 import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
+import com.example.gostsNaumen.exception.LifeCycleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -81,6 +82,31 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
             CustomEntityExistsException exception,
             WebRequest request) {
         log.info("CustomEntityExistsException: {}", exception.getMessage());
+        log.debug(exception.getMessage(), exception);
+
+        return new ResponseEntity<>(
+                new ErrorResponse()
+                        .setTimestamp(LocalDateTime.now())
+                        .setMessage(exception.getMessage())
+                        .setStatus(HttpStatus.CONFLICT)
+                        .setUrl(getUrl(request)),
+                HttpStatus.CONFLICT
+        );
+    }
+
+    /**
+     * Отлавливает ошибки связанные с попыткой добавить сущность/данные в сущность,
+     * которые уже существуют в бд и/или помечены как unique.
+     *
+     * @param exception возникает если сохраняемая сущность уже существует
+     * @param request   http запрос
+     * @return HTTP Status код и JSON с ответом
+     */
+    @ExceptionHandler(LifeCycleException.class)
+    public ResponseEntity<?> handleEntityExistingException(
+            LifeCycleException exception,
+            WebRequest request) {
+        log.info("LifeCycleException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
         return new ResponseEntity<>(
