@@ -122,7 +122,7 @@ public class DocumentController {
     ) {
         Document oldDocument = documentService.getDocumentById(docId).orElseThrow(
                 () -> new EntityNotFoundException("По id - %d документ не найден!".formatted(docId))
-        );;
+        );
         Document documentWithNewFieldsValues = documentFieldsActualizer.setNewValues(oldDocument, dtoWithNewValues);
 
         return documentMapper.mapEntityToDto(documentService.updateDocument(documentWithNewFieldsValues));
