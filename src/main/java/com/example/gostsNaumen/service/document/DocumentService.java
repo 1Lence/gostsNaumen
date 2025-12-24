@@ -1,8 +1,8 @@
 package com.example.gostsNaumen.service.document;
 
 import com.example.gostsNaumen.entity.Document;
-import com.example.gostsNaumen.exception.BusinessException;
-import com.example.gostsNaumen.exception.ErrorCode;
+import com.example.gostsNaumen.exception.EntityExistsException;
+import com.example.gostsNaumen.exception.EntityNotFoundException;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +30,7 @@ public class DocumentService {
     public Document saveDocument(Document documentForSave) {
 
         if (documentRepository.findByFullName(documentForSave.getFullName()).isPresent()) {
-            throw new BusinessException(ErrorCode.STANDARD_EXIST_BY_FULL_NAME,
+            throw new EntityExistsException(
                     "Гост c таким full_name: " + documentForSave.getFullName() + " уже существует!");
         }
 
@@ -50,10 +50,8 @@ public class DocumentService {
         }
 
         return documentRepository
-                .findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
-                        String.format(
-                                "По переданному id: %s нет стандарта",
-                                id)));
+                .findById(id).orElseThrow(() -> new EntityNotFoundException(
+                        String.format("По переданному id: %s нет стандарта", id)));
     }
 
     /**
@@ -67,8 +65,7 @@ public class DocumentService {
             throw new IllegalArgumentException("Получен null id");
         }
         if (!documentRepository.existsById(id)) {
-            throw new BusinessException(
-                    ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+            throw new EntityNotFoundException(
                     String.format("По переданному ID: %s, нет стандарта", id)
             );
         }
@@ -87,8 +84,7 @@ public class DocumentService {
         Long id = document.getId();
 
         if (!documentRepository.existsById(id)) {
-            throw new BusinessException(
-                    ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+            throw new EntityNotFoundException(
                     String.format("По переданному ID: %s, нет стандарта", id));
         }
 
