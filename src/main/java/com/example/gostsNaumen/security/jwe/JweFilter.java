@@ -1,7 +1,6 @@
 package com.example.gostsNaumen.security.jwe;
 
-import com.example.gostsNaumen.exception.BusinessException;
-import com.example.gostsNaumen.exception.ErrorCode;
+import com.example.gostsNaumen.exception.InvalidTokenException;
 import com.example.gostsNaumen.security.dto.CustomUserDetails;
 import com.example.gostsNaumen.service.security.UserDetailServiceImpl;
 import jakarta.servlet.FilterChain;
@@ -95,7 +94,7 @@ public class JweFilter extends OncePerRequestFilter {
 
         } catch (Exception e) {
             logger.error("Ошибка в деталях пользователя.", e);
-            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+            throw new InvalidTokenException("Неправильный токен пользователя!");
         }
     }
 
