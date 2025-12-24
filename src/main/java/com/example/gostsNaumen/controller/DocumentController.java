@@ -73,6 +73,7 @@ public class DocumentController {
      * Получение ГОСТа по ID
      *
      * @param docId ID приходящий в запросе
+     * @throws CustomEntityNotFoundException по переданному id нет стандарта
      * @return <ul>
      * <li>В случае успешного поиска документа по id, возвращает {@link DocumentDtoResponse}</li>
      * <li>В случае, если документ не был найден, возвращается {@link com.example.gostsNaumen.handler.ErrorResponse}
@@ -111,6 +112,7 @@ public class DocumentController {
      *
      * @param docId            идентификатор госта
      * @param dtoWithNewValues дто, содержащее новые значения полей
+     * @throws CustomEntityNotFoundException по переданному id нет стандарта
      * @return обновлённое дто госта
      */
     @PatchMapping("/{docId}")

@@ -24,6 +24,7 @@ public class DocumentService {
      * Сохранение сущности ГОСТа в БД
      *
      * @param documentForSave Сущность из БД
+     * @throws CustomEntityExistsException при существовании госта по полному имени выбрасывается ошибка
      * @return сохраненная сущность в бд
      */
     public Document saveDocument(Document documentForSave) {
@@ -40,6 +41,7 @@ public class DocumentService {
      * Находит ГОСТ по ID
      *
      * @param id id ГОСТа
+     * @throws IllegalArgumentException если получен id null
      * @return найденный по ID ГОСТ
      */
     public Optional<Document> getDocumentById(Long id) {
@@ -55,6 +57,8 @@ public class DocumentService {
      * Удаление ГОСТа по Id
      *
      * @param id id ГОСТа
+     * @throws IllegalArgumentException если получен id null
+     * @throws CustomEntityNotFoundException по переданному id нет стандарта
      */
     public void deleteDocumentById(Long id) {
         if (id == null) {
@@ -72,6 +76,7 @@ public class DocumentService {
      * Метод для обновления полей ГОСТа
      *
      * @param document документ с уже обновлёнными полями, которые нужно сохранить
+     * @throws CustomEntityNotFoundException по переданному id нет стандарта
      * @return {@code document} – обновлённый документ
      */
     public Document updateDocument(Document document) {

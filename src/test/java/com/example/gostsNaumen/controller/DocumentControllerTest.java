@@ -42,23 +42,52 @@ import java.util.Optional;
 @WebMvcTest(DocumentController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class DocumentControllerTest {
-
+    /**
+     * Пример запроса с документом
+     */
     DocumentDtoRequest documentRequest;
+    /**
+     * Пример ответа с документом
+     */
     DocumentDtoResponse documentResponse;
+    /**
+     * Экземпляр документа
+     */
     Document document;
+    /**
+     * Обновлённый экземпляр документа
+     */
     Document updatedDocument;
 
+    /**
+     * MockMvc для тестирования MVC-слоя контроллеров.
+     */
     @Autowired
     private MockMvc mockMvc;
 
+    /**
+     * Маппер для преобразований документов
+     */
     @MockitoBean
     private DocumentMapper documentMapper;
+    /**
+     * Сервис для работы с документами
+     */
     @MockitoBean
     private DocumentService documentService;
+    /**
+     * Конвертер Enum-ов из русского в английское значение и наоборот
+     */
     @MockitoBean
     private RusEngEnumConverter rusEngEnumConverter;
+    /**
+     * Актуализатор полей документа
+     */
     @MockitoBean
     private DocumentFieldsActualizer documentFieldsActualizer;
+    /**
+     * Жве фильтр
+     */
     @MockitoBean
     private JweFilter jweFilter;
 
