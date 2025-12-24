@@ -74,9 +74,8 @@ class DocumentServiceTest {
     }
 
     /**
-     * Проверка на выброс {@link BusinessException} c
-     * {@link com.example.gostsNaumen.exception.ErrorCode#STANDARD_EXIST_BY_FULL_NAME} при попытке сохранить
-     * существующий документ.
+     * Проверка на выброс {@link EntityExistsException}
+     * при попытке сохранить существующий документ.
      * Также проверяется текст исключения, он должен соответствовать
      * {@code "Гост c таким full_name: {имя документа} уже существует!"}
      */
