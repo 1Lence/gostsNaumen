@@ -13,6 +13,7 @@ import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
 import com.example.gostsNaumen.service.document.DocumentLifeCycleService;
+import com.example.gostsNaumen.exception.EntityNotFoundException;
 import com.example.gostsNaumen.service.document.DocumentService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -103,7 +104,9 @@ public class DocumentController {
     @PreAuthorize("hasAuthority('user:read')")
     @Transactional
     public DocumentDtoResponse getDocument(@PathVariable Long docId) {
-        Document document = documentService.getDocumentById(docId);
+        Document document = documentService.getDocumentById(docId).orElseThrow(
+                () -> new EntityNotFoundException("По id - %d документ не найден!".formatted(docId))
+        );
 
         return documentMapper.mapEntityToDto(document);
     }
@@ -152,7 +155,9 @@ public class DocumentController {
             @PathVariable Long docId,
             @RequestBody @Valid ActualizeDtoRequest dtoWithNewValues
     ) {
-        Document oldDocument = documentService.getDocumentById(docId);
+        Document oldDocument = documentService.getDocumentById(docId).orElseThrow(
+                () -> new EntityNotFoundException("По id - %d документ не найден!".formatted(docId))
+        );;
         Document documentWithNewFieldsValues = documentFieldsActualizer.setNewValues(oldDocument, dtoWithNewValues);
 
         return documentMapper.mapEntityToDto(documentService.updateDocument(documentWithNewFieldsValues));
