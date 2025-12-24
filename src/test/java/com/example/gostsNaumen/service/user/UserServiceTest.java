@@ -2,6 +2,8 @@ package com.example.gostsNaumen.service.user;
 
 import com.example.gostsNaumen.controller.dto.request.UpdateUserDtoRequest;
 import com.example.gostsNaumen.entity.User;
+import com.example.gostsNaumen.exception.EntityExistsException;
+import com.example.gostsNaumen.exception.EntityNotFoundException;
 import com.example.gostsNaumen.repository.UserRepository;
 import com.example.gostsNaumen.security.permission.UserRoles;
 import com.example.gostsNaumen.service.security.SecurityContextService;
@@ -85,7 +87,7 @@ class UserServiceTest {
 
     /**
      * Проверяет, что метод {@link UserService#saveUser(User)}
-     * выбрасывает {@link BusinessException} с кодом
+     * выбрасывает {@link EntityExistsException} с кодом
      * {@code ErrorCode#USER_FIELDS_ALREADY_EXIST} и корректным сообщением,
      * если пользователь с такой почтой уже существует в БД.
      */
@@ -93,25 +95,20 @@ class UserServiceTest {
     void saveUserShouldThrowBusinessExceptionWhenUserWithCurrenEmailPresent() {
         Mockito.when(userRepository.findUserByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
-        BusinessException exception = Assertions.assertThrows(
-                BusinessException.class,
+        EntityExistsException exception = Assertions.assertThrows(
+                EntityExistsException.class,
                 () -> userService.saveUser(user)
         );
 
         Assertions.assertEquals(
-                ErrorCode.USER_FIELDS_ALREADY_EXIST,
-                exception.getErrorCode()
-        );
-
-        Assertions.assertEquals(
                 "Пользователь с почтой test@example.com, уже существует",
-                exception.getFormattedMessage()
+                exception.getMessage()
         );
     }
 
     /**
      * Проверяет, что метод {@link UserService#saveUser(User)}
-     * выбрасывает {@link BusinessException} с кодом
+     * выбрасывает {@link EntityExistsException} с кодом
      * {@code ErrorCode.USER_FIELDS_ALREADY_EXIST} и корректным сообщением,
      * если пользователь с таким {@code username} уже существует в БД.
      * Также проверяется, что были вызваны методы {@link UserRepository#findUserByEmail(String)}
@@ -122,19 +119,14 @@ class UserServiceTest {
         Mockito.when(userRepository.findUserByEmail(user.getEmail())).thenReturn(Optional.empty());
         Mockito.when(userRepository.findUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
-        BusinessException exception = Assertions.assertThrows(
-                BusinessException.class,
+        EntityExistsException exception = Assertions.assertThrows(
+                EntityExistsException.class,
                 () -> userService.saveUser(user)
         );
 
         Assertions.assertEquals(
                 "Пользователь с ником TestUser, уже существует",
-                exception.getFormattedMessage()
-        );
-
-        Assertions.assertEquals(
-                ErrorCode.USER_FIELDS_ALREADY_EXIST,
-                exception.getErrorCode()
+                exception.getMessage()
         );
 
         Mockito.verify(
@@ -150,7 +142,7 @@ class UserServiceTest {
 
     /**
      * Проверяет, что метод {@link UserService#findEntityByEmail(String)}
-     * выбрасывает {@link BusinessException} с кодом
+     * выбрасывает {@link EntityNotFoundException} с кодом
      * {@code ErrorCode.USER_NOT_FOUND} и корректным сообщением,
      * если пользователь с указанной электронной почтой не в БД.
      */
@@ -158,25 +150,20 @@ class UserServiceTest {
     void findEntityByEmailShouldThrowBusinessExceptionWhenUserWithCurrenEmailNotPresent() {
         Mockito.when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.empty());
 
-        BusinessException exception = Assertions.assertThrows(
-                BusinessException.class,
+        EntityNotFoundException exception = Assertions.assertThrows(
+                EntityNotFoundException.class,
                 () -> userService.findEntityByEmail("test@example.com")
         );
 
         Assertions.assertEquals(
-                ErrorCode.USER_NOT_FOUND,
-                exception.getErrorCode()
-        );
-
-        Assertions.assertEquals(
                 "Пользователя по почте: test@example.com не существует",
-                exception.getFormattedMessage()
+                exception.getMessage()
         );
     }
 
     /**
      * Проверяет, что метод {@link UserService#findEntityById(Long)}
-     * выбрасывает {@link BusinessException} с кодом
+     * выбрасывает {@link EntityNotFoundException} с кодом
      * {@code ErrorCode.USER_NOT_FOUND} и корректным сообщением,
      * если пользователь с указанным идентификатором не БД.
      */
@@ -184,19 +171,14 @@ class UserServiceTest {
     void findEntityByIdShouldThrowBusinessExceptionWhenUserWithCurrenIdNotPresent() {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        BusinessException exception = Assertions.assertThrows(
-                BusinessException.class,
+        EntityNotFoundException exception = Assertions.assertThrows(
+                EntityNotFoundException.class,
                 () -> userService.findEntityById(1L)
         );
 
         Assertions.assertEquals(
-                ErrorCode.USER_NOT_FOUND,
-                exception.getErrorCode()
-        );
-
-        Assertions.assertEquals(
                 "Пользователя по ID: 1 не существует",
-                exception.getFormattedMessage()
+                exception.getMessage()
         );
     }
 
@@ -225,7 +207,7 @@ class UserServiceTest {
 
     /**
      * Проверяет, что метод {@link UserService#updateUserData(Long, UpdateUserDtoRequest)}
-     * выбрасывает {@link BusinessException}, если имя пользователя, которое нужно обновить,
+     * выбрасывает {@link EntityExistsException}, если имя пользователя, которое нужно обновить,
      * уже занято другим пользователем.
      */
     @Test
@@ -245,19 +227,14 @@ class UserServiceTest {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         Mockito.when(userRepository.findUserByUsername("existingUsername")).thenReturn(Optional.of(conflictingUser));
 
-        BusinessException exception = Assertions.assertThrows(
-                BusinessException.class,
+        EntityExistsException exception = Assertions.assertThrows(
+                EntityExistsException.class,
                 () -> userService.updateUserData(1L, request)
         );
 
         Assertions.assertEquals(
-                ErrorCode.USER_FIELDS_ALREADY_EXIST,
-                exception.getErrorCode()
-        );
-
-        Assertions.assertEquals(
                 "Пользователь с ником: existingUsername уже существует",
-                exception.getFormattedMessage()
+                exception.getMessage()
         );
     }
 
@@ -284,7 +261,7 @@ class UserServiceTest {
 
     /**
      * Проверяет, что метод {@link UserService#updateUserData(Long, UpdateUserDtoRequest)}
-     * выбрасывает {@link BusinessException}, если email, который нужно обновить,
+     * выбрасывает {@link EntityExistsException}, если email, который нужно обновить,
      * уже занят другим пользователем.
      */
     @Test
@@ -304,19 +281,14 @@ class UserServiceTest {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         Mockito.when(userRepository.findUserByEmail("existing@example.com")).thenReturn(Optional.of(conflictingUser));
 
-        BusinessException exception = Assertions.assertThrows(
-                BusinessException.class,
+        EntityExistsException exception = Assertions.assertThrows(
+                EntityExistsException.class,
                 () -> userService.updateUserData(1L, request)
         );
 
         Assertions.assertEquals(
-                ErrorCode.USER_FIELDS_ALREADY_EXIST,
-                exception.getErrorCode()
-        );
-
-        Assertions.assertEquals(
                 "Пользователь с почтой: existing@example.com уже существует",
-                exception.getFormattedMessage()
+                exception.getMessage()
         );
     }
 

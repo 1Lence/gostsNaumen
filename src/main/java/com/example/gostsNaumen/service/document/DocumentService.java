@@ -54,9 +54,9 @@ public class DocumentService {
      * @param id id ГОСТа
      * @return найденный по ID ГОСТ
      */
-    public Document getDocumentById(Long id) {
+    public Optional<Document> getDocumentById(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("Поиск по пустому ID");
+            throw new IllegalArgumentException("Некорректный аргумент: " + id);
         }
 
         return documentRepository
