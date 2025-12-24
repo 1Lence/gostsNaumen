@@ -4,8 +4,9 @@ import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
 import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
+import com.example.gostsNaumen.exception.EntityExistsException;
+import com.example.gostsNaumen.exception.EntityNotFoundException;
 import com.example.gostsNaumen.repository.DocumentRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,29 +85,25 @@ class DocumentServiceTest {
         Mockito.when(documentRepository.findByFullName(document.getFullName()))
                 .thenReturn(Optional.of(document));
 
-        BusinessException testException = Assertions.assertThrows(BusinessException.class,
+        EntityExistsException testException = Assertions.assertThrows(EntityExistsException.class,
                 () -> documentService.saveDocument(document));
 
         Assertions.assertEquals("Гост c таким full_name: " + document.getFullName() + " уже существует!",
-                testException.getFormattedMessage());
+                testException.getMessage());
     }
 
     /**
-     * Проверка на выброс {@link EntityNotFoundException} при попытке получить несуществующий документ
-     * Также проверяет текст ошибки, он должен соответствовать {@code По переданному id нет стандарта}
+     * Проверка на null при попытке получить документ не существующий по id
+     *
      */
     @Test
     void getDocumentShouldThrowBusinessExceptionWhenDocumentDoesNotExist() {
         Mockito.when(documentRepository.findById(document.getId())).thenReturn(Optional.empty());
-
-        BusinessException testException = Assertions.assertThrows(BusinessException.class,
-                () -> documentService.getDocumentById(document.getId()));
-        Assertions.assertEquals("По переданному id нет стандарта", testException
-                .getErrorCode().getDefaultMessage());
+        Assertions.assertTrue(documentService.getDocumentById(document.getId()).isEmpty());
     }
 
     /**
-     * Проверка на выброс {@link EntityNotFoundException} при попытке получить гост по null id
+     * Проверка на выброс {@link IllegalArgumentException} при попытке получить гост по null id
      * Также проверяет текст ошибки, он должен соответствовать {@code Поиск по пустому ID}
      */
     @Test
@@ -120,17 +117,6 @@ class DocumentServiceTest {
     }
 
     /**
-     * Проверка на выброс {@link EntityNotFoundException} при попытке вызвать метод с null id
-     * Также проверяет текст ошибки, он должен соответствовать {@code Получен null id}
-     */
-    @Test
-    void deleteDocumentShouldThrowIllegalArgumentExceptionWhenDocumentDoesNotExist() {
-        IllegalArgumentException testException = Assertions.assertThrows(IllegalArgumentException.class,
-                () -> documentService.deleteDocumentById(null));
-        Assertions.assertEquals("Получен null id", testException.getMessage());
-    }
-
-    /**
      * Проверка на выброс {@link EntityNotFoundException} при попытке вызвать метод с id, запись с которым в
      * базе отсутствует.
      * Также проверяет текст ошибки, он должен соответствовать {@code По переданному id нет стандарта}
@@ -139,9 +125,10 @@ class DocumentServiceTest {
     void deleteDocumentShouldThrowBusinessExceptionWhenDocumentDoesNotExist() {
         Mockito.when(documentRepository.existsById(document.getId())).thenReturn(false);
 
-        BusinessException testException = Assertions.assertThrows(BusinessException.class,
+        EntityNotFoundException testException = Assertions.assertThrows(EntityNotFoundException.class,
                 () -> documentService.deleteDocumentById(document.getId()));
-        Assertions.assertEquals("По переданному ID: 1, нет стандарта", testException.getFormattedMessage());
+
+        Assertions.assertEquals("По переданному ID: 1, нет стандарта", testException.getMessage());
     }
 
     /**
@@ -155,9 +142,9 @@ class DocumentServiceTest {
 
         Mockito.when(documentRepository.existsById(testDocument.getId())).thenReturn(false);
 
-        BusinessException testException = Assertions.assertThrows(BusinessException.class,
+        EntityNotFoundException testException = Assertions.assertThrows(EntityNotFoundException.class,
                 () -> documentService.updateDocument(testDocument));
-        Assertions.assertEquals("По переданному id нет стандарта", testException
-                .getErrorCode().getDefaultMessage());
+        Assertions.assertEquals("По переданному ID: %d, нет стандарта".formatted(testDocument.getId()), testException
+                .getMessage());
     }
 }

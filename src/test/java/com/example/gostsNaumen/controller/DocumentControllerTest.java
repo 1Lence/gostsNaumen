@@ -11,6 +11,8 @@ import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
+import com.example.gostsNaumen.exception.EntityExistsException;
+import com.example.gostsNaumen.exception.EntityNotFoundException;
 import com.example.gostsNaumen.security.jwe.JweFilter;
 import com.example.gostsNaumen.service.document.DocumentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.HashSet;
+import java.util.Optional;
 
 /**
  * Класс, предназначенный для тестирования {@link DocumentController}
@@ -225,7 +228,7 @@ class DocumentControllerTest {
         Mockito.when(documentMapper.createDocumentEntity(Mockito.any(DocumentDtoRequest.class)))
                 .thenReturn(document);
         Mockito.when(documentService.saveDocument(Mockito.any(Document.class)))
-                .thenThrow(new BusinessException(ErrorCode.STANDARD_EXIST_BY_FULL_NAME,
+                .thenThrow(new EntityExistsException(
                         "Гост c таким full name: " + document.getFullName() + " уже существует!"));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/standards")
@@ -317,7 +320,7 @@ class DocumentControllerTest {
      */
     @Test
     void getDocumentShouldReturnDocument() throws Exception {
-        Mockito.when(documentService.getDocumentById(Mockito.anyLong())).thenReturn(document);
+        Mockito.when(documentService.getDocumentById(Mockito.anyLong())).thenReturn(Optional.of(document));
         Mockito.when(documentMapper.mapEntityToDto(Mockito.any(Document.class)))
                 .thenAnswer(invocation -> {
                     Document temp = invocation.getArgument(0);
@@ -363,8 +366,8 @@ class DocumentControllerTest {
     }
 
     /**
-     * Тест, проверяющий кейс, когда метод получения документа выбрасывает ошибку {@link BusinessException} с кодом
-     * {@link  ErrorCode#STANDARD_BY_ID_NOT_EXISTS} в связи с тем, что по полученному id не найдена запись в бд
+     * Тест, проверяющий кейс, когда метод получения документа выбрасывает ошибку {@link EntityNotFoundException}
+     * в связи с тем, что по полученному id не найдена запись в бд
      * <p>
      * Тестируемы метод {@link DocumentController#getDocument(Long)}
      * <p>
@@ -380,7 +383,7 @@ class DocumentControllerTest {
     void getDocumentShouldReturnBusinessExceptionWhyenDocByIdNotFound() throws Exception {
         Long id = 1L;
         Mockito.when(documentService.getDocumentById(
-                Mockito.anyLong())).thenThrow(new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+                Mockito.anyLong())).thenThrow(new EntityNotFoundException(
                 "По переданному id: %s нет стандарта".formatted(id)));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/standards/{id}", id))
@@ -447,7 +450,7 @@ class DocumentControllerTest {
     @Test
     void deleteDocumentShouldThrowBusinessExceptionWhenStandardByIdNotExist() throws Exception {
         Long docId = 1L;
-        Mockito.doThrow(new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+        Mockito.doThrow(new EntityNotFoundException(
                         "По переданному id: %s нет стандарта".formatted(docId)))
                 .when(documentService).deleteDocumentById(docId);
 
@@ -471,8 +474,7 @@ class DocumentControllerTest {
     void updateDocumentShouldThrowBusinessExceptionWhenStandardByIdNotExist() throws Exception {
         Long docId = 1L;
         Mockito.when(documentService.getDocumentById(docId)).thenThrow(
-                new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
-                        "По переданному id: %s нет стандарта".formatted(docId)));
+                new EntityNotFoundException("По переданному id: %s нет стандарта".formatted(docId)));
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/standards/{id}", docId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -497,7 +499,7 @@ class DocumentControllerTest {
 
         document.setId(docId);
 
-        Mockito.when(documentService.getDocumentById(docId)).thenReturn(document);
+        Mockito.when(documentService.getDocumentById(docId)).thenReturn(Optional.of(document));
         Mockito.when(documentFieldsActualizer.setNewValues(
                         Mockito.any(Document.class), Mockito.any(ActualizeDtoRequest.class)))
                 .thenAnswer(invocation -> {
@@ -589,8 +591,7 @@ class DocumentControllerTest {
         Long docId = 1L;
 
         Mockito.when(documentService.getDocumentById(Mockito.anyLong()))
-                .thenThrow(new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
-                        "По переданному id: %s нет стандарта".formatted(docId)));
+                .thenThrow(new EntityNotFoundException("По переданному id: %s нет стандарта".formatted(docId)));
 
         ActualizeDtoRequest actualizeDtoRequest = new ActualizeDtoRequest()
                 .setContentLink("https://new_link.ru");
