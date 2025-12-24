@@ -38,6 +38,7 @@ public class UserService {
      *
      * @param user сущность пригодная для сохранения.
      * @return сохранённая сущность в БД.
+     * @throws CustomEntityExistsException если пользователь с переданной почтой или никнеймом уже существует
      */
     public User saveUser(User user) {
         if (userRepository.findUserByEmail(user.getEmail()).isPresent()) {
@@ -54,30 +55,26 @@ public class UserService {
     }
 
     /**
-     * Поиск сущности пользователя в пределах пакета по почте.
-     *
-     * <p>В случае, когда не существует пользователя по указанному {@code email}
-     * выбрасывается исключение {@code BusinessException }</p>
+     * Получение сущности пользователя в пределах пакета по почте.
      *
      * @param email почта пользователя.
      * @return сущность пользователя из БД.
+     * @throws CustomEntityNotFoundException если пользователь по переданной почте не существует
      */
-    public User findEntityByEmail(String email) {
+    public User getEntityByEmail(String email) {
         return userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new CustomEntityNotFoundException(
                         String.format("Пользователя по почте: %s не существует", email)));
     }
 
     /**
-     * Поиск сущности пользователя в пределах пакета по айди.
-     *
-     * <p>В случае, когда не существует пользователя по указанному {@code id}
-     * выбрасывается исключение {@code BusinessException }</p>
+     * Получение сущности пользователя в пределах пакета по айди.
      *
      * @param id айди пользователя
      * @return сущность пользователя из БД.
+     * @throws CustomEntityNotFoundException если пользователя по переданному id не существует
      */
-    public User findEntityById(Long id) {
+    public User getEntityById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new CustomEntityNotFoundException(
                 String.format("Пользователя по ID: %s не существует", id))
         );
@@ -90,9 +87,10 @@ public class UserService {
      * @param id                   айди пользователя
      * @param updateUserDtoRequest дто с данными пользователя
      * @return обновленная сущность пользователя
+     * @throws CustomEntityExistsException если переданный ник или почта уже связаны с другим пользователем
      */
     public User updateUserData(Long id, UpdateUserDtoRequest updateUserDtoRequest) {
-        User user = findEntityById(id);
+        User user = getEntityById(id);
 
         if (updateUserDtoRequest.userName() != null && !updateUserDtoRequest.userName().isEmpty()) {
             userRepository.findUserByUsername(updateUserDtoRequest.userName())
@@ -131,7 +129,7 @@ public class UserService {
     public Long updatePassword(PasswordDtoRequest newPassword) {
         Long userId = securityContextService.getLoggedInUserId();
 
-        User user = findEntityById(userId);
+        User user = getEntityById(userId);
 
         user.setPasswordHash(passwordEncoder.encode(newPassword.newPassword()));
 
@@ -149,12 +147,12 @@ public class UserService {
     }
 
     /**
-     * Удаляет пользователя по Id, но перед этим происходит проверка, существует ли пользователь с таким id в методе {@link #findEntityById(Long)}
+     * Удаляет пользователя по Id, но перед этим происходит проверка, существует ли пользователь с таким id в методе {@link #getEntityById(Long)}
      *
      * @param id id пользователя в БД
      */
     public String deleteUserById(Long id) {
-        String username = findEntityById(id).getUsername();
+        String username = getEntityById(id).getUsername();
 
         userRepository.deleteById(id);
 
