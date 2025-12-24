@@ -1,13 +1,13 @@
 package com.example.gostsNaumen.service.document;
 
 import com.example.gostsNaumen.entity.Document;
-import com.example.gostsNaumen.exception.BusinessException;
-import com.example.gostsNaumen.exception.ErrorCode;
+import com.example.gostsNaumen.exception.CustomEntityExistsException;
+import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Сервис по работе с гостами в БД
@@ -26,11 +26,10 @@ public class DocumentService {
      * @param documentForSave Сущность из БД
      * @return сохраненная сущность в бд
      */
-    @Transactional
     public Document saveDocument(Document documentForSave) {
 
         if (documentRepository.findByFullName(documentForSave.getFullName()).isPresent()) {
-            throw new BusinessException(ErrorCode.STANDARD_EXIST_BY_FULL_NAME,
+            throw new CustomEntityExistsException(
                     "Гост c таким full_name: " + documentForSave.getFullName() + " уже существует!");
         }
 
@@ -43,17 +42,13 @@ public class DocumentService {
      * @param id id ГОСТа
      * @return найденный по ID ГОСТ
      */
-    @Transactional
-    public Document getDocumentById(Long id) {
-        if (id == null || id <= 0) {
+    public Optional<Document> getDocumentById(Long id) {
+        if (id == null) {
             throw new IllegalArgumentException("Некорректный аргумент: " + id);
         }
 
         return documentRepository
-                .findById(id).orElseThrow(() -> new BusinessException(ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
-                        String.format(
-                                "По переданному id: %s нет стандарта",
-                                id)));
+                .findById(id);
     }
 
     /**
@@ -61,14 +56,12 @@ public class DocumentService {
      *
      * @param id id ГОСТа
      */
-    @Transactional
     public void deleteDocumentById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("Получен null id");
         }
         if (!documentRepository.existsById(id)) {
-            throw new BusinessException(
-                    ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+            throw new CustomEntityNotFoundException(
                     String.format("По переданному ID: %s, нет стандарта", id)
             );
         }
@@ -81,14 +74,12 @@ public class DocumentService {
      * @param document документ с уже обновлёнными полями, которые нужно сохранить
      * @return {@code document} – обновлённый документ
      */
-    @Transactional
     public Document updateDocument(Document document) {
 
         Long id = document.getId();
 
         if (!documentRepository.existsById(id)) {
-            throw new BusinessException(
-                    ErrorCode.STANDARD_BY_ID_NOT_EXISTS,
+            throw new CustomEntityNotFoundException(
                     String.format("По переданному ID: %s, нет стандарта", id));
         }
 

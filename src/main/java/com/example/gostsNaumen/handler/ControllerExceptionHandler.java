@@ -1,6 +1,6 @@
 package com.example.gostsNaumen.handler;
 
-import com.example.gostsNaumen.exception.BusinessException;
+import com.example.gostsNaumen.exception.InvalidTokenException;
 import com.example.gostsNaumen.handler.dto.ValidationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,42 +59,6 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
         );
     }
 
-    /**
-     * Обработка ошибок бизнес-логики приложения
-     *
-     * @param exception возникает при ошибках в бизнес-логике
-     * @param request   данные HTTP запроса
-     * @return удобочитаемый JSON с описанием ошибки
-     */
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessException(
-            final BusinessException exception,
-            WebRequest request) {
-        log.info("BusinessException: {}", exception.getMessage());
-        log.debug(exception.getMessage(), exception);
-
-        return new ResponseEntity<>(
-                new ErrorResponse()
-                        .setTimestamp(LocalDateTime.now())
-                        .setMessage(exception.getFormattedMessage())
-                        .setStatus(exception.getErrorCode().getStatus())
-                        .setUrl(getUrl(request)),
-                exception.getErrorCode().getStatus()
-        );
-    }
-
-    /**
-     * Обрабатывает исключение {@link MethodArgumentTypeMismatchException}, которое возникает,
-     * когда значение параметра метода контроллера не может быть преобразовано к ожидаемому типу.
-     * Логирует информацию об ошибке и возвращает {@link ErrorResponse} с деталями.
-     *
-     * @param exception исключение {@link MethodArgumentTypeMismatchException}, содержащее
-     *                  информацию о несовпадении типа аргумента
-     * @param request   объект {@link WebRequest}, представляющий текущий HTTP-запрос,
-     *                  используется для получения URL, на который был отправлен запрос
-     * @return {@link ResponseEntity}, содержащий {@link ErrorResponse} с информацией об ошибке
-     * и статусом {@link HttpStatus#BAD_REQUEST}
-     */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
             final MethodArgumentTypeMismatchException exception,
@@ -109,6 +73,23 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
                         .setStatus(HttpStatus.BAD_REQUEST)
                         .setUrl(getUrl(request)),
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidTokenError(
+            final InvalidTokenException exception,
+            WebRequest request) {
+        log.info("Invalid Token Exception: {}", exception.getMessage());
+        log.debug(exception.getMessage(), exception);
+
+        return new ResponseEntity<>(
+                new ErrorResponse()
+                        .setTimestamp(LocalDateTime.now())
+                        .setMessage(exception.getMessage())
+                        .setStatus(HttpStatus.UNAUTHORIZED)
+                        .setUrl(getUrl(request)),
+                HttpStatus.UNAUTHORIZED
         );
     }
 }

@@ -7,21 +7,84 @@ import java.util.Set;
  * в ответ на запрос получения ГОСТа или его создания. Содержит все атрибуты документа
  */
 public class DocumentDtoResponse {
+    /**
+     * Идентификатор документа.
+     */
     private Long id;
+
+    /**
+     * Полное название ГОСТа.
+     */
     private String fullName;
+
+    /**
+     * Регистрационный номер ГОСТа.
+     */
     private String designation;
+
+    /**
+     * Код ОКС (Общероссийский классификатор стандартов) ГОСТа.
+     */
     private String codeOKS;
+
+    /**
+     * Область применения ГОСТа.
+     */
     private String activityField;
+
+    /**
+     * Автор ГОСТа.
+     */
     private String author;
+
+    /**
+     * Область применения ГОСТа.
+     */
     private String applicationArea;
+
+    /**
+     * Ссылка на полный документ ГОСТа.
+     */
     private String contentLink;
+
+    /**
+     * Год принятия ГОСТа.
+     */
     private Integer acceptanceYear;
+
+    /**
+     * Год введения ГОСТа в действие.
+     */
     private Integer commissionYear;
+
+    /**
+     * Ключевые слова ГОСТа.
+     */
     private String keyWords;
+
+    /**
+     * Уровень стандартизации ГОСТа.
+     */
     private String adoptionLevel;
+
+    /**
+     * Статус ГОСТа.
+     */
     private String status;
+
+    /**
+     * Уровень гармонизации ГОСТа.
+     */
     private String harmonization;
+
+    /**
+     * Информация о том, был ли стандарт введён впервые или был обновлён.
+     */
     private String acceptedFirstTimeOrReplaced;
+
+    /**
+     * Нормативные ссылки на другие ГОСТы.
+     */
     private Set<String> references;
 
     public DocumentDtoResponse() {

@@ -7,7 +7,9 @@ import com.example.gostsNaumen.controller.dto.request.DocumentDtoRequest;
 import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
 import com.example.gostsNaumen.controller.dto.response.StandardIdDtoResponse;
 import com.example.gostsNaumen.entity.Document;
+import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
 import com.example.gostsNaumen.service.document.DocumentService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +42,7 @@ public class DocumentController {
      */
     @GetMapping("/documents")
     @PreAuthorize("hasAuthority('user:read')")
+    @Transactional
     public List<DocumentDtoResponse> getAll() {
         return documentService.findAll().stream().map(documentMapper::mapEntityToDto).toList();
     }
@@ -57,6 +60,7 @@ public class DocumentController {
      */
     @PostMapping()
     @PreAuthorize("hasAuthority('user:read')")
+    @Transactional
     public StandardIdDtoResponse addDocument(
             @RequestBody @Valid DocumentDtoRequest documentDtoRequest
     ) {
@@ -79,8 +83,11 @@ public class DocumentController {
      */
     @GetMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:read')")
+    @Transactional
     public DocumentDtoResponse getDocument(@PathVariable Long docId) {
-        Document document = documentService.getDocumentById(docId);
+        Document document = documentService.getDocumentById(docId).orElseThrow(
+                () -> new CustomEntityNotFoundException("По id - %d документ не найден!".formatted(docId))
+        );
 
         return documentMapper.mapEntityToDto(document);
     }
@@ -94,6 +101,7 @@ public class DocumentController {
      */
     @DeleteMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:write')")
+    @Transactional
     public void deleteDocument(@PathVariable Long docId) {
         documentService.deleteDocumentById(docId);
     }
@@ -107,11 +115,14 @@ public class DocumentController {
      */
     @PatchMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:write')")
+    @Transactional
     public DocumentDtoResponse updateDocument(
             @PathVariable Long docId,
             @RequestBody @Valid ActualizeDtoRequest dtoWithNewValues
     ) {
-        Document oldDocument = documentService.getDocumentById(docId);
+        Document oldDocument = documentService.getDocumentById(docId).orElseThrow(
+                () -> new CustomEntityNotFoundException("По id - %d документ не найден!".formatted(docId))
+        );
         Document documentWithNewFieldsValues = documentFieldsActualizer.setNewValues(oldDocument, dtoWithNewValues);
 
         return documentMapper.mapEntityToDto(documentService.updateDocument(documentWithNewFieldsValues));

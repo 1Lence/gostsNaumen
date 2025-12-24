@@ -1,8 +1,7 @@
 package com.example.gostsNaumen.service.security;
 
 import com.example.gostsNaumen.entity.User;
-import com.example.gostsNaumen.exception.BusinessException;
-import com.example.gostsNaumen.exception.ErrorCode;
+import com.example.gostsNaumen.exception.InvalidTokenException;
 import com.example.gostsNaumen.security.dto.CustomUserDetails;
 import com.example.gostsNaumen.security.permission.UserRoles;
 import org.junit.jupiter.api.Assertions;
@@ -101,7 +100,7 @@ class SecurityContextServiceTest {
 
     /**
      * Проверяет, что метод {@link SecurityContextService#getLoggedInUserId()}
-     * выбрасывает {@link BusinessException} с кодом {@link ErrorCode#INVALID_TOKEN},
+     * выбрасывает {@link InvalidTokenException},
      * если аутентификация отсутствует (authentication == null).
      */
     @Test
@@ -111,26 +110,21 @@ class SecurityContextServiceTest {
 
             Mockito.when(securityContext.getAuthentication()).thenReturn(null);
 
-            BusinessException exception = Assertions.assertThrows(
-                    BusinessException.class,
+            InvalidTokenException exception = Assertions.assertThrows(
+                    InvalidTokenException.class,
                     securityContextService::getLoggedInUserId
             );
 
             Assertions.assertEquals(
-                    ErrorCode.INVALID_TOKEN,
-                    exception.getErrorCode()
-            );
-
-            Assertions.assertEquals(
-                    "Невалидный токен",
-                    exception.getFormattedMessage()
+                    "Неверный токен",
+                    exception.getMessage()
             );
         }
     }
 
     /**
      * Проверяет, что метод {@link SecurityContextService#getLoggedInUserId()}
-     * выбрасывает {@link BusinessException} с кодом {@link ErrorCode#INVALID_TOKEN},
+     * выбрасывает {@link InvalidTokenException},
      * если аутентификация не прошла (isAuthenticated возвращает false).
      */
     @Test
@@ -143,23 +137,21 @@ class SecurityContextServiceTest {
             Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
             mockedContext.when(SecurityContextHolder::getContext).thenReturn(securityContext);
 
-            BusinessException exception = Assertions.assertThrows(
-                    BusinessException.class,
+            InvalidTokenException exception = Assertions.assertThrows(
+                    InvalidTokenException.class,
                     securityContextService::getLoggedInUserId
             );
 
-            Assertions.assertEquals(ErrorCode.INVALID_TOKEN, exception.getErrorCode());
-
             Assertions.assertEquals(
-                    "Невалидный токен",
-                    exception.getFormattedMessage()
+                    "Неверный токен",
+                    exception.getMessage()
             );
         }
     }
 
     /**
      * Проверяет, что метод {@link SecurityContextService#getLoggedInUserId()}
-     * выбрасывает {@link BusinessException} с кодом {@link ErrorCode#INVALID_TOKEN},
+     * выбрасывает {@link InvalidTokenException,
      * если principal не является экземпляром {@link CustomUserDetails}.
      */
     @Test
@@ -172,19 +164,14 @@ class SecurityContextServiceTest {
             Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
             mockedContext.when(SecurityContextHolder::getContext).thenReturn(securityContext);
 
-            BusinessException exception = Assertions.assertThrows(
-                    BusinessException.class,
+            InvalidTokenException exception = Assertions.assertThrows(
+                    InvalidTokenException.class,
                     securityContextService::getLoggedInUserId
             );
 
             Assertions.assertEquals(
-                    ErrorCode.INVALID_TOKEN,
-                    exception.getErrorCode()
-            );
-
-            Assertions.assertEquals(
-                    "Невалидный токен",
-                    exception.getFormattedMessage()
+                    "Неверный токен",
+                    exception.getMessage()
             );
         }
     }
