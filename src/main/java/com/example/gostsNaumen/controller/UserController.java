@@ -7,6 +7,7 @@ import com.example.gostsNaumen.controller.dto.response.UserDtoResponse;
 import com.example.gostsNaumen.controller.dto.response.UserIdDtoResponse;
 import com.example.gostsNaumen.entity.User;
 import com.example.gostsNaumen.service.user.UserService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +38,7 @@ public class UserController {
      */
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('user:write')")
+    @Transactional
     public List<UserDtoResponse> getAllUsers() {
         List<User> users = userService.findAll();
 
@@ -51,6 +53,7 @@ public class UserController {
      */
     @PatchMapping("/{id}")
     @PreAuthorize("hasAuthority('user:write')")
+    @Transactional
     public UserDtoResponse updateUserData(
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserDtoRequest updateUserDtoRequest
@@ -69,6 +72,7 @@ public class UserController {
      */
     @PatchMapping("/password")
     @PreAuthorize("hasAuthority('user:read')")
+    @Transactional
     public UserIdDtoResponse updatePassword(
             @RequestBody @Valid PasswordDtoRequest passwordDtoRequest
     ) {
@@ -84,6 +88,7 @@ public class UserController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('user:write')")
+    @Transactional
     public void deleteUserById(@PathVariable Long id) {
         userService.deleteUserById(id);
     }
