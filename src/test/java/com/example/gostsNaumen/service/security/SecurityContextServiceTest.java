@@ -1,7 +1,6 @@
 package com.example.gostsNaumen.service.security;
 
 import com.example.gostsNaumen.entity.User;
-import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.security.dto.CustomUserDetails;
 import com.example.gostsNaumen.security.permission.UserRoles;
 import org.junit.jupiter.api.Assertions;

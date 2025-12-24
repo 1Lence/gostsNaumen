@@ -2,7 +2,6 @@ package com.example.gostsNaumen.service.user;
 
 import com.example.gostsNaumen.controller.dto.request.UpdateUserDtoRequest;
 import com.example.gostsNaumen.entity.User;
-import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.repository.UserRepository;
 import com.example.gostsNaumen.security.permission.UserRoles;
 import com.example.gostsNaumen.service.security.SecurityContextService;
