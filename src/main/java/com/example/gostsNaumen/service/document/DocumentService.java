@@ -5,7 +5,6 @@ import com.example.gostsNaumen.exception.EntityExistsException;
 import com.example.gostsNaumen.exception.EntityNotFoundException;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,7 +25,6 @@ public class DocumentService {
      * @param documentForSave Сущность из БД
      * @return сохраненная сущность в бд
      */
-    @Transactional
     public Document saveDocument(Document documentForSave) {
 
         if (documentRepository.findByFullName(documentForSave.getFullName()).isPresent()) {
@@ -43,7 +41,6 @@ public class DocumentService {
      * @param id id ГОСТа
      * @return найденный по ID ГОСТ
      */
-    @Transactional
     public Document getDocumentById(Long id) {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("Некорректный аргумент: " + id);
@@ -59,7 +56,6 @@ public class DocumentService {
      *
      * @param id id ГОСТа
      */
-    @Transactional
     public void deleteDocumentById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("Получен null id");
@@ -78,7 +74,6 @@ public class DocumentService {
      * @param document документ с уже обновлёнными полями, которые нужно сохранить
      * @return {@code document} – обновлённый документ
      */
-    @Transactional
     public Document updateDocument(Document document) {
 
         Long id = document.getId();

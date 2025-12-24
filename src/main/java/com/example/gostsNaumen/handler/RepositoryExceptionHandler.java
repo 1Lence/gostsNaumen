@@ -1,7 +1,7 @@
 package com.example.gostsNaumen.handler;
 
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
+import com.example.gostsNaumen.exception.EntityExistsException;
+import com.example.gostsNaumen.exception.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -52,7 +52,9 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
      * @return HTTP Status код и JSON с ответом
      */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException exception, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(
+            IllegalArgumentException exception,
+            WebRequest request) {
         log.info("IllegalArgumentException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
@@ -74,7 +76,9 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
      * @return HTTP Status код и JSON с ответом
      */
     @ExceptionHandler(com.example.gostsNaumen.exception.EntityExistsException.class)
-    public ResponseEntity<?> handleEntityExistingException(EntityExistsException exception, WebRequest request) {
+    public ResponseEntity<?> handleEntityExistingException(
+            EntityExistsException exception,
+            WebRequest request) {
         log.info("EntityExistsException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
