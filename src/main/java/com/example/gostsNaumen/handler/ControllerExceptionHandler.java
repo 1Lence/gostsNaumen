@@ -1,6 +1,7 @@
 package com.example.gostsNaumen.handler;
 
 import com.example.gostsNaumen.exception.BusinessException;
+import com.example.gostsNaumen.exception.InvalidTokenException;
 import com.example.gostsNaumen.handler.dto.ValidationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,6 +98,23 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
                         .setStatus(HttpStatus.BAD_REQUEST)
                         .setUrl(getUrl(request)),
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidTokenError(
+            final InvalidTokenException exception,
+            WebRequest request) {
+        log.info("Invalid Token Exception: {}", exception.getMessage());
+        log.debug(exception.getMessage(), exception);
+
+        return new ResponseEntity<>(
+                new ErrorResponse()
+                        .setTimestamp(LocalDateTime.now())
+                        .setMessage(exception.getMessage())
+                        .setStatus(HttpStatus.UNAUTHORIZED)
+                        .setUrl(getUrl(request)),
+                HttpStatus.UNAUTHORIZED
         );
     }
 }
