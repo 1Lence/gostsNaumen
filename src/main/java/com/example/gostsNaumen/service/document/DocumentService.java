@@ -7,6 +7,7 @@ import com.example.gostsNaumen.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Сервис по работе с гостами в БД
@@ -41,14 +42,13 @@ public class DocumentService {
      * @param id id ГОСТа
      * @return найденный по ID ГОСТ
      */
-    public Document getDocumentById(Long id) {
+    public Optional<Document> getDocumentById(Long id) {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("Некорректный аргумент: " + id);
         }
 
         return documentRepository
-                .findById(id).orElseThrow(() -> new EntityNotFoundException(
-                        String.format("По переданному id: %s нет стандарта", id)));
+                .findById(id);
     }
 
     /**
