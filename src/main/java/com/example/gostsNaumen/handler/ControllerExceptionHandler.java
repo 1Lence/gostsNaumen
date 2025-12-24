@@ -1,6 +1,5 @@
 package com.example.gostsNaumen.handler;
 
-import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.exception.InvalidTokenException;
 import com.example.gostsNaumen.handler.dto.ValidationError;
 import org.slf4j.Logger;
@@ -57,30 +56,6 @@ public class ControllerExceptionHandler extends BaseControllerAdvice {
                         .setTimestamp(LocalDateTime.now())
                         .setValidationErrors(validationErrors),
                 HttpStatus.BAD_REQUEST
-        );
-    }
-
-    /**
-     * Обработка ошибок бизнес-логики приложения
-     *
-     * @param exception возникает при ошибках в бизнес-логике
-     * @param request   данные HTTP запроса
-     * @return удобочитаемый JSON с описанием ошибки
-     */
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessException(
-            final BusinessException exception,
-            WebRequest request) {
-        log.info("BusinessException: {}", exception.getMessage());
-        log.debug(exception.getMessage(), exception);
-
-        return new ResponseEntity<>(
-                new ErrorResponse()
-                        .setTimestamp(LocalDateTime.now())
-                        .setMessage(exception.getFormattedMessage())
-                        .setStatus(exception.getErrorCode().getStatus())
-                        .setUrl(getUrl(request)),
-                exception.getErrorCode().getStatus()
         );
     }
 

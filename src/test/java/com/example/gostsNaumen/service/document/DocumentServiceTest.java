@@ -4,7 +4,6 @@ import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
 import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
-import com.example.gostsNaumen.exception.BusinessException;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
