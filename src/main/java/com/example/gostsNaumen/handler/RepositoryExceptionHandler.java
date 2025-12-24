@@ -1,7 +1,7 @@
 package com.example.gostsNaumen.handler;
 
-import com.example.gostsNaumen.exception.EntityExistsException;
-import com.example.gostsNaumen.exception.EntityNotFoundException;
+import com.example.gostsNaumen.exception.CustomEntityExistsException;
+import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -27,11 +27,11 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
      * @param request   http запрос
      * @return HTTP Status код и JSON с ответом
      */
-    @ExceptionHandler(EntityNotFoundException.class)
+    @ExceptionHandler(CustomEntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(
-            com.example.gostsNaumen.exception.EntityNotFoundException exception,
+            CustomEntityNotFoundException exception,
             WebRequest request) {
-        log.info("EntityNotFoundException: {}", exception.getMessage());
+        log.info("CustomEntityNotFoundException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
         return new ResponseEntity<>(
@@ -75,11 +75,11 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
      * @param request   http запрос
      * @return HTTP Status код и JSON с ответом
      */
-    @ExceptionHandler(com.example.gostsNaumen.exception.EntityExistsException.class)
+    @ExceptionHandler(CustomEntityExistsException.class)
     public ResponseEntity<?> handleEntityExistingException(
-            EntityExistsException exception,
+            CustomEntityExistsException exception,
             WebRequest request) {
-        log.info("EntityExistsException: {}", exception.getMessage());
+        log.info("CustomEntityExistsException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
         return new ResponseEntity<>(

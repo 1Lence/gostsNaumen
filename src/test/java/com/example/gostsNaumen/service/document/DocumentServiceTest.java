@@ -4,8 +4,8 @@ import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
 import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
-import com.example.gostsNaumen.exception.EntityExistsException;
-import com.example.gostsNaumen.exception.EntityNotFoundException;
+import com.example.gostsNaumen.exception.CustomEntityExistsException;
+import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,7 +74,7 @@ class DocumentServiceTest {
     }
 
     /**
-     * Проверка на выброс {@link EntityExistsException}
+     * Проверка на выброс {@link CustomEntityExistsException}
      * при попытке сохранить существующий документ.
      * Также проверяется текст исключения, он должен соответствовать
      * {@code "Гост c таким full_name: {имя документа} уже существует!"}
@@ -84,7 +84,7 @@ class DocumentServiceTest {
         Mockito.when(documentRepository.findByFullName(document.getFullName()))
                 .thenReturn(Optional.of(document));
 
-        EntityExistsException testException = Assertions.assertThrows(EntityExistsException.class,
+        CustomEntityExistsException testException = Assertions.assertThrows(CustomEntityExistsException.class,
                 () -> documentService.saveDocument(document));
 
         Assertions.assertEquals("Гост c таким full_name: " + document.getFullName() + " уже существует!",
@@ -116,7 +116,7 @@ class DocumentServiceTest {
     }
 
     /**
-     * Проверка на выброс {@link EntityNotFoundException} при попытке вызвать метод с id, запись с которым в
+     * Проверка на выброс {@link CustomEntityNotFoundException} при попытке вызвать метод с id, запись с которым в
      * базе отсутствует.
      * Также проверяет текст ошибки, он должен соответствовать {@code По переданному id нет стандарта}
      */
@@ -124,14 +124,14 @@ class DocumentServiceTest {
     void deleteDocumentShouldThrowBusinessExceptionWhenDocumentDoesNotExist() {
         Mockito.when(documentRepository.existsById(document.getId())).thenReturn(false);
 
-        EntityNotFoundException testException = Assertions.assertThrows(EntityNotFoundException.class,
+        CustomEntityNotFoundException testException = Assertions.assertThrows(CustomEntityNotFoundException.class,
                 () -> documentService.deleteDocumentById(document.getId()));
 
         Assertions.assertEquals("По переданному ID: 1, нет стандарта", testException.getMessage());
     }
 
     /**
-     * Проверяет на выброс {@link EntityNotFoundException}, при попытке актуализировать документ по несуществующему id
+     * Проверяет на выброс {@link CustomEntityNotFoundException}, при попытке актуализировать документ по несуществующему id
      * Также проверяет текст ошибки, он должен соответствовать {@code По переданному id нет стандарта}
      */
     @Test
@@ -141,7 +141,7 @@ class DocumentServiceTest {
 
         Mockito.when(documentRepository.existsById(testDocument.getId())).thenReturn(false);
 
-        EntityNotFoundException testException = Assertions.assertThrows(EntityNotFoundException.class,
+        CustomEntityNotFoundException testException = Assertions.assertThrows(CustomEntityNotFoundException.class,
                 () -> documentService.updateDocument(testDocument));
         Assertions.assertEquals("По переданному ID: %d, нет стандарта".formatted(testDocument.getId()), testException
                 .getMessage());

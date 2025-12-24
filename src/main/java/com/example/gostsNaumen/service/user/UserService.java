@@ -3,8 +3,8 @@ package com.example.gostsNaumen.service.user;
 import com.example.gostsNaumen.controller.dto.request.PasswordDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.UpdateUserDtoRequest;
 import com.example.gostsNaumen.entity.User;
-import com.example.gostsNaumen.exception.EntityExistsException;
-import com.example.gostsNaumen.exception.EntityNotFoundException;
+import com.example.gostsNaumen.exception.CustomEntityExistsException;
+import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
 import com.example.gostsNaumen.repository.UserRepository;
 import com.example.gostsNaumen.security.permission.UserRoles;
 import com.example.gostsNaumen.service.security.SecurityContextService;
@@ -41,11 +41,11 @@ public class UserService {
      */
     public User saveUser(User user) {
         if (userRepository.findUserByEmail(user.getEmail()).isPresent()) {
-            throw new EntityExistsException(
+            throw new CustomEntityExistsException(
                     String.format("Пользователь с почтой %s, уже существует", user.getEmail())
             );
         } else if (userRepository.findUserByUsername(user.getUsername()).isPresent()) {
-            throw new EntityExistsException(
+            throw new CustomEntityExistsException(
                     String.format("Пользователь с ником %s, уже существует", user.getUsername())
             );
         }
@@ -64,7 +64,7 @@ public class UserService {
      */
     public User findEntityByEmail(String email) {
         return userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new CustomEntityNotFoundException(
                         String.format("Пользователя по почте: %s не существует", email)));
     }
 
@@ -78,7 +78,7 @@ public class UserService {
      * @return сущность пользователя из БД.
      */
     public User findEntityById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
+        return userRepository.findById(id).orElseThrow(() -> new CustomEntityNotFoundException(
                 String.format("Пользователя по ID: %s не существует", id))
         );
     }
@@ -97,7 +97,7 @@ public class UserService {
         if (updateUserDtoRequest.userName() != null && !updateUserDtoRequest.userName().isEmpty()) {
             userRepository.findUserByUsername(updateUserDtoRequest.userName())
                     .ifPresent(u -> {
-                        throw new EntityExistsException(
+                        throw new CustomEntityExistsException(
                                 String.format("Пользователь с ником: %s уже существует", u.getUsername()));
                     });
 
@@ -106,7 +106,7 @@ public class UserService {
         if (updateUserDtoRequest.email() != null && !updateUserDtoRequest.email().isEmpty()) {
             userRepository.findUserByEmail(updateUserDtoRequest.email())
                     .ifPresent(u -> {
-                        throw new EntityExistsException(
+                        throw new CustomEntityExistsException(
                                 String.format("Пользователь с почтой: %s уже существует", u.getEmail()));
                     });
 

@@ -1,8 +1,8 @@
 package com.example.gostsNaumen.service.document;
 
 import com.example.gostsNaumen.entity.Document;
-import com.example.gostsNaumen.exception.EntityExistsException;
-import com.example.gostsNaumen.exception.EntityNotFoundException;
+import com.example.gostsNaumen.exception.CustomEntityExistsException;
+import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +29,7 @@ public class DocumentService {
     public Document saveDocument(Document documentForSave) {
 
         if (documentRepository.findByFullName(documentForSave.getFullName()).isPresent()) {
-            throw new EntityExistsException(
+            throw new CustomEntityExistsException(
                     "Гост c таким full_name: " + documentForSave.getFullName() + " уже существует!");
         }
 
@@ -61,7 +61,7 @@ public class DocumentService {
             throw new IllegalArgumentException("Получен null id");
         }
         if (!documentRepository.existsById(id)) {
-            throw new EntityNotFoundException(
+            throw new CustomEntityNotFoundException(
                     String.format("По переданному ID: %s, нет стандарта", id)
             );
         }
@@ -79,7 +79,7 @@ public class DocumentService {
         Long id = document.getId();
 
         if (!documentRepository.existsById(id)) {
-            throw new EntityNotFoundException(
+            throw new CustomEntityNotFoundException(
                     String.format("По переданному ID: %s, нет стандарта", id));
         }
 
