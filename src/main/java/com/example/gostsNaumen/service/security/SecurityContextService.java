@@ -1,7 +1,6 @@
 package com.example.gostsNaumen.service.security;
 
-import com.example.gostsNaumen.exception.BusinessException;
-import com.example.gostsNaumen.exception.ErrorCode;
+import com.example.gostsNaumen.exception.InvalidTokenException;
 import com.example.gostsNaumen.security.dto.CustomUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +21,7 @@ public class SecurityContextService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+            throw new InvalidTokenException("Неверный токен");
         }
 
         Object userDetails = authentication.getPrincipal();
@@ -30,7 +29,7 @@ public class SecurityContextService {
         if (userDetails instanceof CustomUserDetails customUserDetails) {
             return customUserDetails.getId();
         } else {
-            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+            throw new InvalidTokenException("Неверный токен");
         }
     }
 }
