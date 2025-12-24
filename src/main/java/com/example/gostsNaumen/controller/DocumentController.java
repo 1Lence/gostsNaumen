@@ -6,17 +6,10 @@ import com.example.gostsNaumen.controller.dto.request.ActualizeDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.DocumentDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.FilterDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.NewStatusDtoRequest;
-import com.example.gostsNaumen.controller.dto.request.FilterDtoRequest;
-import com.example.gostsNaumen.controller.dto.request.NewStatusDtoRequest;
 import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
 import com.example.gostsNaumen.controller.dto.response.StandardIdDtoResponse;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
-import com.example.gostsNaumen.entity.model.StatusEnum;
-import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
-import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
-import com.example.gostsNaumen.service.document.DocumentLifeCycleService;
-import com.example.gostsNaumen.exception.EntityNotFoundException;
 import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
@@ -27,11 +20,10 @@ import jakarta.validation.Valid;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Контроллер по работе с гостами
@@ -95,21 +87,6 @@ public class DocumentController {
         Document document = documentMapper.createDocumentEntity(documentDtoRequest);
 
         return new StandardIdDtoResponse(documentService.saveDocument(document).getId());
-    }
-
-    /**
-     * Поиск ГОСТ-ов по необходимым фильтрам.
-     *
-     * @param filterDtoRequest JSON с фильтрами
-     * @return список DTO найденных по фильтрам
-     */
-    @GetMapping(path = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<DocumentDtoResponse> getAllDocumentsByFilters(FilterDtoRequest filterDtoRequest) {
-        Specification<Document> specification = documentSpecificationMapper.mapFullSpecification(filterDtoRequest);
-
-        List<Document> documentList = documentService.getAllDocumentsByFilters(specification);
-
-        return documentList.stream().map(documentMapper::mapEntityToDto).toList();
     }
 
     /**
@@ -204,9 +181,14 @@ public class DocumentController {
             @PathVariable Long docId,
             @RequestBody @Valid NewStatusDtoRequest newStatus
     ) {
-        Document documentToUpdate = documentService.getDocumentById(docId);
+        Optional<Document> documentToUpdate = documentService.getDocumentById(docId);
+
+        if (documentToUpdate.isEmpty()) {
+            throw new CustomEntityNotFoundException("Документ для обновления по id - %d не найден".formatted(docId));
+        }
+
         Document documentWithNewStatus = documentLifeCycleService.doLifeCycleTransition(
-                documentToUpdate,
+                documentToUpdate.get(),
                 rusEngEnumConverter.convertToEnglishValue(newStatus.newStatus(), StatusEnum.class));
 
         return documentMapper.mapEntityToDto(documentWithNewStatus);
