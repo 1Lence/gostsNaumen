@@ -92,11 +92,10 @@ class DocumentServiceTest {
     }
 
     /**
-     * Проверка на null при попытке получить документ не существующий по id
-     *
+     * Проверка на Optional.empty при попытке получить документ не существующий по id
      */
     @Test
-    void getDocumentShouldThrowBusinessExceptionWhenDocumentDoesNotExist() {
+    void getDocumentShouldReturnOptionalEmptyWhenDocumentDoesNotExist() {
         Mockito.when(documentRepository.findById(document.getId())).thenReturn(Optional.empty());
         Assertions.assertTrue(documentService.getDocumentById(document.getId()).isEmpty());
     }

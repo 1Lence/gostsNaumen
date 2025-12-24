@@ -92,7 +92,7 @@ class UserServiceTest {
      * если пользователь с такой почтой уже существует в БД.
      */
     @Test
-    void saveUserShouldThrowBusinessExceptionWhenUserWithCurrenEmailPresent() {
+    void saveUserShouldThrowCustomEntityExistsExceptionWhenUserWithCurrenEmailPresent() {
         Mockito.when(userRepository.findUserByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
         CustomEntityExistsException exception = Assertions.assertThrows(
@@ -115,7 +115,7 @@ class UserServiceTest {
      * и {@link UserRepository#findUserByUsername(String)} по одному разу.
      */
     @Test
-    void saveUserShouldThrowBusinessExceptionWhenUserWithCurrentUserNamePresent() {
+    void saveUserShouldThrowCustomEntityExistsExceptionWhenUserWithCurrentUserNamePresent() {
         Mockito.when(userRepository.findUserByEmail(user.getEmail())).thenReturn(Optional.empty());
         Mockito.when(userRepository.findUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
@@ -147,7 +147,7 @@ class UserServiceTest {
      * если пользователь с указанной электронной почтой не в БД.
      */
     @Test
-    void findEntityByEmailShouldThrowBusinessExceptionWhenUserWithCurrenEmailNotPresent() {
+    void findEntityByEmailShouldThrowCustomEntityNotFoundExceptionWhenUserWithCurrenEmailNotPresent() {
         Mockito.when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.empty());
 
         CustomEntityNotFoundException exception = Assertions.assertThrows(
@@ -168,7 +168,7 @@ class UserServiceTest {
      * если пользователь с указанным идентификатором не БД.
      */
     @Test
-    void findEntityByIdShouldThrowBusinessExceptionWhenUserWithCurrenIdNotPresent() {
+    void findEntityByIdShouldThrowCustomEntityNotFoundExceptionWhenUserWithCurrenIdNotPresent() {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         CustomEntityNotFoundException exception = Assertions.assertThrows(
@@ -211,7 +211,7 @@ class UserServiceTest {
      * уже занято другим пользователем.
      */
     @Test
-    void updateUserDataShouldThrowBusinessExceptionWhenUsernameAlreadyExists() {
+    void updateUserDataShouldThrowCustomEntityExistsExceptionWhenUsernameAlreadyExists() {
         UpdateUserDtoRequest request = new UpdateUserDtoRequest(
                 "existingUsername", null, null, null
         );
@@ -265,7 +265,7 @@ class UserServiceTest {
      * уже занят другим пользователем.
      */
     @Test
-    void updateUserDataShouldThrowBusinessExceptionWhenEmailAlreadyExists() {
+    void updateUserDataShouldThrowCustomEntityExistsExceptionWhenEmailAlreadyExists() {
         UpdateUserDtoRequest request = new UpdateUserDtoRequest(
                 null, null, "existing@example.com", null
         );

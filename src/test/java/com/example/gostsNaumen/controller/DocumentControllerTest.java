@@ -380,7 +380,7 @@ class DocumentControllerTest {
      * </ul>
      */
     @Test
-    void getDocumentShouldReturnBusinessExceptionWhyenDocByIdNotFound() throws Exception {
+    void getDocumentShouldReturnCustomEntityNotFoundExceptionWhyenDocByIdNotFound() throws Exception {
         Long id = 1L;
         Mockito.when(documentService.getDocumentById(
                 Mockito.anyLong())).thenThrow(new CustomEntityNotFoundException(
@@ -448,7 +448,7 @@ class DocumentControllerTest {
      * </ul>
      */
     @Test
-    void deleteDocumentShouldThrowBusinessExceptionWhenStandardByIdNotExist() throws Exception {
+    void deleteDocumentShouldThrowCustomEntityNotFoundExceptionWhenStandardByIdNotExist() throws Exception {
         Long docId = 1L;
         Mockito.doThrow(new CustomEntityNotFoundException(
                         "По переданному id: %s нет стандарта".formatted(docId)))
@@ -471,7 +471,7 @@ class DocumentControllerTest {
      * </ul>
      */
     @Test
-    void updateDocumentShouldThrowBusinessExceptionWhenStandardByIdNotExist() throws Exception {
+    void updateDocumentShouldThrowCustomEntityNotFoundExceptionWhenStandardByIdNotExist() throws Exception {
         Long docId = 1L;
         Mockito.when(documentService.getDocumentById(docId)).thenThrow(
                 new CustomEntityNotFoundException("По переданному id: %s нет стандарта".formatted(docId)));
@@ -586,7 +586,7 @@ class DocumentControllerTest {
      * </ul>
      */
     @Test
-    void updateDocumentShouldThrowBusinessExceptionWhenDocumentByIdIsNotExist() throws Exception {
+    void updateDocumentShouldCustomEntityNotFoundExceptionWhenDocumentByIdIsNotExist() throws Exception {
 
         Long docId = 1L;
 
