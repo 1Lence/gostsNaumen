@@ -153,9 +153,11 @@ public class UserService {
      *
      * @param id id пользователя в БД
      */
-    public void deleteUserById(Long id) {
-        findEntityById(id);
+    public String deleteUserById(Long id) {
+        String username = findEntityById(id).getUsername();
 
         userRepository.deleteById(id);
+
+        return username;
     }
 }

@@ -11,7 +11,6 @@ import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
 import com.example.gostsNaumen.entity.model.HarmonizationEnum;
 import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
-import com.example.gostsNaumen.exception.ErrorCode;
 import com.example.gostsNaumen.security.jwe.JweFilter;
 import com.example.gostsNaumen.service.document.DocumentService;
 import com.fasterxml.jackson.databind.ObjectMapper;

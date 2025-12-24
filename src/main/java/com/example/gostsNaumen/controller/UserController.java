@@ -9,10 +9,12 @@ import com.example.gostsNaumen.entity.User;
 import com.example.gostsNaumen.service.user.UserService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Контроллер по работе с пользовательских данных.
@@ -89,7 +91,12 @@ public class UserController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('user:write')")
     @Transactional
-    public void deleteUserById(@PathVariable Long id) {
-        userService.deleteUserById(id);
+    public ResponseEntity<Map<String, String>> deleteUserById(@PathVariable Long id) {
+        String username = userService.deleteUserById(id);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Пользователь успешно удалён",
+                "deletedUsername", username
+        ));
     }
 }
