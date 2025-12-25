@@ -141,18 +141,18 @@ class UserServiceTest {
     }
 
     /**
-     * Проверяет, что метод {@link UserService#findEntityByEmail(String)}
+     * Проверяет, что метод {@link UserService#getEntityByEmail(String)}
      * выбрасывает {@link CustomEntityNotFoundException} с кодом
      * {@code ErrorCode.USER_NOT_FOUND} и корректным сообщением,
      * если пользователь с указанной электронной почтой не в БД.
      */
     @Test
-    void findEntityByEmailShouldThrowBusinessExceptionWhenUserWithCurrenEmailNotPresent() {
+    void getEntityByEmailShouldThrowBusinessExceptionWhenUserWithCurrenEmailNotPresent() {
         Mockito.when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.empty());
 
         CustomEntityNotFoundException exception = Assertions.assertThrows(
                 CustomEntityNotFoundException.class,
-                () -> userService.findEntityByEmail("test@example.com")
+                () -> userService.getEntityByEmail("test@example.com")
         );
 
         Assertions.assertEquals(
@@ -162,18 +162,18 @@ class UserServiceTest {
     }
 
     /**
-     * Проверяет, что метод {@link UserService#findEntityById(Long)}
+     * Проверяет, что метод {@link UserService#getEntityById(Long)}
      * выбрасывает {@link CustomEntityNotFoundException} с кодом
      * {@code ErrorCode.USER_NOT_FOUND} и корректным сообщением,
      * если пользователь с указанным идентификатором не БД.
      */
     @Test
-    void findEntityByIdShouldThrowBusinessExceptionWhenUserWithCurrenIdNotPresent() {
+    void getEntityByIdShouldThrowBusinessExceptionWhenUserWithCurrenIdNotPresent() {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         CustomEntityNotFoundException exception = Assertions.assertThrows(
                 CustomEntityNotFoundException.class,
-                () -> userService.findEntityById(1L)
+                () -> userService.getEntityById(1L)
         );
 
         Assertions.assertEquals(

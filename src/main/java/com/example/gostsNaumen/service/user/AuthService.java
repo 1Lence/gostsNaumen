@@ -57,7 +57,7 @@ public class AuthService {
         String refreshedToken = refreshTokenDto.refreshToken();
 
         if (refreshedToken != null && jweService.validateJweToken(refreshedToken)) {
-            User user = userService.findEntityByEmail(jweService.getEmailFromToken(refreshedToken));
+            User user = userService.getEntityByEmail(jweService.getEmailFromToken(refreshedToken));
             return jweService.refreshBaseToken(user.getEmail(), refreshedToken, user.getId());
         }
         throw new AuthenticationException("Невалидный токен обновления.");
@@ -71,7 +71,7 @@ public class AuthService {
      * @throws AuthenticationException ошибка сверки данных.
      */
     private User checkUserCredentials(UserCredentialsDto userCredentialsDto) throws AuthenticationException {
-        User user = userService.findEntityByEmail(userCredentialsDto.email());
+        User user = userService.getEntityByEmail(userCredentialsDto.email());
 
         if (passwordEncoder.matches(userCredentialsDto.password(), user.getPasswordHash())) {
             return user;
