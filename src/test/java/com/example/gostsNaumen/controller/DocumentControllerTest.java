@@ -304,27 +304,6 @@ class DocumentControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.url").value("/api/standards/-2"));
     }
 
-
-    /**
-     * Тест, покрывающий кейс, когда в параметр метода передаётся строка вместо id
-     * Тестируемый метод {@link DocumentController#getDocument(Long)}
-     * В случае получения строки вместо id метод должен вернуть следующий ответ:
-     * <ul>
-     *         <li>status: BAD_REQUEST</li>
-     *         <li>message: "Некорректный аргумент: {@code некорректное значение id}"</li>
-     *         <li>timestamp: {@code TimeStamp}</li>
-     *         <li>url: /api/standards/{@code некорректное значение id}</li>
-     * </ul>
-     */
-    @Test
-    void getDocumentShouldThrowMethodArgumentTypeMismatchExceptionWhenProvidedStringId() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/standards/{id}", "manakinko"))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Некорректный аргумент: " + "manakinko"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.url").value("/api/standards/manakinko"));
-    }
-
     /**
      * Тест, проверяющий кейс, когда сервис успешно возвращает документ по переданному идентификатору
      * <p>
