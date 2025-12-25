@@ -17,11 +17,31 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CustomEnumValid {
+    /**
+     * Класс enum-а, по которому будет проводиться валидация
+     *
+     * @return класс enum-a для проверки значений
+     */
     Class<? extends HasValue> enumClass();
 
+    /**
+     * Сообщение об ошибке
+     *
+     * @return сообщение об ошибке по-умолчанию
+     */
     String message() default "Должно быть одним из значений value";
 
+    /**
+     * Группы валидации для контекста проверки
+     *
+     * @return группы валидации
+     */
     Class<?>[] groups() default {};
 
+    /**
+     * Payload для дополнительной информации о constraint.
+     *
+     * @return payload классы
+     */
     Class<? extends Payload>[] payload() default {};
 }

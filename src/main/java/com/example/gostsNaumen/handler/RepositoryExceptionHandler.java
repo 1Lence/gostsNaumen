@@ -65,8 +65,7 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
                         .setMessage(exception.getMessage())
                         .setStatus(HttpStatus.BAD_REQUEST)
                         .setUrl(getUrl(request)),
-                HttpStatus.BAD_REQUEST
-        );
+                HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -95,17 +94,17 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
     }
 
     /**
-     * Отлавливает ошибки связанные с попыткой добавить сущность/данные в сущность,
-     * которые уже существуют в бд и/или помечены как unique.
+     * Отлавливает ошибки связанные с проблемами при переходе документов по жизненному циклу.
      *
-     * @param exception возникает если сохраняемая сущность уже существует
+     * @param exception возникает если невозможен переход
      * @param request   http запрос
      * @return HTTP Status код и JSON с ответом
      */
     @ExceptionHandler(LifeCycleException.class)
-    public ResponseEntity<?> handleEntityExistingException(
+    public ResponseEntity<?> handleLifeCycleException(
             LifeCycleException exception,
-            WebRequest request) {
+            WebRequest request
+    ) {
         log.info("LifeCycleException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 

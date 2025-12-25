@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DocumentLifeCycleService {
+    /**
+     * Репозиторий для работы с документами
+     */
     private final DocumentRepository documentRepository;
 
     public DocumentLifeCycleService(DocumentRepository documentRepository) {
@@ -26,9 +29,10 @@ public class DocumentLifeCycleService {
      * который в случае наложения статусов выбрасывает ошибку, если ошибка не была выброшена,
      * то метод успешно меняет статус документа и возвращает обновлённый экземпляр документа.
      *
-     * @param document экземпляр документа, который совершает переход
-     * @param targetStatus   целевой статус
+     * @param document     экземпляр документа, который совершает переход
+     * @param targetStatus целевой статус
      * @return документ с новым статусом
+     * @throws LifeCycleException если переход из одного статуса в другой невозможен
      */
     public Document doLifeCycleTransition(Document document, StatusEnum targetStatus) {
 
@@ -52,7 +56,7 @@ public class DocumentLifeCycleService {
      *
      * @param document     документ, у которого хотят поменять статус
      * @param targetStatus целевой статус, на который производится попытка замены
-     * @throws LifeCycleException
+     * @throws LifeCycleException если переходу мешает другой документ
      */
     public void checkInterferingDocuments(Document document, StatusEnum targetStatus) {
 

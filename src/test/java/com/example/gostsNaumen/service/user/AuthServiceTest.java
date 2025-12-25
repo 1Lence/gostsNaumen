@@ -94,7 +94,7 @@ class AuthServiceTest {
         RefreshTokenDto refreshTokenDto = new RefreshTokenDto("valid-refresh-token");
 
         Mockito.when(jweService.validateJweToken("valid-refresh-token")).thenReturn(true);
-        Mockito.when(userService.findEntityByEmail("test@example.com")).thenReturn(user);
+        Mockito.when(userService.getEntityByEmail("test@example.com")).thenReturn(user);
         Mockito.when(jweService.getEmailFromToken("valid-refresh-token")).thenReturn("test@example.com");
 
         JwtAuthDto refreshedJwt = new JwtAuthDto(

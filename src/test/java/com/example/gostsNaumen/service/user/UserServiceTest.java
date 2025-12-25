@@ -92,7 +92,7 @@ class UserServiceTest {
      * если пользователь с такой почтой уже существует в БД.
      */
     @Test
-    void saveUserShouldThrowBusinessExceptionWhenUserWithCurrenEmailPresent() {
+    void saveUserShouldThrowCustomEntityExistsExceptionWhenUserWithCurrenEmailPresent() {
         Mockito.when(userRepository.findUserByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
         CustomEntityExistsException exception = Assertions.assertThrows(
@@ -115,7 +115,7 @@ class UserServiceTest {
      * и {@link UserRepository#findUserByUsername(String)} по одному разу.
      */
     @Test
-    void saveUserShouldThrowBusinessExceptionWhenUserWithCurrentUserNamePresent() {
+    void saveUserShouldThrowCustomEntityExistsExceptionWhenUserWithCurrentUserNamePresent() {
         Mockito.when(userRepository.findUserByEmail(user.getEmail())).thenReturn(Optional.empty());
         Mockito.when(userRepository.findUserByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
@@ -141,18 +141,18 @@ class UserServiceTest {
     }
 
     /**
-     * Проверяет, что метод {@link UserService#findEntityByEmail(String)}
+     * Проверяет, что метод {@link UserService#getEntityByEmail(String)}
      * выбрасывает {@link CustomEntityNotFoundException} с кодом
      * {@code ErrorCode.USER_NOT_FOUND} и корректным сообщением,
      * если пользователь с указанной электронной почтой не в БД.
      */
     @Test
-    void findEntityByEmailShouldThrowBusinessExceptionWhenUserWithCurrenEmailNotPresent() {
+    void getEntityByEmailShouldThrowCustomEntityNotFoundExceptionWhenUserWithCurrenEmailNotPresent() {
         Mockito.when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.empty());
 
         CustomEntityNotFoundException exception = Assertions.assertThrows(
                 CustomEntityNotFoundException.class,
-                () -> userService.findEntityByEmail("test@example.com")
+                () -> userService.getEntityByEmail("test@example.com")
         );
 
         Assertions.assertEquals(
@@ -162,18 +162,18 @@ class UserServiceTest {
     }
 
     /**
-     * Проверяет, что метод {@link UserService#findEntityById(Long)}
+     * Проверяет, что метод {@link UserService#getEntityById(Long)}
      * выбрасывает {@link CustomEntityNotFoundException} с кодом
      * {@code ErrorCode.USER_NOT_FOUND} и корректным сообщением,
      * если пользователь с указанным идентификатором не БД.
      */
     @Test
-    void findEntityByIdShouldThrowBusinessExceptionWhenUserWithCurrenIdNotPresent() {
+    void getEntityByIdShouldThrowCustomEntityNotFoundExceptionWhenUserWithCurrenIdNotPresent() {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         CustomEntityNotFoundException exception = Assertions.assertThrows(
                 CustomEntityNotFoundException.class,
-                () -> userService.findEntityById(1L)
+                () -> userService.getEntityById(1L)
         );
 
         Assertions.assertEquals(
@@ -211,7 +211,7 @@ class UserServiceTest {
      * уже занято другим пользователем.
      */
     @Test
-    void updateUserDataShouldThrowBusinessExceptionWhenUsernameAlreadyExists() {
+    void updateUserDataShouldThrowCustomEntityExistsExceptionWhenUsernameAlreadyExists() {
         UpdateUserDtoRequest request = new UpdateUserDtoRequest(
                 "existingUsername", null, null, null
         );
@@ -265,7 +265,7 @@ class UserServiceTest {
      * уже занят другим пользователем.
      */
     @Test
-    void updateUserDataShouldThrowBusinessExceptionWhenEmailAlreadyExists() {
+    void updateUserDataShouldThrowCustomEntityExistsExceptionWhenEmailAlreadyExists() {
         UpdateUserDtoRequest request = new UpdateUserDtoRequest(
                 null, null, "existing@example.com", null
         );

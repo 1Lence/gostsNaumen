@@ -128,7 +128,7 @@ class SecurityContextServiceTest {
      * если аутентификация не прошла (isAuthenticated возвращает false).
      */
     @Test
-    void getLoggedInUserIdShouldThrowBusinessExceptionWhenNotAuthenticated() {
+    void getLoggedInUserIdShouldThrowInvalidTokenExceptionWhenNotAuthenticated() {
         Mockito.when(authentication.isAuthenticated()).thenReturn(false);
 
         try (MockedStatic<SecurityContextHolder> mockedContext = Mockito.mockStatic(SecurityContextHolder.class)) {
@@ -155,7 +155,7 @@ class SecurityContextServiceTest {
      * если principal не является экземпляром {@link CustomUserDetails}.
      */
     @Test
-    void getLoggedInUserIdShouldThrowBusinessExceptionWhenPrincipalIsNotCustomUserDetails() {
+    void getLoggedInUserIdShouldThrowInvalidTokenExceptionWhenPrincipalIsNotCustomUserDetails() {
         Mockito.when(authentication.getPrincipal()).thenReturn("SomeOtherPrincipal");
         Mockito.when(authentication.isAuthenticated()).thenReturn(true);
 
