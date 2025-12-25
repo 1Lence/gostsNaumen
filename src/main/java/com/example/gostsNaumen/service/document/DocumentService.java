@@ -33,8 +33,7 @@ public class DocumentService {
         Optional<Document> interferingDocument = documentRepository
                 .findByFullNameAndStatus(documentForSave.getFullName(), StatusEnum.CURRENT);
 
-        if (interferingDocument.isPresent()) {
-            Long interferingDocumentId = interferingDocument.get().getId();
+        if (interferingDocument.isPresent() && documentForSave.getStatus() == StatusEnum.CURRENT) {
             throw new CustomEntityExistsException(
                     "Гост c таким full_name: " + documentForSave.getFullName() + " уже существует!");
         }
@@ -63,7 +62,6 @@ public class DocumentService {
      * @param specification фильтры
      * @return список сущностей найденных по фильтрам
      */
-    @Transactional(readOnly = true)
     public List<Document> getAllDocumentsByFilters(Specification<Document> specification) {
         return documentRepository.findAll(specification);
     }

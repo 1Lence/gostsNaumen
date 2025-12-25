@@ -6,7 +6,7 @@ import com.example.gostsNaumen.entity.model.StatusEnum;
 /**
  * Дто, в котором передается новый статус пользователя для его дальнейшего изменения
  *
- * @param newStatus новый статус документа
+ * @param newStatus новый статус документа, соответствующий одному из значений {@link StatusEnum}
  */
 public record NewStatusDtoRequest(@CustomEnumValid(enumClass = StatusEnum.class,
         message = "Должно содержать: Актуальный, Отменённый или Заменённый") String newStatus) {

@@ -2,13 +2,10 @@ package com.example.gostsNaumen.service.document;
 
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.entity.model.StatusEnum;
-import com.example.gostsNaumen.exception.BusinessException;
-import com.example.gostsNaumen.exception.ErrorCode;
+import com.example.gostsNaumen.exception.LifeCycleException;
 import com.example.gostsNaumen.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Сервис необходимый для управления переходами документов по жизненному циклу
@@ -22,64 +19,62 @@ public class DocumentLifeCycleService {
     }
 
     /**
-     * Метод для совершения перехода по жизненному циклу документа, в случае если метод
-     * {@link DocumentLifeCycleService#isTransitionAllowed(StatusEnum, StatusEnum)} возвращает false, выбрасывается
-     * исключение {@link BusinessException} с {@link ErrorCode#INCORRECT_LIFECYCLE_TRANSITION}
-     * <p>
-     * При успешном изменении статуса обновляет документ в бд
+     * Метод для совершения перехода по жизненному циклу документа.
+     * Сначала проверяется возможность совершения перехода методом
+     * {@link DocumentLifeCycleService#isTransitionAllowed(StatusEnum, StatusEnum)}, затем вызывается метод проверки
+     * наложений {@link DocumentLifeCycleService#checkInterferingDocuments(Document, StatusEnum)},
+     * который в случае наложения статусов выбрасывает ошибку, если ошибка не была выброшена,
+     * то метод успешно меняет статус документа и возвращает обновлённый экземпляр документа.
      *
      * @param document экземпляр документа, который совершает переход
-     * @param status   целевой статус
+     * @param targetStatus   целевой статус
      * @return документ с новым статусом
      */
-    public Document doLifeCycleTransition(Document document, StatusEnum status) {
+    public Document doLifeCycleTransition(Document document, StatusEnum targetStatus) {
 
-        if (!isTransitionAllowed(document.getStatus(), status)) {
-            throw new BusinessException(
-                    ErrorCode.INCORRECT_LIFECYCLE_TRANSITION,
-                    "Переход из статуса %s в статус %s невозможен".formatted(document.getStatus(), status));
+        if (!isTransitionAllowed(document.getStatus(), targetStatus)) {
+            throw new LifeCycleException(
+                    "Переход из статуса %s в статус %s невозможен".formatted(document.getStatus(), targetStatus));
         }
 
-        checkInterferingDocuments(document, status);
+        checkInterferingDocuments(document, targetStatus);
 
-        document.setStatus(status);
+        document.setStatus(targetStatus);
         return documentRepository.save(document);
     }
 
     /**
-     * Вспомогательный метод, необходим для проверки возникновения конфликтов в связи с изменением документа в базе данных.
+     * Вспомогательный метод, служащий для проверки появления наложений в случае перехода документа по циклу.
+     * <ul>
+     *     <li>В случае если наложений нет, метод ничего не возвращает</li>
+     *     <li>Если есть проблемы с наложением, код выбрасывает ошибку {@link LifeCycleException}</li>
+     * </ul>
      *
      * @param document     документ, у которого хотят поменять статус
      * @param targetStatus целевой статус, на который производится попытка замены
+     * @throws LifeCycleException
      */
-    private void checkInterferingDocuments(Document document, StatusEnum targetStatus) {
-        Optional<Document> interferingDocument = documentRepository.findByFullNameAndStatus(
-                document.getFullName(), StatusEnum.CURRENT);
-
-        if (interferingDocument.isPresent()) {
-            if (Objects.equals(interferingDocument.get().getId(), document.getId())) {
-                return;
-            }
-        }
+    public void checkInterferingDocuments(Document document, StatusEnum targetStatus) {
 
         switch (targetStatus) {
             case CURRENT:
-                if (interferingDocument.isPresent()) {
-                    throw new BusinessException(
-                            ErrorCode.OTHER_DOC_INTERFERES_WITH_TRANSITION,
-                            "Другой документ не позволяет изменить статус текущего документа его id: "
-                                    + interferingDocument.get().getId().toString());
-
+                Document interferingDocument = documentRepository.findByFullNameAndStatus(
+                        document.getFullName(), StatusEnum.CURRENT).orElse(null);
+                if (interferingDocument == null || interferingDocument.getId().equals(document.getId())) {
+                    return;
+                } else {
+                    throw new LifeCycleException(
+                            "Другой документ не позволяет изменить статус текущего документа, его id: "
+                                    + interferingDocument.getId().toString());
                 }
-            case REPLACED:
+            case REPLACED, CANCELED:
         }
-
     }
 
 
     /**
-     * Вспомогательный метод, необходимый для проверки возможности совершения транзакции на уровне других
-     * документов и возможных конфликтов
+     * Вспомогательный метод, необходимый для проверки возможности совершения транзакции на уровне текущего и
+     * целевого статуса
      *
      * @param oldStatus старый статус документа
      * @param newStatus новый статус документа
