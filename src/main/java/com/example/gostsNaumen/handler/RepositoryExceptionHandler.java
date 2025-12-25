@@ -64,8 +64,7 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
                         .setMessage(exception.getMessage())
                         .setStatus(HttpStatus.BAD_REQUEST)
                         .setUrl(getUrl(request)),
-                HttpStatus.BAD_REQUEST
-        );
+                HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -81,6 +80,31 @@ public class RepositoryExceptionHandler extends BaseControllerAdvice {
             CustomEntityExistsException exception,
             WebRequest request) {
         log.info("CustomEntityExistsException: {}", exception.getMessage());
+        log.debug(exception.getMessage(), exception);
+
+        return new ResponseEntity<>(
+                new ErrorResponse()
+                        .setTimestamp(LocalDateTime.now())
+                        .setMessage(exception.getMessage())
+                        .setStatus(HttpStatus.CONFLICT)
+                        .setUrl(getUrl(request)),
+                HttpStatus.CONFLICT
+        );
+    }
+
+    /**
+     * Отлавливает ошибки связанные с проблемами при переходе документов по жизненному циклу.
+     *
+     * @param exception возникает если невозможен переход
+     * @param request   http запрос
+     * @return HTTP Status код и JSON с ответом
+     */
+    @ExceptionHandler(LifeCycleException.class)
+    public ResponseEntity<?> handleLifeCycleException(
+            LifeCycleException exception,
+            WebRequest request
+    ) {
+        log.info("LifeCycleException: {}", exception.getMessage());
         log.debug(exception.getMessage(), exception);
 
         return new ResponseEntity<>(

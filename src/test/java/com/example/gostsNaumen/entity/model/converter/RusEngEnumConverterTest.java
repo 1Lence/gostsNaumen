@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Test;
  * Класс для тестирования конвертера Enum-ов, тестирует как успешные случаи, так и ошибочные
  */
 class RusEngEnumConverterTest {
-
+    /**
+     * Экземпляр тестируемого класса
+     */
     RusEngEnumConverter rusEngEnumConverter = new RusEngEnumConverter();
 
     /**

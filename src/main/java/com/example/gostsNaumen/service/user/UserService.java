@@ -38,6 +38,7 @@ public class UserService {
      *
      * @param user сущность пригодная для сохранения.
      * @return сохранённая сущность в БД.
+     * @throws CustomEntityExistsException если пользователь с переданной почтой или никнеймом уже существует
      */
     public User saveUser(User user) {
         if (userRepository.findUserByEmail(user.getEmail()).isPresent()) {
@@ -56,11 +57,9 @@ public class UserService {
     /**
      * Получение сущности пользователя в пределах пакета по почте.
      *
-     * <p>В случае, когда не существует пользователя по указанному {@code email}
-     * выбрасывается исключение {@code BusinessException }</p>
-     *
      * @param email почта пользователя.
      * @return сущность пользователя из БД.
+     * @throws CustomEntityNotFoundException если пользователь по переданной почте не существует
      */
     public User getEntityByEmail(String email) {
         return userRepository.findUserByEmail(email)
@@ -71,11 +70,9 @@ public class UserService {
     /**
      * Получение сущности пользователя в пределах пакета по айди.
      *
-     * <p>В случае, когда не существует пользователя по указанному {@code id}
-     * выбрасывается исключение {@code BusinessException }</p>
-     *
      * @param id айди пользователя
      * @return сущность пользователя из БД.
+     * @throws CustomEntityNotFoundException если пользователя по переданному id не существует
      */
     public User getEntityById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new CustomEntityNotFoundException(
@@ -90,6 +87,7 @@ public class UserService {
      * @param id                   айди пользователя
      * @param updateUserDtoRequest дто с данными пользователя
      * @return обновленная сущность пользователя
+     * @throws CustomEntityExistsException если переданный ник или почта уже связаны с другим пользователем
      */
     public User updateUserData(Long id, UpdateUserDtoRequest updateUserDtoRequest) {
         User user = getEntityById(id);
