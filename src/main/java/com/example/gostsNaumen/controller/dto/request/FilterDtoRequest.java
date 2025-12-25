@@ -4,19 +4,61 @@ package com.example.gostsNaumen.controller.dto.request;
  * Дто принимающая в себя строки по которым происходит фильтрация
  */
 public class FilterDtoRequest {
+    /**
+     * Полное имя стандарта
+     */
     private String fullName;
+    /**
+     * Код окс
+     */
     private String codeOks;
+    /**
+     * Год принятия
+     */
     private Integer acceptanceYear;
+    /**
+     * Год введения
+     */
     private Integer commissionYear;
+    /**
+     * Автор госта
+     */
     private String author;
+    /**
+     * ГОСТ введён впервые или изменён?
+     */
     private String acceptedFirstTimeOrReplaced;
+    /**
+     * Ключевые слова
+     */
     private String keyWords;
+    /**
+     * Уровень принятия
+     */
     private String adoptionLevel;
+    /**
+     * Статус госта
+     */
     private String status;
+    /**
+     * Уровень гармонизации госта
+     */
     private String harmonization;
+    /**
+     * Начало промежутка года приянтия госта
+     */
     private Integer acceptanceYearBegin;
+    /**
+     * Конец промежутка года приянтия госта
+     */
     private Integer acceptanceYearEnd;
+    /**
+     * Начало промежутка года введения госта
+     */
     private Integer commissionYearBegin;
+    /**
+     * Конец промежутка года введения госта
+     */
     private Integer commissionYearEnd;
 
     public String getFullName() {
