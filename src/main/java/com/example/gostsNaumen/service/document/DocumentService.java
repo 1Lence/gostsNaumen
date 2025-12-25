@@ -3,7 +3,9 @@ package com.example.gostsNaumen.service.document;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.exception.CustomEntityExistsException;
 import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
+import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.repository.DocumentRepository;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,12 +26,15 @@ public class DocumentService {
      * Сохранение сущности ГОСТа в БД
      *
      * @param documentForSave Сущность из БД
-     * @throws CustomEntityExistsException при существовании госта по полному имени выбрасывается ошибка
      * @return сохраненная сущность в бд
+     * @throws CustomEntityExistsException если уже существует гост с таким именем и статусом Current
      */
     public Document saveDocument(Document documentForSave) {
 
-        if (documentRepository.findByFullName(documentForSave.getFullName()).isPresent()) {
+        Optional<Document> interferingDocument = documentRepository
+                .findByFullNameAndStatus(documentForSave.getFullName(), StatusEnum.CURRENT);
+
+        if (interferingDocument.isPresent() && documentForSave.getStatus() == StatusEnum.CURRENT) {
             throw new CustomEntityExistsException(
                     "Гост c таким full_name: " + documentForSave.getFullName() + " уже существует!");
         }
@@ -38,11 +43,11 @@ public class DocumentService {
     }
 
     /**
-     * Находит ГОСТ по ID
+     * Получает ГОСТ по ID
      *
      * @param id id ГОСТа
-     * @throws IllegalArgumentException если получен id null
      * @return найденный по ID ГОСТ
+     * @throws IllegalArgumentException если получен некорректный id
      */
     public Optional<Document> getDocumentById(Long id) {
         if (id == null) {
@@ -54,11 +59,21 @@ public class DocumentService {
     }
 
     /**
+     * Поиск документов в БД по фильтрам
+     *
+     * @param specification фильтры
+     * @return список сущностей найденных по фильтрам
+     */
+    public List<Document> getAllDocumentsByFilters(Specification<Document> specification) {
+        return documentRepository.findAll(specification);
+    }
+
+    /**
      * Удаление ГОСТа по Id
      *
      * @param id id ГОСТа
-     * @throws IllegalArgumentException если получен id null
-     * @throws CustomEntityNotFoundException по переданному id нет стандарта
+     * @throws IllegalArgumentException      если получен некорректный id
+     * @throws CustomEntityNotFoundException если по полученному id нет стандарта
      */
     public void deleteDocumentById(Long id) {
         if (id == null) {
@@ -76,8 +91,8 @@ public class DocumentService {
      * Метод для обновления полей ГОСТа
      *
      * @param document документ с уже обновлёнными полями, которые нужно сохранить
-     * @throws CustomEntityNotFoundException по переданному id нет стандарта
      * @return {@code document} – обновлённый документ
+     * @throws CustomEntityNotFoundException если по переданному id нет стандарта
      */
     public Document updateDocument(Document document) {
 

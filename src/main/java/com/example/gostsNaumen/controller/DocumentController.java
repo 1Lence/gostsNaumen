@@ -4,17 +4,27 @@ import com.example.gostsNaumen.controller.dto.DocumentFieldsActualizer;
 import com.example.gostsNaumen.controller.dto.DocumentMapper;
 import com.example.gostsNaumen.controller.dto.request.ActualizeDtoRequest;
 import com.example.gostsNaumen.controller.dto.request.DocumentDtoRequest;
+import com.example.gostsNaumen.controller.dto.request.FilterDtoRequest;
+import com.example.gostsNaumen.controller.dto.request.NewStatusDtoRequest;
 import com.example.gostsNaumen.controller.dto.response.DocumentDtoResponse;
 import com.example.gostsNaumen.controller.dto.response.StandardIdDtoResponse;
 import com.example.gostsNaumen.entity.Document;
 import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
+import com.example.gostsNaumen.entity.model.StatusEnum;
+import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
+import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
+import com.example.gostsNaumen.service.document.DocumentLifeCycleService;
+import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
 import com.example.gostsNaumen.service.document.DocumentService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Контроллер по работе с гостами
@@ -22,17 +32,44 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/standards")
 public class DocumentController {
+    /**
+     * Серваис по работе с документами
+     */
     private final DocumentService documentService;
+    /**
+     * Маппер документов
+     */
     private final DocumentMapper documentMapper;
+    /**
+     * Актуалайзер полей документа
+     */
     private final DocumentFieldsActualizer documentFieldsActualizer;
+    /**
+     * Сервис перехода документов по жизненному циклу
+     */
+    private final DocumentLifeCycleService documentLifeCycleService;
+    /**
+     * Маппер спецификаций документов
+     */
+    private final DocumentSpecificationMapper documentSpecificationMapper;
+    /**
+     * Конвертер значений enum-ов
+     */
+    private final RusEngEnumConverter rusEngEnumConverter;
 
     public DocumentController(
             DocumentService documentService,
             DocumentMapper documentMapper,
-            DocumentFieldsActualizer documentFieldsActualizer) {
+            DocumentFieldsActualizer documentFieldsActualizer,
+            DocumentSpecificationMapper documentSpecificationMapper,
+            RusEngEnumConverter rusEngEnumConverter,
+            DocumentLifeCycleService documentLifeCycleService) {
         this.documentService = documentService;
         this.documentMapper = documentMapper;
         this.documentFieldsActualizer = documentFieldsActualizer;
+        this.documentSpecificationMapper = documentSpecificationMapper;
+        this.rusEngEnumConverter = rusEngEnumConverter;
+        this.documentLifeCycleService = documentLifeCycleService;
     }
 
     /**
@@ -48,7 +85,9 @@ public class DocumentController {
     }
 
     /**
-     * Добавление нового ГОСТа
+     * Добавление нового ГОСТа, в случае попытки замены существующего ГОСТ-а со статусом "Актуальный" новым документом
+     * так же со статусом "Актуальный", вылетит ошибка, предупреждающая о необходимости отправить старый документ в
+     * "Заменённый"
      *
      * @param documentDtoRequest {@link DocumentDtoRequest} ДТО ГОСТа
      * @return <ul><li>В случае успешного добавления возвращается {"id":{@code id госта}}</li>
@@ -73,7 +112,6 @@ public class DocumentController {
      * Получение ГОСТа по ID
      *
      * @param docId ID приходящий в запросе
-     * @throws CustomEntityNotFoundException по переданному id нет стандарта
      * @return <ul>
      * <li>В случае успешного поиска документа по id, возвращает {@link DocumentDtoResponse}</li>
      * <li>В случае, если документ не был найден, возвращается {@link com.example.gostsNaumen.handler.ErrorResponse}
@@ -81,6 +119,7 @@ public class DocumentController {
      * <li>В случае передачи некорректного {@code /{docId}} возвращается
      * {@link com.example.gostsNaumen.handler.ErrorResponse} с кодом {@code 400 BAD REQUEST}</li>
      * </ul>
+     * @throws CustomEntityNotFoundException по переданному id нет стандарта
      */
     @GetMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:read')")
@@ -91,6 +130,22 @@ public class DocumentController {
         );
 
         return documentMapper.mapEntityToDto(document);
+    }
+
+    /**
+     * Поиск ГОСТ-ов по необходимым фильтрам.
+     *
+     * @param filterDtoRequest JSON с фильтрами
+     * @return список DTO найденных по фильтрам
+     */
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('user:read')")
+    public List<DocumentDtoResponse> getAllDocumentsByFilters(FilterDtoRequest filterDtoRequest) {
+        Specification<Document> specification = documentSpecificationMapper.mapFullSpecification(filterDtoRequest);
+
+        List<Document> documentList = documentService.getAllDocumentsByFilters(specification);
+
+        return documentList.stream().map(documentMapper::mapEntityToDto).toList();
     }
 
     /**
@@ -112,8 +167,8 @@ public class DocumentController {
      *
      * @param docId            идентификатор госта
      * @param dtoWithNewValues дто, содержащее новые значения полей
-     * @throws CustomEntityNotFoundException по переданному id нет стандарта
      * @return обновлённое дто госта
+     * @throws CustomEntityNotFoundException по переданному id нет стандарта
      */
     @PatchMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:write')")
@@ -129,4 +184,34 @@ public class DocumentController {
 
         return documentMapper.mapEntityToDto(documentService.updateDocument(documentWithNewFieldsValues));
     }
+
+    /**
+     * Метод для обновления статуса документа
+     *
+     * @param docId     идентификатор документа, у которого мы меняем статус
+     * @param newStatus новый статус документа
+     * @return <ul>
+     * <li>В случае успеха возвращает {@link DocumentDtoResponse} с обновлённым статусом</li>
+     * <li>В случае ошибки возвращается {@link com.example.gostsNaumen.handler.ErrorResponse} с причиной ошибки</li>
+     * </ul>
+     */
+    @PatchMapping("/{docId}/status")
+    @PreAuthorize("hasAuthority('user:write')")
+    public DocumentDtoResponse updateDocumentStatus(
+            @PathVariable Long docId,
+            @RequestBody @Valid NewStatusDtoRequest newStatus
+    ) {
+        Optional<Document> documentToUpdate = documentService.getDocumentById(docId);
+
+        if (documentToUpdate.isEmpty()) {
+            throw new CustomEntityNotFoundException("Документ для обновления по id - %d не найден".formatted(docId));
+        }
+
+        Document documentWithNewStatus = documentLifeCycleService.doLifeCycleTransition(
+                documentToUpdate.get(),
+                rusEngEnumConverter.convertToEnglishValue(newStatus.newStatus(), StatusEnum.class));
+
+        return documentMapper.mapEntityToDto(documentWithNewStatus);
+    }
+
 }

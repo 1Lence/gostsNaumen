@@ -13,7 +13,9 @@ import com.example.gostsNaumen.entity.model.StatusEnum;
 import com.example.gostsNaumen.entity.model.converter.RusEngEnumConverter;
 import com.example.gostsNaumen.exception.CustomEntityExistsException;
 import com.example.gostsNaumen.exception.CustomEntityNotFoundException;
+import com.example.gostsNaumen.repository.specification.DocumentSpecificationMapper;
 import com.example.gostsNaumen.security.jwe.JweFilter;
+import com.example.gostsNaumen.service.document.DocumentLifeCycleService;
 import com.example.gostsNaumen.service.document.DocumentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +26,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.HashSet;
@@ -90,6 +92,10 @@ class DocumentControllerTest {
      */
     @MockitoBean
     private JweFilter jweFilter;
+    @MockitoBean
+    private DocumentSpecificationMapper documentSpecificationMapper;
+    @MockitoBean
+    private DocumentLifeCycleService documentLifeCycleService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -298,8 +304,33 @@ class DocumentControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.url").value("/api/standards/-2"));
     }
 
-
     /**
+     * Тест, проверяющий кейс, когда сервис успешно возвращает документ по переданному идентификатору
+     * <p>
+     * Тестируемы метод {@link DocumentController#getDocument(Long)}
+     * <p>
+     * Пример успешно выведенного документа:
+     * <ul>
+     *     <li>"id": 9,</li>
+     *     <li>"fullName": "testName,"</li>
+     *     <li>"designation": "ГОСТ 34286-2017,"</li>
+     *     <li>"codeOKS": "13.340.10,"</li>
+     *     <li>"activityField": "test Field,"</li>
+     *     <li>"author": "testAuthor,"</li>
+     *     <li>"applicationArea": "testApplicationArea,"</li>
+     *     <li>"contentLink": "testLink,"</li>
+     *     <li>"acceptanceYear": 2017,</li>
+     *     <li>"commissionYear": 2019,</li>
+     *     <li>"keyWords": "testKeyWords,"</li>
+     *     <li>"adoptionLevel": "Национальный,"</li>
+     *     <li>"status": "Актуальный,"</li>
+     *     <li>"harmonization": "Не гармонизированный,"</li>
+     *     <li>"acceptedFirstTimeOrReplaced": "ВВЕДЕН ВПЕРВЫЕ,"</li>
+     *     <li>"references": [<br>
+     *      test2",<br>
+     *      test1"<br>
+     *      ]</li>
+     * </ul>
      * Тест, покрывающий кейс, когда в параметр метода передаётся строка вместо id
      * Тестируемый метод {@link DocumentController#getDocument(Long)}
      * В случае получения строки вместо id метод должен вернуть следующий ответ:
