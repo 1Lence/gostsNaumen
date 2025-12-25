@@ -35,11 +35,29 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
  */
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
+    /**
+     * Сервис аутентификации
+     */
     private final AuthService authService;
+    /**
+     * Сервис для работы с пользователями
+     */
     private final UserService userService;
+    /**
+     * Маппер для преобразования пользователей
+     */
     private final UserMapper userMapper;
+    /**
+     * Контроллер аутентификации
+     */
     private final AuthController authController;
+    /**
+     * MockMvc для тестирования MVC-слоя контроллеров.
+     */
     private final MockMvc mockMvc;
+    /**
+     * Маппер обджектов
+     */
     private final ObjectMapper objectMapper;
 
     public AuthControllerTest(

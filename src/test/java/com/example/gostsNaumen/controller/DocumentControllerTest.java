@@ -26,8 +26,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.HashSet;
@@ -44,23 +44,52 @@ import java.util.Optional;
 @WebMvcTest(DocumentController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class DocumentControllerTest {
-
+    /**
+     * Пример запроса с документом
+     */
     DocumentDtoRequest documentRequest;
+    /**
+     * Пример ответа с документом
+     */
     DocumentDtoResponse documentResponse;
+    /**
+     * Экземпляр документа
+     */
     Document document;
+    /**
+     * Обновлённый экземпляр документа
+     */
     Document updatedDocument;
 
+    /**
+     * MockMvc для тестирования MVC-слоя контроллеров.
+     */
     @Autowired
     private MockMvc mockMvc;
 
+    /**
+     * Маппер для преобразований документов
+     */
     @MockitoBean
     private DocumentMapper documentMapper;
+    /**
+     * Сервис для работы с документами
+     */
     @MockitoBean
     private DocumentService documentService;
+    /**
+     * Конвертер Enum-ов из русского в английское значение и наоборот
+     */
     @MockitoBean
     private RusEngEnumConverter rusEngEnumConverter;
+    /**
+     * Актуализатор полей документа
+     */
     @MockitoBean
     private DocumentFieldsActualizer documentFieldsActualizer;
+    /**
+     * Жве фильтр
+     */
     @MockitoBean
     private JweFilter jweFilter;
     @MockitoBean
@@ -323,6 +352,52 @@ class DocumentControllerTest {
      *      test1"<br>
      *      ]</li>
      * </ul>
+     * Тест, покрывающий кейс, когда в параметр метода передаётся строка вместо id
+     * Тестируемый метод {@link DocumentController#getDocument(Long)}
+     * В случае получения строки вместо id метод должен вернуть следующий ответ:
+     * <ul>
+     *         <li>status: BAD_REQUEST</li>
+     *         <li>message: "Некорректный аргумент: {@code некорректное значение id}"</li>
+     *         <li>timestamp: {@code TimeStamp}</li>
+     *         <li>url: /api/standards/{@code некорректное значение id}</li>
+     * </ul>
+     */
+    @Test
+    void getDocumentShouldThrowMethodArgumentTypeMismatchExceptionWhenProvidedStringId() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/standards/{id}", "manakinko"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Некорректный аргумент: " + "manakinko"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.url").value("/api/standards/manakinko"));
+    }
+
+    /**
+     * Тест, проверяющий кейс, когда сервис успешно возвращает документ по переданному идентификатору
+     * <p>
+     * Тестируемы метод {@link DocumentController#getDocument(Long)}
+     * <p>
+     * Пример успешно выведенного документа:
+     * <ul>
+     *     <li>"id": 9,</li>
+     *     <li>"fullName": "testName,"</li>
+     *     <li>"designation": "ГОСТ 34286-2017,"</li>
+     *     <li>"codeOKS": "13.340.10,"</li>
+     *     <li>"activityField": "test Field,"</li>
+     *     <li>"author": "testAuthor,"</li>
+     *     <li>"applicationArea": "testApplicationArea,"</li>
+     *     <li>"contentLink": "testLink,"</li>
+     *     <li>"acceptanceYear": 2017,</li>
+     *     <li>"commissionYear": 2019,</li>
+     *     <li>"keyWords": "testKeyWords,"</li>
+     *     <li>"adoptionLevel": "Национальный,"</li>
+     *     <li>"status": "Актуальный,"</li>
+     *     <li>"harmonization": "Не гармонизированный,"</li>
+     *     <li>"acceptedFirstTimeOrReplaced": "ВВЕДЕН ВПЕРВЫЕ,"</li>
+     *     <li>"references": [<br>
+     *      test2",<br>
+     *      test1"<br>
+     *      ]</li>
+     * </ul>
      */
     @Test
     void getDocumentShouldReturnDocument() throws Exception {
@@ -386,7 +461,7 @@ class DocumentControllerTest {
      * </ul>
      */
     @Test
-    void getDocumentShouldReturnBusinessExceptionWhyenDocByIdNotFound() throws Exception {
+    void getDocumentShouldReturnCustomEntityNotFoundExceptionWhyenDocByIdNotFound() throws Exception {
         Long id = 1L;
         Mockito.when(documentService.getDocumentById(
                 Mockito.anyLong())).thenThrow(new CustomEntityNotFoundException(
@@ -454,7 +529,7 @@ class DocumentControllerTest {
      * </ul>
      */
     @Test
-    void deleteDocumentShouldThrowBusinessExceptionWhenStandardByIdNotExist() throws Exception {
+    void deleteDocumentShouldThrowCustomEntityNotFoundExceptionWhenStandardByIdNotExist() throws Exception {
         Long docId = 1L;
         Mockito.doThrow(new CustomEntityNotFoundException(
                         "По переданному id: %s нет стандарта".formatted(docId)))
@@ -477,7 +552,7 @@ class DocumentControllerTest {
      * </ul>
      */
     @Test
-    void updateDocumentShouldThrowBusinessExceptionWhenStandardByIdNotExist() throws Exception {
+    void updateDocumentShouldThrowCustomEntityNotFoundExceptionWhenStandardByIdNotExist() throws Exception {
         Long docId = 1L;
         Mockito.when(documentService.getDocumentById(docId)).thenThrow(
                 new CustomEntityNotFoundException("По переданному id: %s нет стандарта".formatted(docId)));
@@ -592,7 +667,7 @@ class DocumentControllerTest {
      * </ul>
      */
     @Test
-    void updateDocumentShouldThrowBusinessExceptionWhenDocumentByIdIsNotExist() throws Exception {
+    void updateDocumentShouldCustomEntityNotFoundExceptionWhenDocumentByIdIsNotExist() throws Exception {
 
         Long docId = 1L;
 
