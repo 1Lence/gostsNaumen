@@ -32,11 +32,29 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/standards")
 public class DocumentController {
+    /**
+     * Серваис по работе с документами
+     */
     private final DocumentService documentService;
+    /**
+     * Маппер документов
+     */
     private final DocumentMapper documentMapper;
+    /**
+     * Актуалайзер полей документа
+     */
     private final DocumentFieldsActualizer documentFieldsActualizer;
+    /**
+     * Сервис перехода документов по жизненному циклу
+     */
     private final DocumentLifeCycleService documentLifeCycleService;
+    /**
+     * Маппер спецификаций документов
+     */
     private final DocumentSpecificationMapper documentSpecificationMapper;
+    /**
+     * Конвертер значений enum-ов
+     */
     private final RusEngEnumConverter rusEngEnumConverter;
 
     public DocumentController(
@@ -94,7 +112,6 @@ public class DocumentController {
      * Получение ГОСТа по ID
      *
      * @param docId ID приходящий в запросе
-     * @throws CustomEntityNotFoundException по переданному id нет стандарта
      * @return <ul>
      * <li>В случае успешного поиска документа по id, возвращает {@link DocumentDtoResponse}</li>
      * <li>В случае, если документ не был найден, возвращается {@link com.example.gostsNaumen.handler.ErrorResponse}
@@ -102,6 +119,7 @@ public class DocumentController {
      * <li>В случае передачи некорректного {@code /{docId}} возвращается
      * {@link com.example.gostsNaumen.handler.ErrorResponse} с кодом {@code 400 BAD REQUEST}</li>
      * </ul>
+     * @throws CustomEntityNotFoundException по переданному id нет стандарта
      */
     @GetMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:read')")
@@ -149,8 +167,8 @@ public class DocumentController {
      *
      * @param docId            идентификатор госта
      * @param dtoWithNewValues дто, содержащее новые значения полей
-     * @throws CustomEntityNotFoundException по переданному id нет стандарта
      * @return обновлённое дто госта
+     * @throws CustomEntityNotFoundException по переданному id нет стандарта
      */
     @PatchMapping("/{docId}")
     @PreAuthorize("hasAuthority('user:write')")
@@ -173,8 +191,8 @@ public class DocumentController {
      * @param docId     идентификатор документа, у которого мы меняем статус
      * @param newStatus новый статус документа
      * @return <ul>
-     *     <li>В случае успеха возвращает {@link DocumentDtoResponse} с обновлённым статусом</li>
-     *     <li>В случае ошибки возвращается {@link com.example.gostsNaumen.handler.ErrorResponse} с причиной ошибки</li>
+     * <li>В случае успеха возвращает {@link DocumentDtoResponse} с обновлённым статусом</li>
+     * <li>В случае ошибки возвращается {@link com.example.gostsNaumen.handler.ErrorResponse} с причиной ошибки</li>
      * </ul>
      */
     @PatchMapping("/{docId}/status")

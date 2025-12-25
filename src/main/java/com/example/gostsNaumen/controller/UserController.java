@@ -22,7 +22,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
+    /**
+     * Сервис работы с пользователями
+     */
     private final UserService userService;
+    /**
+     * Маппер юзеров
+     */
     private final UserMapper userMapper;
 
     public UserController(

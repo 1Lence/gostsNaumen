@@ -28,9 +28,21 @@ import javax.naming.AuthenticationException;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+    /**
+     * Логгер
+     */
     private final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    /**
+     * Сервис аутентификации
+     */
     private final AuthService authService;
+    /**
+     * Сервис для работы с пользователями
+     */
     private final UserService userService;
+    /**
+     * Маппер юзеров
+     */
     private final UserMapper userMapper;
 
     public AuthController(
