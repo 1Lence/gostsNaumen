@@ -1,0 +1,309 @@
+package com.example.gostsNaumen.entity;
+
+import com.example.gostsNaumen.entity.model.AcceptedFirstTimeOrReplacedEnum;
+import com.example.gostsNaumen.entity.model.AdoptionLevelEnum;
+import com.example.gostsNaumen.entity.model.HarmonizationEnum;
+import com.example.gostsNaumen.entity.model.StatusEnum;
+import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+/**
+ * Сущность документа (ГОСТа) представляет собой ГОСТ со всеми необходимыми полями.<br>
+ */
+@Entity
+public class Document {
+    /**
+     * Генерируемый id типа Long
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    /**
+     * Полное название ГОСТа.<br>
+     * Пример: "БРОНЕОДЕЖДА Классификация и общие технические требования"
+     */
+    @Column(name = "full_name")
+    private String fullName;
+    /**
+     * Регистрационный номер ГОСТа.<br>
+     * Пример: "ГОСТ 34286-2017"
+     */
+    private String designation;
+    /**
+     * Код ОКС (Общероссийский классификатор стандартов) ГОСТа.<br>
+     * Пример: "13.340.10"
+     */
+    @Column(name = "code_oks")
+    private String codeOKS;
+    /**
+     * Область применения ГОСТа.<br>
+     * Пример: "Защитная одежда"
+     */
+    @Column(name = "activity_field")
+    private String activityField;
+    /**
+     * Автор ГОСТа.<br>
+     * Пример: "МТК 391 «Средства физической защиты и материалы для их изготовления"
+     */
+    private String author;
+    /**
+     * Область применения ГОСТа.<br>
+     * Пример: "Настоящий стандарт распространяется на бронеодежду, предназначенную для защиты туловища и конечностей
+     * человека (за исключением стоп ног и кистей рук) (далее — человека) от воздействияхолодного и огнестрельного
+     * стрелкового оружия, а также поражения осколками. Стандарт устанавливает классификацию бронеодежды и
+     * общие технические требования к ней, необходимые для разработки, изготовления
+     * и испытаний соответствующей продукции."
+     */
+    @Column(name = "application_area")
+    private String applicationArea;
+    /**
+     * Ссылка на полный документ ГОСТа.<br>
+     * Пример: <a href="https://meganorm.ru/Data2/1/4293734/4293734461.pdf">
+     * https://meganorm.ru/Data2/1/4293734/4293734461.pdf</a>
+     */
+    @Column(name = "content_link")
+    private String contentLink;
+    /**
+     * Год принятия ГОСТа.<br>
+     * Пример: 2017
+     */
+    @Column(name = "acceptance_year")
+    private Integer acceptanceYear;
+    /**
+     * Год введения ГОСТа в действие.<br>
+     * Пример: 2019
+     */
+    @Column(name = "commission_year")
+    private Integer commissionYear;
+    /**
+     * Ключевые слова ГОСТа.<br>
+     * Пример: "Ключевые слова: бронеодежда, холодное оружие,
+     * стрелковое оружие, защитная структура, класс защитной
+     * структуры, заброневое воздействие поражающего элемента при непробитии защитной структуры,
+     * показатель противоосколочной стойкости защитной структуры"
+     */
+    @Column(name = "key_words")
+    private String keyWords;
+    /**
+     * Уровень стандартизации ГОСТа.<br>
+     * Всего бывает 5 уровней:<br>
+     * Национальный, Межгосударственный, Отраслевой, Региональный, Стандарт Организаций.<br>
+     */
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
+    private AdoptionLevelEnum adoptionLevel;
+    /**
+     * Статус ГОСТа.<br>
+     * Всего бывает 3 статуса:<br>
+     * Актуальный, Отменённый, Заменённый<br>
+     */
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
+    private StatusEnum status;
+    /**
+     * Уровень гармонизации ГОСТа<br>
+     * Всего бывает 3 варианта:<br>
+     * Негармонизированный, Модифицированный, Гармонизированный<br>
+     */
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
+    private HarmonizationEnum harmonization;
+
+    /**
+     * Информация о том, был ли стандарт введён впервые, или был обновлён<br>
+     * Бывает 2 состояния:<br>
+     * Введён впервые, изменён
+     */
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
+    private AcceptedFirstTimeOrReplacedEnum acceptedFirstTimeOrReplaced;
+
+    /**
+     * Нормативные ссылки на другие ГОСТы
+     * Пример: "ГОСТ 3722—2014", "ГОСТ 28653—90"
+     */
+    @Column(name = "references_list")
+    private Set<String> references = new HashSet<>();
+
+    public Document() {
+    }
+
+    public Document(
+            String fullName,
+            String designation,
+            String codeOKS,
+            String activityField,
+            String author,
+            String applicationArea,
+            String contentLink,
+            Integer acceptanceYear,
+            Integer commissionYear,
+            String keyWords,
+            AdoptionLevelEnum adoptionLevel,
+            StatusEnum status,
+            HarmonizationEnum harmonization,
+            AcceptedFirstTimeOrReplacedEnum acceptedFirstTimeOrReplaced,
+            Set<String> references
+    ) {
+        this.fullName = fullName;
+        this.designation = designation;
+        this.codeOKS = codeOKS;
+        this.activityField = activityField;
+        this.author = author;
+        this.applicationArea = applicationArea;
+        this.contentLink = contentLink;
+        this.acceptanceYear = acceptanceYear;
+        this.commissionYear = commissionYear;
+        this.keyWords = keyWords;
+        this.adoptionLevel = adoptionLevel;
+        this.status = status;
+        this.harmonization = harmonization;
+        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
+        this.references = references;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
+
+    public String getCodeOKS() {
+        return codeOKS;
+    }
+
+    public void setCodeOKS(String codeOKS) {
+        this.codeOKS = codeOKS;
+    }
+
+    public String getActivityField() {
+        return activityField;
+    }
+
+    public void setActivityField(String activityField) {
+        this.activityField = activityField;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getApplicationArea() {
+        return applicationArea;
+    }
+
+    public void setApplicationArea(String applicationArea) {
+        this.applicationArea = applicationArea;
+    }
+
+    public String getContentLink() {
+        return contentLink;
+    }
+
+    public void setContentLink(String contentLink) {
+        this.contentLink = contentLink;
+    }
+
+    public Integer getAcceptanceYear() {
+        return acceptanceYear;
+    }
+
+    public void setAcceptanceYear(Integer acceptanceYear) {
+        this.acceptanceYear = acceptanceYear;
+    }
+
+    public Integer getCommissionYear() {
+        return commissionYear;
+    }
+
+    public void setCommissionYear(Integer commissionYear) {
+        this.commissionYear = commissionYear;
+    }
+
+    public String getKeyWords() {
+        return keyWords;
+    }
+
+    public void setKeyWords(String keyWords) {
+        this.keyWords = keyWords;
+    }
+
+    public AdoptionLevelEnum getAdoptionLevel() {
+        return adoptionLevel;
+    }
+
+    public void setAdoptionLevel(AdoptionLevelEnum adoptionLevel) {
+        this.adoptionLevel = adoptionLevel;
+    }
+
+    public StatusEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusEnum status) {
+        this.status = status;
+    }
+
+    public HarmonizationEnum getHarmonization() {
+        return harmonization;
+    }
+
+    public void setHarmonization(HarmonizationEnum harmonization) {
+        this.harmonization = harmonization;
+    }
+
+    public AcceptedFirstTimeOrReplacedEnum getAcceptedFirstTimeOrReplaced() {
+        return acceptedFirstTimeOrReplaced;
+    }
+
+    public void setAcceptedFirstTimeOrReplaced(AcceptedFirstTimeOrReplacedEnum acceptedFirstTimeOrReplaced) {
+        this.acceptedFirstTimeOrReplaced = acceptedFirstTimeOrReplaced;
+    }
+
+    public Set<String> getReferences() {
+        return references;
+    }
+
+    public void setReferences(Set<String> references) {
+        this.references = references;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Document document = (Document) o;
+        return Objects.equals(id, document.id) && Objects.equals(fullName, document.fullName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, fullName);
+    }
+}
